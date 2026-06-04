@@ -3,18 +3,8 @@
 // content, so it ships zero framework JS; the body prose is now in the served
 // HTML (crawlable). The inert Tweaks panel is dropped (invisible in production).
 import Page from '../layouts/Page.astro';
+import '../styles/bio.css';
 
-// Bio-specific CSS (the EXTRA block from bio.jsx), global so it reaches the slot.
-const EXTRA = `
-.bio-cta{ border-top:1px solid var(--line); padding:34px 0 80px; }
-.bio-cta a{ font-family:var(--display); color:var(--acc); text-decoration:none; font-size:clamp(20px,3vw,30px); font-weight:600; letter-spacing:-.01em; }
-.bio-cta a:hover{ opacity:.8; }
-.bio-aside{ position:sticky; top:30px; }
-@media (max-width:820px){ .bio-aside{ position:static; } }
-.at-glance dt{ margin-top:14px; } .at-glance dt:first-child{ margin-top:0; }
-.tm.rw .pg-lead{ font-size:clamp(17px,1.7vw,21px); }
-.tm.rw .prose p{ font-family:var(--body); font-size:16px; }
-`;
 const skills = ['TypeScript', 'Python', 'React', 'Node', 'PyTorch', 'LLM APIs', 'WebRTC'];
 ---
 <Page
@@ -23,8 +13,6 @@ const skills = ['TypeScript', 'Python', 'React', 'Node', 'PyTorch', 'LLM APIs', 
   canonical="https://rogerwinter.dev/bio.html"
   active="bio"
 >
-  <style is:global set:html={EXTRA}></style>
-
   <header class="pg">
     <p class="pg-kicker">About</p>
     <h1 class="pg-h1">Hi, I'm Roger Winter.</h1>

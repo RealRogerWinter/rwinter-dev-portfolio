@@ -40,7 +40,7 @@ JSX_ROOT = ["tweaks-panel.jsx"]
 JSX_PORTFOLIO = [
     "data.jsx", "shell.jsx", "microviz.jsx",          # shared
     "site.jsx",                                        # home
-    "bio.jsx", "contact.jsx",                          # bio / contact
+    "contact.jsx",                                     # contact (bio migrated to Astro: src/pages/bio.astro)
     "seo-viz.jsx", "seo-demo.jsx", "seotool.jsx",      # multilingual-seo
     "os-diagrams.jsx", "onestreamer.jsx",              # onestreamer
     "pg-diagrams.jsx", "pricegames.jsx",               # price-games
@@ -51,7 +51,8 @@ JSX_PORTFOLIO = [
 # --- page rename map (export filename -> deployed filename) ------------------
 PAGES = {
     "Roger Winter - Portfolio.html": "index.html",
-    "Bio.html": "bio.html",
+    # "Bio.html" removed: bio is migrated to Astro (src/pages/bio.astro). Pages
+    # migrated to Astro are intentionally NOT regenerated here.
     "Contact.html": "contact.html",
     "project-multilingual-seo.html": "project-multilingual-seo.html",
     "project-onestreamer.html": "project-onestreamer.html",
@@ -136,10 +137,6 @@ def patch_shell_and_bio():
     t2 = t2.replace('href:"Bio.html"', 'href:"bio.html"')
     t2 = t2.replace('href="Contact.html"', 'href="contact.html"')
     open(p, "w", encoding="utf-8").write(t2)
-    # bio.jsx: Contact.html -> contact.html
-    p = os.path.join(DST, "portfolio", "bio.jsx")
-    t = open(p, encoding="utf-8").read()
-    open(p, "w", encoding="utf-8").write(t.replace('href="Contact.html"', 'href="contact.html"'))
 
 VENDOR_SUBS = [
     (re.compile(r'<script[^>]*\breact-dom\.development\.js\b[^>]*>\s*</script>'),

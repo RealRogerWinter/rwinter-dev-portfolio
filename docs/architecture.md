@@ -2,6 +2,8 @@
 
 This document describes how the Roger Winter portfolio is built, structured, and deployed. It is the companion to the deploy runbook (`docs/deploy.md`), CI/CD reference (`docs/ci-cd.md`), and DNS/TLS bring-up (`docs/cloudflare-setup.md`).
 
+> **Migration in progress.** The site is being migrated to Astro (see [`docs/adr/0001-migrate-to-astro-islands.md`](adr/0001-migrate-to-astro-islands.md)). A build step now produces `dist/` — Astro copies `site/` verbatim and renders migrated pages from `src/pages/`. `bio.html` is the first page served by Astro (static, zero JS). The in-browser-Babel model described below still applies to the pages not yet migrated.
+
 ## 1. What the site is
 
 The portfolio at [rogerwinter.dev](https://rogerwinter.dev) is a **lightweight, multi-page static site** migrated from a Claude Design export. It has eight HTML pages — `index.html` (home), `bio.html`, `contact.html`, and five project pages (`project-multilingual-seo.html`, `project-onestreamer.html`, `project-price-games.html`, `project-pricey.html`, `project-sheet-llm.html`) — plus `favicon.svg`, `robots.txt`, and `sitemap.xml`. There is **no server-side application and no build step** for the site itself: `site/` is the committed source of truth and is copied verbatim into the image.
@@ -29,7 +31,7 @@ All 21 components live in `site/portfolio/` (plus `site/tweaks-panel.jsx` at the
 | Page | Root component | Page-specific JSX (after base) |
 |---|---|---|
 | `index.html` | `window.PortfolioSite` | `microviz`, `site.jsx` |
-| `bio.html` | `window.BioPage` | `bio.jsx` |
+| `bio.html` | **Astro** — `src/pages/bio.astro` (migrated; static, zero JS) | n/a |
 | `contact.html` | `window.ContactPage` | `contact.jsx` |
 | `project-multilingual-seo.html` | `window.SeoToolPage` | `microviz`, `seo-viz`, `seo-demo`, `seotool.jsx` |
 | `project-onestreamer.html` | `window.OneStreamerPage` | `microviz`, `os-diagrams`, `onestreamer.jsx` |
