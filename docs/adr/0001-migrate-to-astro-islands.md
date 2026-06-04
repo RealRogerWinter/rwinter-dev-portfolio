@@ -14,7 +14,7 @@ The portfolio at rogerwinter.dev is delivered as static files but rendered entir
 This shape has four structural consequences, all verified against the code:
 
 1. **A 3.0 MB Babel payload plus per-load transpile cost.** The vendor scripts are cached for a week, so this is mostly a first-visit and post-deploy cost, but the in-browser transpile runs on every load and is worst on low-end mobile.
-2. **The Content-Security-Policy is forced to allow `script-src 'unsafe-inline' 'unsafe-eval'`.** These directives exist only because the in-browser Babel runtime needs `eval`. The nginx config comment already notes that a precompiled build is what lets them drop.
+2. **The Content-Security-Policy is forced to allow `script-src 'unsafe-inline' 'unsafe-eval'`.** The `'unsafe-eval'` directive exists only because the in-browser Babel runtime needs `eval`, so removing Babel drops it unconditionally. The `'unsafe-inline'` directive drops too, but only once the one remaining inline script (the pre-paint theme bootstrap introduced in Phase A) is pinned with a CSP hash or externalized to a `'self'` file. The nginx config comment already notes that a precompiled build is what lets the relaxations drop.
 3. **Page bodies are invisible to crawlers and to LLMs that do not execute JavaScript.** The served HTML body is an empty `<div id="root">`; only the static `<head>` metadata is present. For a brand whose premise is being found and read, this is the most strategically costly gap.
 4. **There is no content pipeline.** A new tutorial today means hand-authored JSX. The owner's stated mission is writing tutorials, so this is the single largest capability gap.
 
@@ -42,7 +42,7 @@ The owner's mission is to build AI-native software and publish the tutorials tha
 
 Migrate the site to **Astro**, using its **islands architecture** for the interactive demos, **MDX content collections** for tutorials, and **static site generation** for every page.
 
-Astro renders the existing React components to static HTML at build time and ships JavaScript only for the islands that need interactivity. This delivers crawlable page bodies, a first-class markdown and MDX content pipeline, built-in image optimization, and the removal of in-browser Babel (which in turn lets the CSP drop the `script-src` relaxations), while keeping the output a directory of static files for the existing nginx container.
+Astro renders the existing React components to static HTML at build time and ships JavaScript only for the islands that need interactivity. This delivers crawlable page bodies, a first-class markdown and MDX content pipeline, built-in image optimization, and the removal of in-browser Babel (which lets the CSP drop `script-src 'unsafe-eval'` unconditionally, and `'unsafe-inline'` once the pre-paint theme bootstrap is CSP-hashed), while keeping the output a directory of static files for the existing nginx container.
 
 ### Why Astro over the alternatives
 
@@ -70,16 +70,16 @@ The migration is sequenced so that the look-preservation constraint becomes veri
 ### Phase A: de-risking foundation (the live site is untouched)
 
 - **Visual-regression harness.** A Playwright pixel-diff suite snapshots all eight pages across the real look matrix (accent, background, light/dark, rw-mode) on the current site. Run inside the pinned official Playwright Docker image so baselines generated locally match CircleCI exactly. This is the oracle that turns "do not change the look" and "no flash, ever" into a CI gate. It lands first.
-- **Resolve the three verified blockers in principle.** Theme flash: a tiny pre-paint inline script reads the saved tweaks and sets the theme on `<html>` before first paint. Twitch embed: the `&parent=` host is injected at build from the canonical hostname rather than read from `window.location.hostname` (which is empty at build). Noto Music: the clef glyph font is hand-vendored because it is absent from `@fontsource`.
-- **Asset and font wins.** Convert the two heavy PNGs to WebP/AVIF and self-host fonts. These are framework-independent, reversible, and Noto Music self-hosting is needed regardless.
+- **Resolve the three verified blockers in principle.** Theme flash: a tiny pre-paint script, pinned with a `script-src` sha256 hash so it does not reintroduce `'unsafe-inline'`, reads the saved tweaks and sets the full theme (light/dark, accent, background, layout, and font variables) on `<html>` before first paint. Twitch embed: the `&parent=` host is injected at build from the canonical hostname rather than read from `window.location.hostname` (which is empty at build). Noto Music: the clef glyph font is hand-vendored because it is absent from `@fontsource`.
+- **Asset and font wins.** Convert the two multi-megabyte PNGs (and the long tail of 150 to 390 KB PNGs) to WebP/AVIF, self-host fonts, and extend the smoke and resource asset checks to recognize `avif`. These are framework-independent, reversible, and Noto Music self-hosting is needed regardless.
 
 ### Phase B: single source of truth for the look
 
-Extract the nineteen CSS template-literal blocks into real stylesheets and the Nav/Footer/shell chrome into Astro components, so the look exists as a served stylesheet rather than only at React runtime. Prove pixel parity on the simplest page (bio or contact, which has no inline visualizations) before touching anything harder.
+Extract the nineteen CSS template-literal blocks into real stylesheets and the Nav/Footer/shell chrome into Astro components, so the look exists as a served stylesheet rather than only at React runtime. Because the theme selectors are currently scoped to the `.tm` root div (which does not exist before React mounts), this phase also rescopes them so the pre-paint bootstrap can apply the saved theme to a root element. Prove pixel parity on the simplest page (bio or contact, which has no inline visualizations) before touching anything harder.
 
 ### Phase C: demos become islands, one page at a time
 
-Convert the `window.*`-global components to ES module React islands mounted with `client:visible`. Migrate each project page individually, gated on the harness. This is where page bodies become crawlable, demos stay interactive, and in-browser Babel and the `script-src` relaxations are removed.
+Convert the `window.*`-global components to ES module React islands mounted with `client:visible`. Migrate each project page individually, gated on the harness. This is where page bodies become crawlable, demos stay interactive, and in-browser Babel is removed (dropping `script-src 'unsafe-eval'`, and `'unsafe-inline'` given the hashed pre-paint bootstrap).
 
 ### Phase D: content collections and MDX writeups
 
@@ -100,7 +100,7 @@ Add Astro content collections for `/writeups`, with MDX so live demos can be wov
 
 - **No server-side application runtime.** Astro is used in static output mode. The site stays static.
 - **No headless CMS.** Tutorials are markdown and MDX files in the repo.
-- **We do not promise to drop `style-src 'unsafe-inline'`.** It is required by the styling model even after migration. Only `script-src` relaxations are removed.
+- **We do not promise to drop `style-src 'unsafe-inline'`.** It is required by the styling model even after migration (React `<style>` children, the runtime lightbox `<style>`, inline `style` attributes, and the inline accent variable). Only the `script-src` relaxations are removed, and `script-src 'unsafe-inline'` only because the single pre-paint script is CSP-hashed.
 - **No speculative abstractions.** Component structure and naming are preserved where they already read well; refactoring is for modularity that the migration actually needs.
 
 ## Risks and mitigations
@@ -116,7 +116,7 @@ Add Astro content collections for `/writeups`, with MDX so live demos can be wov
 
 ## Success criteria
 
-- In-browser Babel is gone from the wire and `script-src` no longer needs `'unsafe-eval'`/`'unsafe-inline'`.
+- In-browser Babel is gone from the wire. `script-src` drops `'unsafe-eval'` unconditionally, and drops `'unsafe-inline'` because the one pre-paint theme bootstrap is pinned by a `script-src` sha256 hash (or externalized to a `'self'` file).
 - Every page's body prose is present in the served static HTML (verifiable with JavaScript disabled).
 - A `/writeups` pipeline is live with at least one tutorial whose full body is in the served HTML and which can embed a live demo.
 - Returning visitors with a saved theme see it applied with no visible flash, proven by the harness.
