@@ -1,77 +1,15 @@
-// Bespoke diagrams for the OneStreamer page. Theme-aware (currentColor + tokens).
-// Exports: window.OS_DIAG_CSS, window.TakeoverDiagram, window.ViewerPipelineDiagram, window.ArchitectureDiagram
-
-const OS_DIAG_CSS = `
-.osd{ width:100%; display:block; color:var(--acc); }
-.osd svg{ width:100%; height:auto; display:block; overflow:visible; }
-.osd .pnl{ fill:color-mix(in srgb,var(--acc) 9%, var(--panel2)); stroke:var(--line); stroke-width:1.4; }
-.osd .pnl-live{ fill:color-mix(in srgb,var(--acc) 18%, var(--panel2)); stroke:var(--acc); stroke-width:1.8; }
-.osd .lbl{ fill:var(--ink); font-family:var(--mono); font-size:11px; letter-spacing:.06em; }
-.osd .lbl-d{ fill:var(--dim); font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
-.osd .lbl-a{ fill:var(--acc); font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; }
-.osd .wire{ fill:none; stroke:var(--line); stroke-width:1.6; }
-.osd .flow{ fill:none; stroke:var(--acc); stroke-width:1.8; stroke-dasharray:3 8; opacity:.85; }
-.osd .play{ fill:var(--acc); }
-.osd .ico{ fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
-
-/* takeover */
-.osd-take .liveDot{ fill:var(--acc); }
-.osd-take .nameA{ opacity:1; } .osd-take .nameB{ opacity:0; }
-.osd-take .defFill{ fill:var(--acc); transform-box:fill-box; transform-origin:left center; }
-.osd-take .zap{ stroke:var(--acc); stroke-width:2.2; fill:none; opacity:0; stroke-linecap:round; stroke-linejoin:round; }
-.osd-take .takeover{ opacity:0; }
-.osd-take .interrupt{ opacity:.5; }
-.osd-take .incoming{ opacity:0; }
-
-.osd-anim .osd-take .defFill{ animation:osDef 9s ease-in-out infinite; }
-@keyframes osDef{ 0%,8%{ transform:scaleX(1); } 46%{ transform:scaleX(.06); } 60%{ transform:scaleX(.06); } 78%,100%{ transform:scaleX(1); } }
-.osd-anim .osd-take .nameA{ animation:osFadeA 9s steps(1) infinite; }
-.osd-anim .osd-take .nameB{ animation:osFadeB 9s steps(1) infinite; }
-@keyframes osFadeA{ 0%,52%{ opacity:1; } 54%,100%{ opacity:0; } }
-@keyframes osFadeB{ 0%,52%{ opacity:0; } 54%,100%{ opacity:1; } }
-.osd-anim .osd-take .z1{ animation:osZap 9s ease-out infinite; }
-.osd-anim .osd-take .z2{ animation:osZap 9s ease-out infinite .5s; }
-.osd-anim .osd-take .z3{ animation:osZap 9s ease-out infinite 1s; }
-@keyframes osZap{ 0%,14%{ opacity:0; transform:translateX(-8px); } 18%{ opacity:1; transform:translateX(0); } 30%{ opacity:0; transform:translateX(6px); } 100%{ opacity:0; } }
-.osd-anim .osd-take .takeover{ animation:osTake 9s ease-out infinite; }
-@keyframes osTake{ 0%,48%{ opacity:0; transform:scale(.8); } 53%{ opacity:1; transform:scale(1); } 64%{ opacity:1; } 70%,100%{ opacity:0; } }
-.osd-anim .osd-take .interrupt{ animation:osPulse 9s ease-in-out infinite; }
-@keyframes osPulse{ 0%,40%{ opacity:.85; } 50%,100%{ opacity:.2; } }
-.osd-anim .osd-take .incoming{ animation:osIncoming 9s ease-in-out infinite; }
-@keyframes osIncoming{ 0%,40%{ opacity:0; transform:translate(0,0); } 46%{ opacity:1; } 54%{ opacity:1; transform:translate(118px,-44px); } 60%{ opacity:0; transform:translate(118px,-44px); } 100%{ opacity:0; } }
-
-/* pipeline */
-.osd-anim .osd-pipe .flow{ animation:osFlow 1.1s linear infinite; }
-@keyframes osFlow{ to{ stroke-dashoffset:-22; } }
-.osd-pipe .chat{ opacity:0; transform-box:fill-box; transform-origin:left center; }
-.osd-anim .osd-pipe .c1{ animation:osChat 4.5s ease-out infinite .4s; }
-.osd-anim .osd-pipe .c2{ animation:osChat 4.5s ease-out infinite 1.4s; }
-.osd-anim .osd-pipe .c3{ animation:osChat 4.5s ease-out infinite 2.4s; }
-@keyframes osChat{ 0%{ opacity:0; transform:translateY(6px) scale(.96); } 12%{ opacity:1; transform:translateY(0) scale(1); } 80%{ opacity:1; } 100%{ opacity:.15; } }
-.osd-pipe .brain{ fill:none; stroke:var(--acc); stroke-width:1.8; }
-.osd-anim .osd-pipe .brainPulse{ animation:osBrain 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
-@keyframes osBrain{ 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
-
-/* architecture */
-.osd-anim .osd-arch .flow{ animation:osFlow 1.1s linear infinite; }
-.osd-arch .sfu{ fill:color-mix(in srgb,var(--acc) 16%, var(--panel2)); stroke:var(--acc); stroke-width:1.8; }
-.osd-arch .sig{ fill:var(--acc); opacity:0; }
-.osd-anim .osd-arch .s1{ animation:osSig 2.4s linear infinite; }
-.osd-anim .osd-arch .s2{ animation:osSig 2.4s linear infinite .3s; }
-.osd-anim .osd-arch .s3{ animation:osSig 2.4s linear infinite .6s; }
-.osd-anim .osd-arch .s4{ animation:osSig 2.4s linear infinite .9s; }
-@keyframes osSig{ 0%{ opacity:0; } 10%{ opacity:1; } 90%{ opacity:1; } 100%{ opacity:0; } }
-.osd-arch .rec{ fill:var(--acc); }
-.osd-anim .osd-arch .rec{ animation:osBrain 1.6s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
-
-@media (prefers-reduced-motion: reduce){ .osd *{ animation:none !important; } }
-`;
+// OneStreamer diagrams — ESM port of the window-global site/portfolio/os-diagrams.jsx.
+// All three are pure functions of no props (static SVG; their animation is CSS-only,
+// gated by the [data-anim] root attribute via src/styles/onestreamer.css). The Astro
+// page renders them with no client directive, so they ship as static HTML with zero
+// JS. Bodies reproduced verbatim from the original (CSS extracted to the stylesheet).
+import React from 'react';
 
 function screen(x, y, w, h, live){
   return <rect className={live ? "pnl-live" : "pnl"} x={x} y={y} width={w} height={h} rx="8" />;
 }
 
-function TakeoverDiagram(){
+export function TakeoverDiagram(){
   return (
     <div className="osd osd-take">
       <svg viewBox="0 0 386 218" role="img" aria-label="Takeover mechanic: a challenger interrupts, attacks the defender's shield, and seizes the live stream">
@@ -120,7 +58,7 @@ function TakeoverDiagram(){
   );
 }
 
-function ViewerPipelineDiagram(){
+export function ViewerPipelineDiagram(){
   return (
     <div className="osd osd-pipe">
       <svg viewBox="0 0 480 240" role="img" aria-label="AI viewer pipeline: the live stream's video frames and audio transcript feed a lightweight LLM that posts chat messages">
@@ -171,7 +109,7 @@ function ViewerPipelineDiagram(){
   );
 }
 
-function ArchitectureDiagram(){
+export function ArchitectureDiagram(){
   const viewers = [[392,40],[392,86],[392,132],[392,178]];
   return (
     <div className="osd osd-arch">
@@ -218,5 +156,3 @@ function ArchitectureDiagram(){
     </div>
   );
 }
-
-Object.assign(window, { OS_DIAG_CSS, TakeoverDiagram, ViewerPipelineDiagram, ArchitectureDiagram });

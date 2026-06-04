@@ -1,0 +1,223 @@
+---
+// Project page: OneStreamer — migrated from site/portfolio/onestreamer.jsx
+// (window.OneStreamerPage). Static Astro shell; the three diagrams render as
+// static HTML at build (no client directive, zero JS — their animation is
+// CSS-only, gated by [data-anim]); the micro-viz (band, CTA, prev/next minis)
+// is a client:only island. No interactive demos on this page. The inert Tweaks
+// panel is dropped; its vizAnim flag is bridged via [data-anim] in CSS.
+import Page from '../layouts/Page.astro';
+import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import { TakeoverDiagram, ViewerPipelineDiagram, ArchitectureDiagram } from '../components/viz/onestreamer.jsx';
+import { projects } from '../data/portfolio.js';
+import '../styles/microviz.css';
+import '../styles/onestreamer.css';
+
+const p = projects.find((x) => x.id === 'onestreamer');
+const idx = projects.findIndex((x) => x.id === 'onestreamer');
+const prev = projects[(idx - 1 + projects.length) % projects.length];
+const next = projects[(idx + 1) % projects.length];
+
+const stack = [
+  { layer: 'Runtime', key: ['Node.js 18+', 'Express 4', 'Socket.IO 4.7'], rest: [] },
+  { layer: 'Frontend', key: ['React 19', 'TypeScript 4.9'], rest: ['livekit-client', 'hls.js', 'socket.io-client', 'lucide-react', 'CRA build'] },
+  { layer: 'Realtime media', key: ['LiveKit'], rest: ['livekit-server-sdk', '@livekit/rtc-node', 'coturn (TURN/STUN)'], note: 'Sole WebRTC SFU · ADR-0024' },
+  { layer: 'Media tooling', key: ['ffmpeg'], rest: ['streamlink', 'yt-dlp'], note: 'URL-relay ingest' },
+  { layer: 'Storage', key: ['SQLite'], rest: ['Backblaze B2 (S3-compatible)', 'Redis (optional cache)'], note: 'Recordings + clips on B2' },
+  { layer: 'Auth', key: ['Passport'], rest: ['JWT', 'Cloudflare Turnstile', 'bcrypt'], note: 'Google OAuth + Local' },
+  { layer: 'CMS', key: ['Strapi 4'], rest: [], note: 'Blog content, separate process' },
+  { layer: 'AI / ML', key: ['Ollama', 'whisper.cpp'], rest: ['Groq (optional cloud LLM)'], note: 'Local-first: default mistral, local STT' },
+  { layer: 'Email', key: ['SendGrid'], rest: ['nodemailer'], note: 'SMTP' },
+  { layer: 'Ops', key: ['PM2', 'nginx'], rest: ["Let's Encrypt TLS"], note: 'Process mgmt + reverse proxy' },
+];
+
+const tourPins = [
+  { left: 48, top: 3.4, l: 'Next-switch timer' },
+  { left: 46, top: 46, l: 'The live game' },
+  { left: 10, top: 70, l: 'Streamer cam' },
+  { left: 87, top: 30, l: 'Live chat · AI + people', r: true },
+];
+---
+<Page
+  title="OneStreamer — Roger Winter"
+  description={p.desc}
+  canonical="https://rogerwinter.dev/project-onestreamer.html"
+  active=""
+  ogType="article"
+  ogImage="https://rogerwinter.dev/portfolio/assets/onestreamer.png"
+>
+  {/* hero */}
+  <header class="os-hero">
+    <div class="os-band">
+      <ProjectVizIsland id="onestreamer" client:only="react" />
+      <div class="os-scrim"></div>
+      <div class="os-status"><i></i> {p.status}</div>
+      <div class="os-titlewrap">
+        <div class="os-logo"><img src={p.logo} alt="OneStreamer logo" /></div>
+        <div>
+          <p class="os-eyebrow">Project {p.n}</p>
+          <h1 class="os-title">OneStreamer</h1>
+        </div>
+      </div>
+    </div>
+    <div class="os-intro">
+      <p class="os-tagline">{p.tagline}</p>
+      <div class="os-actions">
+        <a class="tm-btn demo" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+        <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="tm-btn ghost" href="/">← All projects</a>
+      </div>
+    </div>
+  </header>
+
+  {/* lede */}
+  <section class="os-lede">
+    <p>OneStreamer started with one question: what if streamers competed for the audience by taking the broadcast away from each other?</p>
+    <p>Only one person holds the stream at a time. Anyone can cut in and seize it, so the show keeps changing hands. It's also where I test how far AI agents can carry a real product, with <span class="hl">AI viewers watching alongside real people</span> and talking back in chat.</p>
+  </section>
+
+  {/* interface tour */}
+  <section class="os-sec">
+    <p class="os-kicker">The interface</p>
+    <h2 class="os-h2">One stream, wrapped in a control room</h2>
+    <p class="os-p">Every viewer sees the same thing: the live game full-bleed, the streamer's own cam, a switch timer counting down to the next takeover, and a chat where real people and AI viewers talk over each other.</p>
+    <figure class="os-tour" style="margin:8px 0 0">
+      <picture><source srcset="portfolio/assets/onestreamer-stream.webp" type="image/webp" /><img src="portfolio/assets/onestreamer-stream.png" width="2560" height="1440" alt="An annotated frame of the OneStreamer interface" loading="lazy" /></picture>
+      {tourPins.map((pin) => (
+        <span class={'pin' + (pin.r ? ' r' : '')} style={`left:${pin.left}%;top:${pin.top}%`}>
+          <span class="dot"></span><span class="lab">{pin.l}</span>
+        </span>
+      ))}
+    </figure>
+    <figcaption class="os-figcap">The live broadcast overlay, over whatever's being streamed</figcaption>
+  </section>
+
+  {/* takeover mechanic */}
+  <section class="os-sec">
+    <div class="os-split">
+      <div>
+        <p class="os-kicker">The mechanic</p>
+        <h2 class="os-h2">One live seat. Anyone can take it.</h2>
+        <p class="os-p">The platform never runs more than a single broadcast, so attention doesn't fragment across a hundred parallel streams. Holding the seat is the whole game, and it's always up for grabs.</p>
+        <p class="os-p">Streamers and viewers pick up items between rounds. Some raise a stream's defense so it can't be grabbed. Others cut that defense or disrupt the broadcast, opening a window for the next takeover.</p>
+      </div>
+      <figure class="os-figure">
+        <div class="os-figbox"><TakeoverDiagram /></div>
+        <figcaption class="os-figcap">Interrupt → attack the defense → seize the stream</figcaption>
+      </figure>
+    </div>
+    <div class="os-moves">
+      <div class="os-move"><h3 class="mh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg> Interrupt</h3><p>Anyone watching can cut in. The current broadcast stops and the challenger becomes the show.</p></div>
+      <div class="os-move"><h3 class="mh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4 3 6.5 7 9 4-2.5 7-5 7-9V6l-7-3Z"/></svg> Defend</h3><p>Items raise a stream's defense, making it harder for anyone to grab the seat.</p></div>
+      <div class="os-move"><h3 class="mh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5 21 3l-.5 6.5L9 21l-3-3L17.5 6.5ZM6 18l-3 3M4 14l3 3"/></svg> Attack</h3><p>Other items drain a stream's defense or disrupt it, setting up the next takeover.</p></div>
+    </div>
+  </section>
+
+  {/* AI viewers */}
+  <section class="os-sec">
+    <div class="os-split rev">
+      <figure class="os-figure">
+        <div class="os-figbox"><ViewerPipelineDiagram /></div>
+        <figcaption class="os-figcap">Frames + audio transcript → lightweight LLM → chat</figcaption>
+      </figure>
+      <div>
+        <p class="os-kicker">AI viewers</p>
+        <h2 class="os-h2">Viewers that watch and react</h2>
+        <p class="os-p">Real people fill the room, and OneStreamer seeds it with LLM-powered viewers too. Each AI viewer takes screenshots of the stream and a transcript of the audio, feeds both into a lightweight model, and posts back to chat.</p>
+        <p class="os-p">Because the reactions come from the current frame and the current audio, they track what's on screen right now instead of running a generic script. Every viewer keeps a consistent personality across a session, so running jokes and callbacks build over time.</p>
+      </div>
+    </div>
+
+    {/* moderation callout */}
+    <div class="os-callout">
+      <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6 18.4 18.4" stroke-linecap="round"/></svg></div>
+      <div>
+        <h3>The same eyes and ears keep the room safe</h3>
+        <p>AI moderation runs on the same pipeline as the viewers. Frames from the live video and the audio transcript pass through a detection step, and when something crosses the line the offending account is banned automatically, without waiting for a human to catch it.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* interactive effects */}
+  <section class="os-sec">
+    <p class="os-kicker">On the stream</p>
+    <h2 class="os-h2">Effects that reach into the broadcast</h2>
+    <p class="os-p">Viewers don't just watch. They can change what the broadcast looks and sounds like in real time.</p>
+    <div class="os-cells">
+      <div class="os-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 20 4-1L19 8a2.1 2.1 0 0 0-3-3L5 16l-1 4Z"/></svg><span>Draw on the stream</span></div><p>Mark up the live video with drawings and graphic effects layered straight over the feed.</p></div>
+      <div class="os-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 8a5 5 0 0 1 0 8"/></svg><span>Sound effects</span></div><p>Triggered sounds play through the broadcast audio for everyone watching.</p></div>
+      <div class="os-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg><span>Text to speech</span></div><p>TTS voices speak into the stream, so chat can talk out loud mid-broadcast.</p></div>
+    </div>
+  </section>
+
+  {/* architecture */}
+  <section class="os-sec">
+    <div class="os-split">
+      <div>
+        <p class="os-kicker">Architecture</p>
+        <h2 class="os-h2">Built on LiveKit, one to many</h2>
+        <p class="os-p">OneStreamer uses LiveKit as its only WebRTC SFU. A single publisher sends video into the SFU, which forwards it to every viewer at once — the one-to-many shape the takeover game needs.</p>
+        <p class="os-p">Latency stays low enough that a takeover feels instant. A recorder taps the same feed continuously, so any moment can be turned into a clip after the fact.</p>
+        <a class="os-doclink" href="https://github.com/RealRogerWinter/onestreamer/blob/main/docs/architecture/overview.md" target="_blank" rel="noopener">Read the architecture overview ↗</a>
+      </div>
+      <figure class="os-figure">
+        <div class="os-figbox"><ArchitectureDiagram /></div>
+        <figcaption class="os-figcap">One publisher · LiveKit SFU · many viewers · continuous recording</figcaption>
+      </figure>
+    </div>
+
+    {/* tech stack */}
+    <dl class="os-stack">
+      {stack.map((r) => (
+        <div class="os-row">
+          <dt>{r.layer}</dt>
+          <dd>
+            {r.key.map((k) => <span class="os-chip key">{k}</span>)}
+            {r.rest.map((k) => <span class="os-chip">{k}</span>)}
+            {r.note && <span class="note">{r.note}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+    <p class="os-stacknote">Full per-dependency notes live in <code>docs/integrations/</code>.</p>
+  </section>
+
+  {/* dev timeline */}
+  <section class="os-sec">
+    <p class="os-kicker">Built with</p>
+    <h2 class="os-h2">A test bed for AI development</h2>
+    <p class="os-p">OneStreamer predates vibecoding and today's agents, so its history doubles as a record of how AI tooling changed under it. Each rebuild used whatever was the best tool at the time.</p>
+    <div class="os-timeline">
+      <div class="os-stop"><p class="when">First prototype</p><h3 class="what">Hand-assembled from ChatGPT</h3><p>The earliest version came together by copy-pasting code out of an early ChatGPT, one piece at a time, before agents could touch a repo directly.</p></div>
+      <div class="os-stop"><p class="when">Agent takes the wheel</p><h3 class="what">Claude Code · Sonnet 4.5</h3><p>Claude Code took over the codebase running Sonnet 4.5. Whole features started landing in a sitting instead of a weekend.</p></div>
+      <div class="os-stop"><p class="when">Bigger changes</p><h3 class="what">Claude Code · Opus</h3><p>Switching to Opus made larger, system-wide edits hold together — refactors that touched many files at once instead of one corner.</p></div>
+      <div class="os-stop"><p class="when">Now</p><h3 class="what">Heavy refactor · Opus 4.8</h3><p>The current version is a deep refactor done with Opus 4.8, and development keeps going from here.</p></div>
+    </div>
+  </section>
+
+  {/* CTA */}
+  <section class="os-cta">
+    <div class="mvbg"><ProjectVizIsland id="onestreamer" client:only="react" /></div>
+    <div class="inner">
+      <div>
+        <h2>See who's holding the stream</h2>
+        <p>One seat, an audience of real people and AI, and a takeover always one item away.</p>
+        <span class="url">onestreamer.live</span>
+      </div>
+      <a class="tm-btn demo big" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+    </div>
+  </section>
+
+  {/* prev/next */}
+  <nav class="os-nav">
+    <a class="os-navcard prev" href={`project-${prev.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
+    </a>
+    <a class="os-navcard next" href={`project-${next.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>
+    </a>
+  </nav>
+</Page>
