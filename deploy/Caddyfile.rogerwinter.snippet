@@ -1,43 +1,45 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Roger Winter portfolio — Caddy site blocks.
+# Roger Winter portfolio — Caddy site block  (DEPLOYED on the VPS)
 #
-# APPEND these blocks to the shared /etc/caddy/Caddyfile on the VPS. The global
-# options block (email, `acme_dns cloudflare {env.CF_API_TOKEN}`, trusted_proxies
-# = Cloudflare ranges, client_ip_headers) is already present from the shared
-# config and is NOT repeated here.
+# Appended to the shared /etc/caddy/Caddyfile. The global options block (email,
+# `acme_dns cloudflare {env.CF_API_TOKEN}`, trusted_proxies = Cloudflare ranges)
+# is already present from the shared config and is left UNCHANGED — sheet-llm
+# keeps using the global token.
 #
-# Mirrors the sheetllm.com pattern exactly:
-#   * apex serves the app, www + the .biz mirror redirect to the canonical
-#     https://rogerwinter.dev,
-#   * TLS server cert via Let's Encrypt DNS-01 (global acme_dns),
-#   * mTLS: require Cloudflare's Authenticated Origin Pull client cert so only
-#     real Cloudflare connections complete the handshake,
-#   * reverse_proxy to the loopback-only container on :3001.
+# rogerwinter.dev gets its TLS cert from Let's Encrypt via the DNS-01 challenge
+# using its OWN Cloudflare DNS-edit token, `CF_API_TOKEN_RW` (in
+# /etc/caddy/caddy.env, mode 640 root:caddy), via the per-site `tls { dns … }`
+# override below. This keeps sheet-llm's global CF_API_TOKEN untouched.
 #
-# PRECONDITIONS (see docs/cloudflare-setup.md):
-#   * rogerwinter.dev AND rogerwinter.biz are zones in the SAME Cloudflare
-#     account as CF_API_TOKEN, and the token can edit DNS for both (DNS-01).
-#   * Authenticated Origin Pulls enabled per zone; SSL/TLS mode Full (strict).
-#   * Apex + www proxied (orange-cloud) A/AAAA records -> ${VPS_HOST} / IPv6.
-#   * The portfolio container is up: 127.0.0.1:3001 (docker compose in
-#     /opt/rwinter-portfolio).
+#   NOTE: adding a NEW env var to caddy.env requires a restart, not just a reload
+#   (systemd reads EnvironmentFile at start): `sudo systemctl restart caddy`.
 #
-# After appending:  sudo caddy validate --config /etc/caddy/Caddyfile
-#                   sudo systemctl reload caddy
+# Origin lock: `client_auth require_and_verify` against Cloudflare's
+# Authenticated-Origin-Pull CA means only real Cloudflare connections complete
+# the TLS handshake (verified: a direct-to-origin request is refused with
+# "certificate required"). Requires AOP enabled + SSL/TLS Full(strict) on the
+# zone, and the apex A/AAAA records proxied.
+#
+# DEFERRED — www.rogerwinter.dev and rogerwinter.biz: each needs its own proxied
+# DNS record first (and, for .biz, onboarding that zone + a token that covers it).
+# When ready, add redirect blocks that ALSO carry the per-site dns token, e.g.:
+#
+#   www.rogerwinter.dev {
+#       tls { dns cloudflare {env.CF_API_TOKEN_RW} }
+#       redir https://rogerwinter.dev{uri} permanent
+#   }
+#
+# After editing: `sudo caddy validate --config /etc/caddy/Caddyfile` (note: a
+# standalone validate run shows an empty-token warning because caddy.env isn't
+# loaded in your shell — harmless; the service has the tokens) then
+# `sudo systemctl restart caddy`.
 # ─────────────────────────────────────────────────────────────────────────────
-
-www.rogerwinter.dev {
-	redir https://rogerwinter.dev{uri} permanent
-}
-
-rogerwinter.biz, www.rogerwinter.biz {
-	redir https://rogerwinter.dev{uri} permanent
-}
 
 rogerwinter.dev {
 	encode zstd gzip
 
 	tls {
+		dns cloudflare {env.CF_API_TOKEN_RW}
 		client_auth {
 			mode require_and_verify
 			trust_pool file {
