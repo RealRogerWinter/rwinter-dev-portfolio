@@ -12,6 +12,7 @@ design-src/
 
 # Tooling / OS cruft
 node_modules/
+__pycache__/
 test-results/
 .DS_Store
 *.log
