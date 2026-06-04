@@ -37,6 +37,11 @@ executors:
   deployer:
     docker:
       - image: cimg/base:current
+  playwright:
+    docker:
+      # Pinned to the @playwright/test version in package.json so the bundled
+      # Chromium matches the one that generates the committed baselines.
+      - image: mcr.microsoft.com/playwright:v1.49.1-noble
 
 commands:
   scan_image_for_secrets:
@@ -85,6 +90,31 @@ jobs:
             echo "this node runs:"; echo "$TESTFILES"
             CI=1 npx vitest run $TESTFILES
       - store_test_results:    # JUnit → Test Insights, flaky detection, timing data
+          path: test-results
+      - store_artifacts:
+          path: test-results
+
+  visual:
+    executor: playwright
+    steps:
+      - checkout
+      - restore_cache:
+          keys: ["npm-pw-v1-{{ checksum \"package-lock.json\" }}"]
+      - run:
+          name: Install deps
+          command: npm ci
+      - save_cache:
+          key: "npm-pw-v1-{{ checksum \"package-lock.json\" }}"
+          paths: ["~/.npm"]
+      - run:
+          name: Visual harness (render-smoke + oracle self-test)
+          # Environment-independent specs only. The pixel-parity comparison
+          # (pages.spec.mjs) is the authoring-environment gate; see
+          # tests/visual/README.md.
+          command: |
+            mkdir -p test-results
+            npm run test:visual:ci
+      - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
@@ -172,10 +202,11 @@ workflows:
     jobs:
       - lint
       - test
+      - visual
       - verify
       - build_and_push:
           context: ghcr-push
-          requires: [lint, test, verify]
+          requires: [lint, test, visual, verify]
           filters:
             branches:
               only: main

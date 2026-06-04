@@ -29,5 +29,11 @@ test-results/
 *.tmp
 .cache/
 
+# Playwright run output (reports + per-run actual/diff images). The committed
+# baselines under tests/visual/__screenshots__/ are NOT ignored — they are the
+# look-oracle and must be tracked.
+playwright-report/
+blob-report/
+
 # Claude Code session / worktree scratch dir — never project content
 /.claude/
