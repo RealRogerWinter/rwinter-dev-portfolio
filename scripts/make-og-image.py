@@ -13,8 +13,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 # ── theme tokens (from portfolio/shell.jsx) ────────────────────────────
 BG     = (11, 13, 12)     # --bg     #0b0d0c
 PANEL  = (16, 20, 18)     # --panel  #101412
-ACC    = (87, 240, 141)   # --acc    #57f08d
-BORDER = (61, 148, 92)    # color-mix(acc 55%, line) -> header monogram border
+ACC    = (91, 140, 255)   # --acc    #5b8cff (TW_DEFAULTS accent, applied as --acc)
+BORDER = (63, 93, 155)    # color-mix(acc 55%, line) -> header monogram border (#3f5d9b)
 INK    = (215, 224, 218)  # --ink    #d7e0da
 DIM    = (126, 138, 131)  # --dim    #7e8a83
 
@@ -70,6 +70,8 @@ url = "rogerwinter.dev"
 ub = draw.textbbox((0, 0), url, font=url_font)
 draw.text((PAD, H - PAD - (ub[3] - ub[1])), url, font=url_font, fill=ACC)
 
-out = "/home/claudeuser/rogerwinter-dev/.claude/worktrees/favicon-og-meta/site/portfolio/assets/og-cover.png"
+import os
+out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                   "site", "portfolio", "assets", "og-cover.png")
 img.save(out, "PNG")
 print("wrote", out, img.size)

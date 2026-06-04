@@ -98,11 +98,11 @@ META = {
 }
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Matches the site's header monogram: dark badge, accent-green border, green "RW" -->
+  <!-- Matches the site's header monogram: dark badge, accent-blue border, blue "RW" -->
   <rect x="0.9" y="0.9" width="30.2" height="30.2" rx="8" fill="#0b0d0c"
-        stroke="#3d945c" stroke-width="1.8"/>
+        stroke="#3f5d9b" stroke-width="1.8"/>
   <text x="16" y="20.5" font-family="'Syne','Arial Black',system-ui,sans-serif"
-        font-size="13" font-weight="800" text-anchor="middle" fill="#57f08d">RW</text>
+        font-size="13" font-weight="800" text-anchor="middle" fill="#5b8cff">RW</text>
 </svg>
 """
 
