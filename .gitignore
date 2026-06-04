@@ -12,7 +12,11 @@ design-src/
 
 # Tooling / OS cruft
 node_modules/
+test-results/
 .DS_Store
 *.log
 *.tmp
 .cache/
+
+# Claude Code session / worktree scratch dir — never project content
+/.claude/

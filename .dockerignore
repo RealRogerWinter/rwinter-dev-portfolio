@@ -11,3 +11,11 @@ LICENSE
 .gitignore
 .dockerignore
 deploy/Caddyfile.rogerwinter.snippet
+
+# dev/test tooling — never part of the runtime image
+tests
+package.json
+package-lock.json
+vitest.config.js
+.htmlhintrc
+test-results
