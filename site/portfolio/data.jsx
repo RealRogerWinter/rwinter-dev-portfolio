@@ -3,10 +3,10 @@ window.PORTFOLIO = {
   name: "Roger Winter",
   tagline: "AI-native developer & technical content creator",
   blurb: "I build AI-native software and write the tutorials that teach people how it works. Below are the projects I ship and document — explore the writeups, try the live demos, read the code.",
-  email: "hello@rogerwinter.dev",
+  email: "rogerdwinter@gmail.com",
   social: [
     { label: "GitHub", href: "https://github.com/RealRogerWinter", handle: "RealRogerWinter" },
-    { label: "LinkedIn", href: "#linkedin", handle: "in/rogerwinter" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/roger-winter-content-strategy", handle: "in/roger-winter-content-strategy" },
     { label: "X / Twitter", href: "#x", handle: "@rogerwinter" },
     { label: "Twitch", href: "#twitch", handle: "twitch.tv/pricey" },
   ],
@@ -20,7 +20,7 @@ window.PORTFOLIO = {
       tagline: "Compose, edit, and reason about musical scores in plain language.",
       tags: ["Music", "LLM", "Editor"],
       clef: true,
-      demo: "#demo",
+      demo: "https://sheetllm.com",
       repo: "https://github.com/RealRogerWinter/sheet-llm",
       overview: [
         "sheet-llm is a notation editor built around a language model. Instead of placing every note by hand, you describe what you want — \u201cadd a four-bar ii\u2013V\u2013I in F\u201d, \u201ctranspose the bridge up a third\u201d, \u201charmonize this melody as a chorale\u201d — and the score updates in place.",
@@ -67,7 +67,7 @@ window.PORTFOLIO = {
       tags: ["Games", "Web"],
       logo: "portfolio/assets/price-games.png", logoBg: "#14152b",
       demo: "https://price.games",
-      repo: "#repo",
+      repo: "https://github.com/RealRogerWinter/price-games-public",
       overview: [
         "Price Games is a collection of quick, browser-based games built around guessing and bidding on prices. No install, no account — open a tab and play.",
         "It also doubles as the arena that Pricey (the AI streamer) competes in, so the same game engine powers both human and machine players.",
@@ -90,7 +90,7 @@ window.PORTFOLIO = {
       tags: ["Neural Net", "Twitch", "AI"],
       logo: "portfolio/assets/pricey.webp", logoBg: "#1d1518",
       demo: "https://www.twitch.tv/pricegamespricey",
-      repo: "#repo",
+      repo: "https://github.com/RealRogerWinter/price-games-public/blob/main/docs/STREAMER.md",
       overview: [
         "Pricey is an autonomous Twitch streamer: a neural network that plays Price Games on camera and gets measurably better as it goes. Viewers watch the model reason, guess, and adjust in real time.",
         "It\u2019s equal parts product and teaching tool — the learning curve is the show, and the writeups break down exactly how the network improves.",
