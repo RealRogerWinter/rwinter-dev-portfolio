@@ -1,0 +1,270 @@
+---
+// Project page: Pricey — migrated from site/portfolio/pricey.jsx
+// (window.PriceyPage). Static Astro shell; the charts/diagrams render as static
+// HTML at build (no client directive, zero JS); BrainTopology + MoodWheel
+// hydrate on scroll (client:visible, both with deterministic initial renders);
+// the micro-viz (band, CTA, related-card, prev/next minis) is a client:only
+// island. The Twitch player is a static iframe over the .ps-video poster
+// background (the old page rendered it client-side from window.location.hostname;
+// the poster shows through whether or not the embed loads). Tweaks panel dropped;
+// vizAnim bridged via [data-anim] in CSS.
+import Page from '../layouts/Page.astro';
+import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import {
+  BrainTopology, LearningCurve, MoodBars, ArchPipeline, MoodGains, MoodWheel, MoodLines,
+} from '../components/viz/pricey.jsx';
+import { projects } from '../data/portfolio.js';
+import '../styles/microviz.css';
+import '../styles/pricey.css';
+
+const p = projects.find((x) => x.id === 'pricey');
+const idx = projects.findIndex((x) => x.id === 'pricey');
+const prev = projects[(idx - 1 + projects.length) % projects.length];
+const next = projects[(idx + 1) % projects.length];
+const priceGames = projects.find((x) => x.id === 'price-games');
+const TWITCH = 'https://www.twitch.tv/pricegamespricey';
+// The old page set parent from window.location.hostname at runtime; the deployed
+// host is rogerwinter.dev (localhost kept so `npm run preview` embeds too).
+const twitchSrc = 'https://player.twitch.tv/?channel=pricegamespricey&parent=rogerwinter.dev&parent=localhost&muted=true&autoplay=true';
+
+const stats = [
+  { v: '48,205', l: 'training rounds', s: 'live, and counting' },
+  { v: '~7,000', l: 'Float32 weights', s: 'tens of KB' },
+  { v: '<2 ms', l: 'per-round fwd+back', s: '2 pinned CPU cores' },
+  { v: '48→53%', l: 'correct-rate climb', s: 'first 1k vs recent 1k' },
+];
+const stack = [
+  { layer: 'Capture', key: ['Playwright', 'ffmpeg'], rest: ['Chromium', 'Xvfb', 'nginx-rtmp'] },
+  { layer: 'Audio', key: ['Piper TTS'], rest: ['mpd', 'PulseAudio'] },
+  { layer: 'Brain', key: ['worker-thread MLP'], rest: ['online learning', 'AdamW'] },
+  { layer: 'Network', key: ['Tailscale'], rest: ['remote game host'] },
+];
+
+const personaPins = [
+  { left: 23, top: 17, l: 'Thought bubble' },
+  { left: 10, top: 51, l: 'Mood wheel' },
+  { left: 10, top: 80, l: 'Live neural net' },
+  { left: 49, top: 13, l: 'W/L · streak' },
+  { left: 50, top: 73, l: 'Her guess' },
+];
+---
+<Page
+  title="Pricey — Roger Winter"
+  description={p.desc}
+  canonical="https://rogerwinter.dev/project-pricey.html"
+  active=""
+  ogType="article"
+  ogImage="https://rogerwinter.dev/portfolio/assets/pricey.webp"
+>
+  {/* hero */}
+  <header class="pcy-hero">
+    <div class="pcy-band">
+      <ProjectVizIsland id="pricey" client:only="react" />
+      <div class="pcy-scrim"></div>
+      <div class="pcy-status"><i></i> {p.status}</div>
+      <div class="pcy-titlewrap">
+        <div class="pcy-logo"><img src={p.logo} alt="Pricey avatar" /></div>
+        <div>
+          <p class="pcy-eyebrow">Project {p.n}</p>
+          <h1 class="pcy-title">Pricey</h1>
+        </div>
+      </div>
+    </div>
+    <div class="pcy-intro">
+      <p class="pcy-tagline">{p.tagline}</p>
+      <div class="pcy-actions">
+        <a class="tm-btn demo" href={TWITCH} target="_blank" rel="noopener">Watch live ↗</a>
+        <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="tm-btn ghost" href="/">← All projects</a>
+      </div>
+    </div>
+  </header>
+
+  {/* lede + stats */}
+  <section class="pcy-lede">
+    <p>Pricey is a 24/7 AI streamer. She logs into <a href="project-price-games.html" style="color: var(--acc); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--acc) 40%, transparent)">Price Games</a> like any other player, guesses the prices of real products round after round, narrates her reasoning out loud, and broadcasts the whole thing to Twitch.</p>
+    <p>Two things make her more than a bot playing a game: <span class="hl">a tiny neural network that learns on stream</span>, and a simulated mood wired straight into it that changes both what she says and how she plays.</p>
+    <div class="pcy-stats">
+      {stats.map((s) => (<div class="pcy-stat"><div class="v">{s.v}</div><div class="l">{s.l}</div><div class="s">{s.s}</div></div>))}
+    </div>
+  </section>
+
+  {/* live on twitch */}
+  <section class="pcy-sec">
+    <p class="pcy-kicker">Live on Twitch</p>
+    <h2 class="pcy-h2">Watch her play, right now</h2>
+    <p class="pcy-p">Pricey streams around the clock. The overlay shows her avatar and mood ring, a running win/loss and streak, her live "brain" panels, and the thought bubble narrating each guess, all on top of the real game.</p>
+    <div class="pcy-stream">
+      <div class="ps-bar">
+        <span class="ps-live"><i></i> Live</span>
+        <span class="ps-ch">twitch.tv/pricegamespricey</span>
+        <a class="ps-cta" href={TWITCH} target="_blank" rel="noopener">Watch on Twitch ↗</a>
+      </div>
+      <div class="ps-video">
+        <iframe title="Pricey live on Twitch" src={twitchSrc} allowfullscreen frameborder="0" scrolling="no"></iframe>
+      </div>
+    </div>
+  </section>
+
+  {/* the brain */}
+  <section class="pcy-sec">
+    <div class="pcy-split rev">
+      <figure class="pcy-figure">
+        <div class="pcy-figbox"><BrainTopology client:visible /></div>
+        <figcaption class="pcy-figcap">140 features → 32 → 16 → six task heads</figcaption>
+      </figure>
+      <div>
+        <p class="pcy-kicker">The brain</p>
+        <h2 class="pcy-h2">A hand-rolled net, no PyTorch</h2>
+        <p class="pcy-p">Pricey's brain is a tiny multi-task network where every weight is a Float32 array the author owns byte for byte. A 140-feature read of each product runs through a small trunk into six heads, one per job: a 103-bin price belief, a cents estimate, a "which is pricier" call, a safe-bid floor, an uncertainty signal, and a mood head.</p>
+        <p class="pcy-p">It doesn't predict the raw price. It predicts where a simple built-in estimator is <strong>wrong</strong>, so it only has to learn the hard part. Forward, backward, and the optimizer step all finish in under 2 ms.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* learning */}
+  <section class="pcy-sec">
+    <div class="pcy-split">
+      <div>
+        <p class="pcy-kicker">Learning in public</p>
+        <h2 class="pcy-h2">She gets better on camera</h2>
+        <p class="pcy-p">The network trains while it plays. Across roughly 48,000 logged rounds, her self-graded correct-rate climbed from <strong>48.4% to 53.3%</strong>, comparing her first thousand rounds to her most recent thousand.</p>
+        <p class="pcy-p">Getting there took real network surgery: an early build collapsed its heads and starved several game modes, and one feature column that sat at zero for 1,500 rounds detonated the gradients the moment it saw real data. Re-specialized heads, action-masking to feasible prices, and a looser gradient clip turned the curve back upward.</p>
+      </div>
+      <figure class="pcy-figure">
+        <div class="pcy-figbox"><LearningCurve /></div>
+        <figcaption class="pcy-figcap">Self-graded correct-rate · 5k-round windows</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* mood wheel */}
+  <section class="pcy-sec">
+    <p class="pcy-kicker">The mood</p>
+    <h2 class="pcy-h2">Eight moods, on two hidden dials</h2>
+    <p class="pcy-p">A fast "vibe" reads the last few rounds and a slow "morale" tracks whole games. A small table over those two, plus her current streak, resolves to one of eight moods. One lucky guess can't fake a comeback, but a genuinely good session lifts her, and a long streak either way reads as locked-in focus.</p>
+    <figure class="pcy-figure" style="margin-top:8px">
+      <div class="pcy-figbox"><MoodWheel client:visible /></div>
+    </figure>
+  </section>
+
+  {/* mood rewires play */}
+  <section class="pcy-sec">
+    <div class="pcy-split rev">
+      <figure class="pcy-figure">
+        <MoodGains />
+      </figure>
+      <div>
+        <p class="pcy-kicker">Mood → optimizer</p>
+        <h2 class="pcy-h2">Her feelings rewire how she plays</h2>
+        <p class="pcy-p">The mood isn't a costume painted on top. It turns into three multiplicative gains on her decisions and her learning, all exactly identity when a master knob is off, so there's a provably emotionless baseline to compare against.</p>
+        <p class="pcy-p">The grounding is real affective-neuroscience: arousal-biased competition makes her learn harder from high-stakes rounds whether she's up or down, and mood-as-momentum makes her over-credit whatever matches her mood. She gets streaky and superstitious for the same computational reason people do.</p>
+        <p class="pcy-cite">GANE — <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3110019/" target="_blank" rel="noopener">Mather &amp; Sutherland (2011)</a> · Mood-congruent learning — <a href="https://www.nature.com/articles/ncomms7149" target="_blank" rel="noopener">Eldar &amp; Niv (2015)</a></p>
+      </div>
+    </div>
+  </section>
+
+  {/* verbatim lines */}
+  <section class="pcy-sec">
+    <p class="pcy-kicker">In her words</p>
+    <h2 class="pcy-h2">Same win, very different deliveries</h2>
+    <p class="pcy-p">Every round maps to a line, and her mood biases which pool it's drawn from. Her voice changes too: Piper TTS speeds up when she's winning and drags when she's losing, and a test forbids ever making a defeated line sound chipper.</p>
+    <MoodLines />
+  </section>
+
+  {/* mood distribution */}
+  <section class="pcy-sec">
+    <div class="pcy-split">
+      <div>
+        <p class="pcy-kicker">How she feels, lifetime</p>
+        <h2 class="pcy-h2">Mostly upbeat, occasionally despairing</h2>
+        <p class="pcy-p">Tallied across every round she's played, Pricey runs warm. Happy and neutral dominate, elation spikes on streaks, and despondent is rare, the bottom of a curve she usually climbs back out of.</p>
+      </div>
+      <figure class="pcy-figure">
+        <div class="pcy-figbox"><MoodBars /></div>
+        <figcaption class="pcy-figcap">Lifetime mood counts, from the live DB</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* architecture */}
+  <section class="pcy-sec">
+    <p class="pcy-kicker">The system</p>
+    <h2 class="pcy-h2">A small distributed broadcast</h2>
+    <p class="pcy-p">Pricey is several moving parts. A headless Chromium runs the game and a custom overlay, ffmpeg grabs the framebuffer and audio, and an nginx-rtmp loopback fans one encode out to every platform. Her voice is local Piper TTS mixed with music, and the brain runs in a worker thread on its own cores. The game she plays lives on a separate machine, reached over a Tailscale tailnet.</p>
+    <figure class="pcy-figure" style="margin-top:8px">
+      <div class="pcy-figbox"><ArchPipeline /></div>
+      <figcaption class="pcy-figcap">Remote game · capture · encode · RTMP fan-out</figcaption>
+    </figure>
+    <dl class="pcy-stack">
+      {stack.map((r) => (
+        <div class="pcy-row">
+          <dt>{r.layer}</dt>
+          <dd>{r.key.map((k) => <span class="pcy-chip key">{k}</span>)}{r.rest.map((k) => <span class="pcy-chip">{k}</span>)}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  {/* persona */}
+  <section class="pcy-sec">
+    <p class="pcy-kicker">Persona</p>
+    <h2 class="pcy-h2">A piggy bank with opinions</h2>
+    <div class="pcy-persona">
+      <div class="av"><img src={p.logo} alt="Pricey avatar" /></div>
+      <div>
+        <p>Pricey is a piggy-bank character drawn across 24 sprites, eight moods by three mouth shapes, so her body language shifts with her mood and her mouth lip-syncs to the live voice. The show around her adds a thinking bubble, an aim reticle that telegraphs each click, subtitles, music, and multi-platform chat with viewer commands.</p>
+        <p><strong>She is not an LLM.</strong> Her lines come from a large hand-authored, mood-biased library read by local TTS. Her intelligence is the price-prediction network and the affect engine, not a chatbot reading the screen.</p>
+        <div class="pcy-tags2"><span>piggy-bank avatar</span><span>24 mood sprites</span><span>Piper TTS</span><span>!hint · !stats · !join</span></div>
+      </div>
+    </div>
+    <figure class="pcy-tour" style="margin:0">
+      <picture><source srcset="portfolio/assets/pricey-stream.webp" type="image/webp" /><img src="portfolio/assets/pricey-stream.png" width="2560" height="1440" alt="An annotated frame of Pricey's stream overlay" loading="lazy" /></picture>
+      {personaPins.map((pin) => (
+        <span class="pin" style={`left:${pin.left}%;top:${pin.top}%`}>
+          <span class="dot"></span><span class="lab">{pin.l}</span>
+        </span>
+      ))}
+    </figure>
+    <figcaption class="pcy-tourcap">The glass-shell overlay, live over the real game</figcaption>
+  </section>
+
+  {/* related: price games */}
+  <a class="pcy-related" href="project-price-games.html">
+    <div class="rv"><ProjectVizIsland id="price-games" client:only="react" /></div>
+    <div class="ri"><img src={priceGames.logo} alt="Price Games logo" /></div>
+    <div class="rt">
+      <div class="k">The game she plays</div>
+      <h3>Price Games</h3>
+      <p>The free browser pricing game Pricey competes in, round after round. See how it's built.</p>
+    </div>
+    <span class="rgo">See Price Games →</span>
+  </a>
+
+  {/* CTA */}
+  <section class="pcy-cta">
+    <div class="mvbg"><ProjectVizIsland id="pricey" client:only="react" /></div>
+    <div class="inner">
+      <div>
+        <h2>Can you beat Pricey?</h2>
+        <p>She's live right now, learning and emoting in real time.</p>
+        <span class="url">twitch.tv/pricegamespricey</span>
+      </div>
+      <a class="tm-btn demo big" href={TWITCH} target="_blank" rel="noopener">Watch live ↗</a>
+    </div>
+  </section>
+
+  {/* prev/next */}
+  <nav class="pcy-nav">
+    <a class="pcy-navcard prev" href={`project-${prev.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
+    </a>
+    <a class="pcy-navcard next" href={`project-${next.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>
+    </a>
+  </nav>
+</Page>

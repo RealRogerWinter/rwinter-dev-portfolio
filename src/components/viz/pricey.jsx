@@ -1,54 +1,17 @@
-// Pricey — real-data charts + diagrams. Exports: window.PR_VIZ_CSS,
-//   BrainTopology, LearningCurve, MoodBars, ArchPipeline, MoodGains
-const PR_VIZ_CSS = `
-.prv{ width:100%; display:block; color:var(--acc); }
-.prv svg{ width:100%; height:auto; display:block; overflow:visible; }
-.prv .pnl{ fill:color-mix(in srgb,var(--acc) 9%, var(--panel2)); stroke:var(--line); stroke-width:1.4; }
-.prv .pnl-a{ fill:color-mix(in srgb,var(--acc) 18%, var(--panel2)); stroke:var(--acc); stroke-width:1.6; }
-.prv .lbl{ fill:var(--ink); font-family:var(--mono); font-size:11px; letter-spacing:.02em; }
-.prv .lbl-s{ fill:var(--ink); font-family:var(--mono); font-size:9.5px; }
-.prv .lbl-d{ fill:var(--dim); font-family:var(--mono); font-size:9px; letter-spacing:.05em; text-transform:uppercase; }
-.prv .lbl-a{ fill:var(--acc); font-family:var(--mono); font-size:9.5px; letter-spacing:.06em; }
-.prv .node{ fill:var(--bg); stroke:var(--acc); stroke-width:1.5; }
-.prv .edge{ stroke:var(--acc); stroke-width:1; opacity:.16; }
-.prv .wire{ fill:none; stroke:var(--line); stroke-width:1.6; }
-.prv .flow{ fill:none; stroke:var(--acc); stroke-width:1.8; stroke-dasharray:3 8; opacity:.85; }
-.prv-anim .flow{ animation:prFlow 1.1s linear infinite; }
-@keyframes prFlow{ to{ stroke-dashoffset:-22; } }
-.prv .sig{ fill:var(--acc); opacity:0; }
-.prv-anim .sig{ animation:prSig 3s linear infinite; }
-@keyframes prSig{ 0%{opacity:0;} 7%{opacity:1;} 92%{opacity:1;} 100%{opacity:0;} }
-.prv .grid{ stroke:var(--line); stroke-width:1; opacity:.5; }
-.prv .axis{ stroke:var(--dim); stroke-width:1; opacity:.5; }
-.prv .curve{ fill:none; stroke:var(--acc); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
-.prv .area{ fill:url(#prGrad); opacity:.4; }
-.prv .dot{ fill:var(--bg); stroke:var(--acc); stroke-width:2; }
-.prv-anim .curve{ stroke-dasharray:600; stroke-dashoffset:600; animation:prDraw 2.4s ease-out forwards; }
-@keyframes prDraw{ to{ stroke-dashoffset:0; } }
-@media (prefers-reduced-motion: reduce){ .prv *{ animation:none !important; stroke-dashoffset:0 !important; } }
-.prv .routeline{ fill:none; stroke:var(--acc); stroke-width:2.4; stroke-linecap:round; opacity:.95;
-  filter:drop-shadow(0 0 3px color-mix(in srgb,var(--acc) 70%, transparent)); stroke-dasharray:280; stroke-dashoffset:280; animation:prRoute .5s ease-out forwards; }
-@keyframes prRoute{ to{ stroke-dashoffset:0; } }
-.prv .routesig{ fill:var(--acc); filter:drop-shadow(0 0 4px var(--acc)); }
-.prv .node{ transition:fill .35s, stroke .35s; }
-.prv .node.on{ fill:var(--acc); stroke:var(--acc); }
-.prv .head rect{ transition:fill .4s, stroke .4s; }
-.prv .head .lbl-s{ transition:fill .35s; }
-.prv .head.on .lbl-s{ fill:var(--acc); }
-@media (prefers-reduced-motion: reduce){ .prv .routeline{ stroke-dashoffset:0 !important; } }
-
-/* mood gains (html) */
-.pr-gains{ display:grid; gap:14px; }
-.pr-gain{ border:1px solid var(--line); border-radius:13px; padding:18px 20px; background:var(--panel); }
-.pr-gain .gh{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; }
-.pr-gain .gh b{ font-family:var(--display); font-weight:600; font-size:15px; color:var(--ink); }
-.pr-gain .gh span{ font-family:var(--mono); font-size:11px; color:var(--dim); }
-.pr-track{ position:relative; height:8px; border-radius:5px; background:var(--panel2); border:1px solid var(--line); }
-.pr-track .seg{ position:absolute; top:-1px; bottom:-1px; border-radius:5px; }
-.pr-ends{ display:flex; justify-content:space-between; margin-top:9px; font-family:var(--mono); font-size:10.5px; color:var(--dim); }
-.pr-ends b{ color:var(--acc); font-weight:500; }
-.pr-gain p{ margin:10px 0 0; font-size:12.5px; line-height:1.55; color:color-mix(in oklab,var(--ink) 74%, var(--dim)); }
-`;
+// Pricey diagrams, charts + interactive widgets — ESM port of the window-global
+// pair site/portfolio/pricey-viz.jsx + pricey-mood.jsx, co-located in one module
+// so the page's islands share a single bundle chunk.
+//
+// Two carry state and are the page's client:visible islands: BrainTopology (its
+// setInterval animation early-returns under prefers-reduced-motion, which the
+// harness sets, so its initial render is deterministic) and MoodWheel (initial
+// active=0). The rest — LearningCurve, MoodBars, ArchPipeline, MoodGains,
+// MoodLines — are pure functions, rendered by the Astro page with no client
+// directive (static HTML, zero JS). Bodies reproduced verbatim from the originals
+// (CSS extracted to src/styles/pricey.css; the `.prv-anim` gate is rekeyed there
+// to the pre-painted [data-anim] attribute).
+import React, { useState } from 'react';
+const prUseState = useState;
 
 // ---- brain topology: 140 -> 32 -> 16 -> 6 heads ----
 const PR_HEADS = [
@@ -59,7 +22,7 @@ const PR_HEADS = [
   ["logPrice", "mean + variance"],
   ["FiLM", "mood → (γ, β)"],
 ];
-function BrainTopology(){
+export function BrainTopology(){
   const inN = 8, h1N = 6, h2N = 5;
   const col = (x, n, y0, y1)=> Array.from({length:n}, (_,i)=> [x, y0 + (n===1?0:i*(y1-y0)/(n-1))]);
   const inP = col(40, inN, 18, 250);
@@ -129,7 +92,7 @@ function BrainTopology(){
 }
 
 // ---- learning curve: correct-rate climb ----
-function LearningCurve(){
+export function LearningCurve(){
   const pts = [[0,48.4],[1,49.7],[2,50.9],[3,51.7],[4,52.2],[5,52.6],[6,52.9],[7,53.1],[8,53.3]];
   const x0=52, x1=456, y0=28, y1=168, lo=46, hi=54;
   const X=(i)=> x0 + (i/8)*(x1-x0);
@@ -165,7 +128,7 @@ const PR_MOODS_DIST = [
   ["tilted", 352, "oklch(0.63 0.21 352)"],
   ["despondent", 129, "oklch(0.62 0.20 25)"],
 ];
-function MoodBars(){
+export function MoodBars(){
   const max = 3604, x0 = 96, x1 = 452, rowH = 26, top = 8;
   return (
     <div className="prv prv-bars">
@@ -188,7 +151,7 @@ function MoodBars(){
 }
 
 // ---- architecture pipeline ----
-function ArchPipeline(){
+export function ArchPipeline(){
   const box = (x,y,w,h,t,d,hot)=>(
     <g><rect className={hot?"pnl-a":"pnl"} x={x} y={y} width={w} height={h} rx="9" />
       <text x={x+w/2} y={y+h/2-3} textAnchor="middle" className="lbl">{t}</text>
@@ -223,7 +186,7 @@ function ArchPipeline(){
 }
 
 // ---- mood rewires play (3 gains) ----
-function MoodGains(){
+export function MoodGains(){
   return (
     <div className="pr-gains">
       <div className="pr-gain">
@@ -248,4 +211,74 @@ function MoodGains(){
   );
 }
 
-Object.assign(window, { PR_VIZ_CSS, BrainTopology, LearningCurve, MoodBars, ArchPipeline, MoodGains });
+// ---- interactive 8-sector mood wheel + verbatim mood lines ----
+// cyclic order around the wheel (clockwise from top) — matches Pricey's on-stream wheel
+const PR_MOODS = [
+  { k: "focused",    c: "oklch(0.70 0.14 250)", val: "in a groove", line: "Correct. Next.",                             play: "Sampler ×0.70 — greedy and tight." },
+  { k: "confident",  c: "oklch(0.76 0.12 202)", val: "+ sure",      line: "Told you. I told you all.",                  play: "Trusts its read, samples tighter." },
+  { k: "happy",      c: "oklch(0.79 0.16 150)", val: "+ up",        line: null,                                        play: "Warm and steady." },
+  { k: "elated",     c: "oklch(0.86 0.16 110)", val: "++ peak",     line: "YES! YES! I am uncontainable!",              play: "Loose and quick." },
+  { k: "neutral",    c: "oklch(0.77 0.13 66)",  val: "baseline",    line: null,                                        play: "Plays its plain read." },
+  { k: "despondent", c: "oklch(0.62 0.20 25)",  val: "−− low",      line: "I peaked. The peak was twenty minutes ago.", play: "Sampler ×1.30, +ε to break the rut." },
+  { k: "tilted",     c: "oklch(0.63 0.21 352)", val: "−− off",      line: "WHO. WHO IS BUYING THESE.",                  play: "Gambles wider." },
+  { k: "frustrated", c: "oklch(0.58 0.17 300)", val: "− down",      line: "I quit. I'm not quitting. But I want to.",   play: "Pacing drags." },
+];
+
+function arcPath(cx, cy, ri, ro, a0, a1){
+  const p = (r,a)=>[cx + r*Math.cos(a), cy + r*Math.sin(a)];
+  const large = (a1 - a0) > Math.PI ? 1 : 0;
+  const [x0,y0] = p(ro,a0), [x1,y1] = p(ro,a1), [x2,y2] = p(ri,a1), [x3,y3] = p(ri,a0);
+  return `M${x0} ${y0} A${ro} ${ro} 0 ${large} 1 ${x1} ${y1} L${x2} ${y2} A${ri} ${ri} 0 ${large} 0 ${x3} ${y3} Z`;
+}
+
+export function MoodWheel(){
+  const [active, setActive] = prUseState(0); // focused
+  const n = PR_MOODS.length;
+  const cx = 120, cy = 120, ro = 112, ri = 70;
+  const gap = 0.045;
+  const m = PR_MOODS[active];
+  return (
+    <div className="pr-wheelwrap">
+      <div className="pr-wheel">
+        <svg viewBox="0 0 240 240" role="img" aria-label="Pricey's mood wheel: eight moods arranged as a cycle">
+          {PR_MOODS.map((mo,i)=>{
+            const center = -Math.PI/2 + i*(2*Math.PI/n);
+            const a0 = center - Math.PI/n + gap, a1 = center + Math.PI/n - gap;
+            const isActive = i === active;
+            const isNeighbor = Math.abs(((i - active + n) % n)) === 1 || Math.abs(((active - i + n) % n)) === 1;
+            const op = isActive ? 1 : (isNeighbor ? 0.6 : 0.28);
+            return (
+              <path key={i} className="sec" d={arcPath(cx,cy,ri,ro,a0,a1)} fill={mo.c} opacity={op}
+                stroke={isActive ? "var(--ink)" : "transparent"} strokeWidth={isActive ? 1.5 : 0}
+                onClick={()=>setActive(i)} onMouseEnter={()=>setActive(i)} />
+            );
+          })}
+          <text x={cx} y={cy-4} textAnchor="middle" className="ctr-k" fontSize="20" style={{ textTransform:'capitalize' }}>{m.k}</text>
+          <text x={cx} y={cy+14} textAnchor="middle" className="ctr-v">{m.val}</text>
+        </svg>
+      </div>
+      <div className="pr-detail">
+        <div className="dk"><i style={{ background:m.c }}></i><b>{m.k}</b><span>{m.val}</span></div>
+        {m.line
+          ? <p className="quote">“{m.line}”</p>
+          : <p className="quote none">No catchphrase — she just plays.</p>}
+        <div className="play"><span className="pl">plays</span><span>{m.play}</span></div>
+        <p className="pr-hint">Hover or tap a sector. The wheel is a cycle: the low arc turns a corner at focused and climbs back up.</p>
+      </div>
+    </div>
+  );
+}
+
+export function MoodLines(){
+  const withLines = PR_MOODS.filter(m=>m.line);
+  return (
+    <div className="pr-lines">
+      {withLines.map((m)=>(
+        <div className="pr-linecard" key={m.k} style={{ borderLeftColor:m.c }}>
+          <div className="m" style={{ color:m.c }}>{m.k}</div>
+          <q>{m.line}</q>
+        </div>
+      ))}
+    </div>
+  );
+}
