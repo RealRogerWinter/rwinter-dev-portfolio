@@ -17,7 +17,9 @@ version: 2.1
 #   deploy          SSH the pinned digest to the VPS forced-command
 #
 # Contexts/keys (see docs/ci-cd.md): ghcr-push {GHCR_USER,GHCR_TOKEN},
-# deploy {VPS_KNOWN_HOSTS} + the rwinter-deploy@VPS project SSH key.
+# deploy {VPS_HOST, VPS_KNOWN_HOSTS} + the rwinter-deploy@VPS project SSH key.
+# VPS_HOST is the deploy target (the origin host); kept in the context, not the
+# repo, so the public config never carries the origin address.
 # ─────────────────────────────────────────────────────────────────────────────
 
 parameters:

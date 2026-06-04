@@ -308,7 +308,7 @@ function Footer(){
   return (
     <footer className="tm-foot">
       <span>© 2026 Roger Winter — built &amp; documented in public</span>
-      <span><a href="https://github.com/RealRogerWinter" target="_blank" rel="noopener">github</a> · <a href="https://www.linkedin.com/in/roger-winter-content-strategy" target="_blank" rel="noopener">linkedin</a></span>
+      <span><a href="https://github.com/RealRogerWinter" target="_blank" rel="noopener">github</a> · <a href="https://www.linkedin.com/in/roger-winter-content-strategy" target="_blank" rel="noopener">linkedin</a> · <a href="https://github.com/RealRogerWinter/rwinter-dev-portfolio" target="_blank" rel="noopener">site source</a></span>
     </footer>
   );
 }

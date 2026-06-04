@@ -7,10 +7,10 @@ A lightweight, multi-page static site migrated from a Claude Design export. It
 showcases five projects — sheet-llm, OneStreamer, Price Games, Pricey, and the
 Multilingual SEO Tool — plus bio and contact pages.
 
-> **Status:** private repo, intended to become public. Practising
-> public-from-day-one hygiene: no secrets in git, image, or logs (see
-> [`docs/security.md`](docs/security.md)). Finalize [`LICENSE`](LICENSE) before
-> flipping public.
+> **Status:** public. Built with public-from-day-one hygiene: no secrets in
+> git, image, or logs (see [`docs/security.md`](docs/security.md)). Licensing is
+> split — MIT for the infrastructure/tooling, all rights reserved for the site
+> content; see [`LICENSE`](LICENSE).
 
 ## Architecture at a glance
 

@@ -1,21 +1,58 @@
-Copyright (c) 2026 Roger Winter. All rights reserved.
+Copyright (c) 2026 Roger Winter.
 
-This repository is a personal portfolio. It is currently private and intended
-to be made public in future.
+This repository contains two kinds of material, under different terms.
 
-Licensing summary (to be finalized before the repository is made public):
+================================================================================
+1. Infrastructure, build, deploy, and tooling code — MIT License
+================================================================================
 
-  * Infrastructure & tooling — the Dockerfile, nginx config, CircleCI pipeline,
-    deploy scripts, and the build/smoke scripts under scripts/ — are intended to
-    be released under the MIT License for reference and reuse.
+The following parts of this repository are released under the MIT License
+(reproduced below), for reference and reuse:
 
-  * Site content — the page copy, project writeups, branding, logos, and all
-    images and screenshots under site/portfolio/assets/ — are the original work
-    of Roger Winter and are NOT licensed for reuse. All rights reserved.
+  * the CI/CD pipeline (.circleci/);
+  * containerization and serving config (Dockerfile, .dockerignore,
+    docker-compose.yml, and deploy/);
+  * build, deploy, smoke, and test code (scripts/, tests/, vitest.config.js,
+    .htmlhintrc);
+  * the documentation (docs/, README.md);
+  * and the other root-level tooling/config that is not part of the website
+    itself.
 
-  * Third-party vendored libraries under site/vendor/ retain their own licenses
-    (React and Babel — MIT). See https://github.com/facebook/react and
-    https://github.com/babel/babel.
+MIT License
 
-Until a LICENSE is finalized, no permission is granted to copy, modify, or
-redistribute the contents of this repository.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+2. Site content — All rights reserved
+================================================================================
+
+The website itself, under site/ — the page copy, project writeups, design,
+branding, logos, and all images and screenshots under site/portfolio/assets/,
+together with the bespoke page and component code that renders them — is the
+original work of Roger Winter and is NOT licensed for reuse. All rights
+reserved. You may read it in this repository, but you may not copy, modify, or
+redistribute it without prior written permission.
+
+================================================================================
+3. Third-party libraries
+================================================================================
+
+Vendored libraries under site/vendor/ retain their own licenses (React and
+Babel — MIT). See https://github.com/facebook/react and
+https://github.com/babel/babel.

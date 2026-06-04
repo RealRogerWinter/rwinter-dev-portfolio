@@ -31,7 +31,10 @@ builds, pushes, or deploys; on every other branch the pipeline stops after
    - `GHCR_USER` — the GHCR machine-user login (see below).
    - `GHCR_TOKEN` — that machine user's classic PAT, `write:packages` **only**.
 
-3. **Create context `deploy`** with one env var used by `deploy`:
+3. **Create context `deploy`** with two env vars used by `deploy`:
+   - `VPS_HOST` — the origin host CI deploys to (its IPv4/IPv6/hostname). Kept in
+     the context, not the repo, so the public config never carries the origin
+     address. The `deploy` job uses it as `ssh rwinter-deploy@${VPS_HOST}`.
    - `VPS_KNOWN_HOSTS` — base64 of the VPS host key, so SSH host verification is
      pinned rather than blindly trusted. Produce it on the VPS and paste the output:
 
