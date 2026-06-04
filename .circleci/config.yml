@@ -82,6 +82,9 @@ jobs:
           keys: ["npm-v1-{{ checksum \"package-lock.json\" }}"]
       - run: npm ci
       - run:
+          name: Build site (dist/ — page-shape tests validate the built output)
+          command: npm run build
+      - run:
           name: Run tests (timing-split across parallel nodes)
           command: |
             mkdir -p test-results

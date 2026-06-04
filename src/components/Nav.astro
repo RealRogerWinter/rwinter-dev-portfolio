@@ -1,0 +1,22 @@
+---
+// Shared site nav — ports window.Nav from site/portfolio/shell.jsx. The `active`
+// prop matches a nav item key ("home" | "bio") and marks it current.
+const { active } = Astro.props;
+const HOME = '/';
+const items = [
+  { k: 'home', label: 'Projects', href: HOME },
+  { k: 'bio', label: 'Bio', href: 'bio.html' },
+];
+---
+<nav class="tm-nav">
+  <a class="tm-brand" href={HOME}>
+    <span class="tm-mono">RW</span><span class="tm-wordmark">Roger Winter</span>
+  </a>
+  <div class="tm-navright">
+    <div class="tm-navlinks">
+      {items.map((it) => <a href={it.href} class={active === it.k ? 'active' : undefined}>{it.label}</a>)}
+      <a href="https://github.com/RealRogerWinter" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <a class="tm-cta" href="contact.html">Contact</a>
+  </div>
+</nav>

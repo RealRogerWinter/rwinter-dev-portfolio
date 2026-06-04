@@ -31,6 +31,10 @@ export const SHOTS = [
   { page: PAGES[3], name: 'project-sheet-llm--default-mobile', viewport: MOBILE, tweaks: FREEZE },
   { page: PAGES[0], name: 'index--light', viewport: DESKTOP, tweaks: { ...FREEZE, theme: 'light' } },
   { page: PAGES[1], name: 'bio--light', viewport: DESKTOP, tweaks: { ...FREEZE, theme: 'light' } },
+  // bio is migrated to Astro; cover it across more of the theme space so a
+  // future bio-only regression in these states is caught (it is the template).
+  { page: PAGES[1], name: 'bio--default-mobile', viewport: MOBILE, tweaks: FREEZE },
+  { page: PAGES[1], name: 'bio--accent-green', viewport: DESKTOP, tweaks: { ...FREEZE, accent: '#57f08d' } },
   { page: PAGES[0], name: 'index--accent-green', viewport: DESKTOP, tweaks: { ...FREEZE, accent: '#57f08d' } },
   { page: PAGES[0], name: 'index--bg-grid', viewport: DESKTOP, tweaks: { ...FREEZE, background: 'grid' } },
 ];
@@ -64,9 +68,12 @@ export async function gotoStable(page, { path, viewport, tweaks }) {
   await page.setViewportSize(viewport);
   await page.addInitScript(initScript, tweaks);
   await page.goto(path, { waitUntil: 'networkidle' });
+  // Wait for the themed root to have content. Works for both rendering models:
+  // old pages mount React into #root producing a .tm div; migrated Astro pages
+  // ship the .tm root (#rw-root) as static HTML.
   await page.waitForFunction(() => {
-    const root = document.getElementById('root');
-    return root && root.children.length > 0;
+    const tm = document.querySelector('.tm');
+    return tm && tm.children.length > 0;
   });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);

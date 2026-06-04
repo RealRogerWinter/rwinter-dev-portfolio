@@ -1,0 +1,11 @@
+/* Bio-specific CSS (the EXTRA block from the old bio.jsx). Bundled by Astro
+   after the shared shell.css; its .tm.rw-scoped rules win on specificity. */
+.bio-cta { border-top: 1px solid var(--line); padding: 34px 0 80px; }
+.bio-cta a { font-family: var(--display); color: var(--acc); text-decoration: none; font-size: clamp(20px, 3vw, 30px); font-weight: 600; letter-spacing: -.01em; }
+.bio-cta a:hover { opacity: .8; }
+.bio-aside { position: sticky; top: 30px; }
+@media (max-width: 820px) { .bio-aside { position: static; } }
+.at-glance dt { margin-top: 14px; }
+.at-glance dt:first-child { margin-top: 0; }
+.tm.rw .pg-lead { font-size: clamp(17px, 1.7vw, 21px); }
+.tm.rw .prose p { font-family: var(--body); font-size: 16px; }
