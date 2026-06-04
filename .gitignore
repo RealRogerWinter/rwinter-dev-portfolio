@@ -16,6 +16,10 @@ id_ed25519*
 # Local design export (source material; migrated into site/ by scripts/).
 design-src/
 
+# GitHub profile repo (RealRogerWinter/RealRogerWinter) — its own git repo that
+# happens to sit in this working tree; not part of the portfolio site.
+/RealRogerWinter/
+
 # Tooling / OS cruft
 node_modules/
 __pycache__/
