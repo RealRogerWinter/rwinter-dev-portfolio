@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { getCollection } from 'astro:content';
+import { fmtDate } from '../../lib/date.js';
 import '../../styles/writeup.css';
 
 export async function getStaticPaths() {
@@ -11,14 +12,13 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 const { title, description, date, tags } = entry.data;
-const fmtDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 const canonical = `https://rogerwinter.dev/writeups/${entry.slug}.html`;
 ---
 <Page title={`${title} — Roger Winter`} description={description} canonical={canonical} active="writeups">
   <article class="wr">
     <header class="wr-head">
       <p class="wr-kicker">
-        <time datetime={date.toISOString()}>{fmtDate}</time>
+        <time datetime={date.toISOString()}>{fmtDate(date)}</time>
         {tags.map((t) => <span class="tag">#{t}</span>)}
       </p>
       <h1 class="wr-title">{title}</h1>

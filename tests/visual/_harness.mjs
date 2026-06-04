@@ -19,7 +19,7 @@ const MOBILE = { width: 390, height: 844 };
 
 // vizAnim/blink off is belt-and-suspenders with reducedMotion:'reduce'. Other
 // keys merge over the site's TW_DEFAULTS (shell.jsx), so we set only overrides.
-const FREEZE = { vizAnim: false, blink: false };
+export const FREEZE = { vizAnim: false, blink: false };
 
 // A deliberately small, meaningful matrix: every page in its default look, plus
 // targeted variants that exercise the theme system (light, alternate accent,

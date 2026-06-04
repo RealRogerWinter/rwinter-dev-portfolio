@@ -1,12 +1,12 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { getCollection } from 'astro:content';
+import { fmtDate } from '../../lib/date.js';
 import '../../styles/writeup.css';
 
 const entries = (await getCollection('writeups', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
-const fmt = (d) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 <Page
   title="Writeups — Roger Winter"
@@ -24,7 +24,7 @@ const fmt = (d) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long
       {entries.map((e) => (
         <a class="wr-item" href={`/writeups/${e.slug}.html`}>
           <p class="meta">
-            <time datetime={e.data.date.toISOString()}>{fmt(e.data.date)}</time>
+            <time datetime={e.data.date.toISOString()}>{fmtDate(e.data.date)}</time>
             {e.data.tags.map((t) => <span class="tag">#{t}</span>)}
           </p>
           <h2>{e.data.title}</h2>

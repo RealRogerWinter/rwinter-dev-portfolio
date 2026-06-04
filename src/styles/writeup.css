@@ -20,6 +20,22 @@
 .wr-body :not(pre) > code { font-family: var(--mono); font-size: .88em; color: var(--acc); background: color-mix(in srgb, var(--acc) 9%, var(--panel2)); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
 .wr-body pre { font-family: var(--mono); font-size: 13.5px; line-height: 1.6; background: var(--panel2) !important; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; overflow-x: auto; }
 .wr-body pre code { font-family: inherit; }
+/* Shiki dual-theme: keep the on-brand panel background, switch token colours by
+   theme (defaultColor:false emits --shiki-light/--shiki-dark per token). */
+.wr-body pre.astro-code, .wr-body pre.astro-code span { color: var(--shiki-dark); }
+[data-theme='light'] .wr-body pre.astro-code,
+[data-theme='light'] .wr-body pre.astro-code span { color: var(--shiki-light); }
+
+/* Prose elements a future article may use (none in the seed, but style them now
+   so they are on-brand in both themes instead of unstyled browser defaults). */
+.wr-body h4 { font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--ink); margin-top: 28px; }
+.wr-body hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+.wr-body img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); display: block; }
+.wr-body figure { margin: 24px 0; }
+.wr-body figcaption { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 10px; text-align: center; }
+.wr-body table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.wr-body th, .wr-body td { border: 1px solid var(--line); padding: 9px 13px; text-align: left; }
+.wr-body th { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); background: var(--panel2); }
 .wr-foot { border-top: 1px solid var(--line); margin-top: 56px; padding-top: 26px; }
 .wr-foot a { font-family: var(--mono); font-size: 13px; color: var(--dim); text-decoration: none; }
 .wr-foot a:hover { color: var(--acc); }
