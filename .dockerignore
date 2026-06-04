@@ -1,0 +1,13 @@
+# Keep the build context small — the image only needs site/ and deploy/default.conf.
+.git
+.github
+.circleci
+docs
+scripts
+node_modules
+design-src
+*.md
+LICENSE
+.gitignore
+.dockerignore
+deploy/Caddyfile.rogerwinter.snippet

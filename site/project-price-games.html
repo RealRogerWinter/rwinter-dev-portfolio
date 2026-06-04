@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Price Games — Roger Winter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Music&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0b0d0c; }
+  * { box-sizing: border-box; }
+  ::selection { background: color-mix(in srgb, var(--acc, #57f08d) 30%, transparent); }
+</style>
+
+<meta name="description" content="A free browser game for guessing real Amazon prices, with seven modes and live multiplayer. Built test-first, end to end, by Claude Code agents." />
+<link rel="canonical" href="https://rogerwinter.dev/project-price-games.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="theme-color" content="#0b0d0c" />
+<meta name="author" content="Roger Winter" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Roger Winter" />
+<meta property="og:title" content="Price Games — Roger Winter" />
+<meta property="og:description" content="A free browser game for guessing real Amazon prices, with seven modes and live multiplayer. Built test-first, end to end, by Claude Code agents." />
+<meta property="og:url" content="https://rogerwinter.dev/project-price-games.html" />
+<meta property="og:image" content="https://rogerwinter.dev/portfolio/assets/pg-hero.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Price Games — Roger Winter" />
+<meta name="twitter:description" content="A free browser game for guessing real Amazon prices, with seven modes and live multiplayer. Built test-first, end to end, by Claude Code agents." />
+<meta name="twitter:image" content="https://rogerwinter.dev/portfolio/assets/pg-hero.png" />
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/babel.min.js"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="portfolio/data.jsx"></script>
+<script type="text/babel" src="portfolio/shell.jsx"></script>
+<script type="text/babel" src="portfolio/microviz.jsx"></script>
+<script type="text/babel" src="portfolio/pg-diagrams.jsx"></script>
+<script type="text/babel" src="portfolio/pricegames.jsx"></script>
+<script type="text/babel">
+  ReactDOM.createRoot(document.getElementById('root')).render(<window.PriceGamesPage />);
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Vendored front-end libs (self-hosted; no runtime CDN dependency).
+react.production.min.js  sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z  10751 bytes
+react-dom.production.min.js  sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1  131835 bytes
+babel.min.js  sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y  3137752 bytes

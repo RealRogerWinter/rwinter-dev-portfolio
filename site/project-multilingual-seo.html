@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Multilingual SEO Tool — Roger Winter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Music&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0b0d0c; }
+  * { box-sizing: border-box; }
+  ::selection { background: color-mix(in srgb, var(--acc, #57f08d) 30%, transparent); }
+</style>
+
+<meta name="description" content="Give it a URL and it checks real search demand for intent-preserving keyword translations, ranking what&#x27;s actually worth translating per locale." />
+<link rel="canonical" href="https://rogerwinter.dev/project-multilingual-seo.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="theme-color" content="#0b0d0c" />
+<meta name="author" content="Roger Winter" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Roger Winter" />
+<meta property="og:title" content="Multilingual SEO Tool — Roger Winter" />
+<meta property="og:description" content="Give it a URL and it checks real search demand for intent-preserving keyword translations, ranking what&#x27;s actually worth translating per locale." />
+<meta property="og:url" content="https://rogerwinter.dev/project-multilingual-seo.html" />
+<meta property="og:image" content="https://rogerwinter.dev/portfolio/assets/seo-results.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Multilingual SEO Tool — Roger Winter" />
+<meta name="twitter:description" content="Give it a URL and it checks real search demand for intent-preserving keyword translations, ranking what&#x27;s actually worth translating per locale." />
+<meta name="twitter:image" content="https://rogerwinter.dev/portfolio/assets/seo-results.png" />
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/babel.min.js"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="portfolio/data.jsx"></script>
+<script type="text/babel" src="portfolio/shell.jsx"></script>
+<script type="text/babel" src="portfolio/microviz.jsx"></script>
+<script type="text/babel" src="portfolio/seo-viz.jsx"></script>
+<script type="text/babel" src="portfolio/seo-demo.jsx"></script>
+<script type="text/babel" src="portfolio/seotool.jsx"></script>
+<script type="text/babel">
+  ReactDOM.createRoot(document.getElementById('root')).render(<window.SeoToolPage />);
+</script>
+</body>
+</html>

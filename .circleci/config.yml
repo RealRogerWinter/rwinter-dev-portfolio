@@ -1,0 +1,125 @@
+version: 2.1
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Roger Winter portfolio — CI/CD
+#
+#   verify          build the image, run it, smoke-test every page/asset/header
+#   build_and_push  (main) build + push the image to GHCR, pinned by sha256
+#   hold            (main) MANUAL APPROVAL — gates every production deploy
+#   deploy          (main) SSH the pinned digest to the VPS forced-command
+#
+# Required CircleCI contexts / project settings (see docs/ci-cd.md):
+#   context "ghcr-push":  GHCR_USER, GHCR_TOKEN   (machine-user classic PAT,
+#                         write:packages ONLY — never the admin PAT)
+#   context "deploy":     VPS_KNOWN_HOSTS         (base64 of `ssh-keyscan ${VPS_HOST}`)
+#   project SSH key:      the `deploy@VPS` private key; put its fingerprint below.
+# No secrets live in this file or in the repo.
+# ─────────────────────────────────────────────────────────────────────────────
+
+parameters:
+  image_name:
+    type: string
+    default: "ghcr.io/realrogerwinter/rwinter-dev-portfolio"
+
+executors:
+  vm:
+    machine:
+      image: ubuntu-2404:current
+  deployer:
+    docker:
+      - image: cimg/base:current
+
+jobs:
+  verify:
+    executor: vm
+    steps:
+      - checkout
+      - run:
+          name: Build image
+          command: docker build -t rwinter-portfolio:ci .
+      - run:
+          name: Run container (loopback)
+          command: docker run -d --name rwp -p 127.0.0.1:3001:8080 rwinter-portfolio:ci
+      - run:
+          name: Wait for health
+          command: |
+            for i in $(seq 1 30); do
+              curl -fsS http://127.0.0.1:3001/healthz >/dev/null 2>&1 && exit 0
+              sleep 1
+            done
+            echo "container did not become healthy"; docker logs rwp; exit 1
+      - run:
+          name: Smoke test (pages, assets, headers, 404s)
+          command: python3 scripts/smoke.py http://127.0.0.1:3001
+      - run:
+          name: Verify no secrets baked into the image
+          command: |
+            ! docker run --rm --entrypoint sh rwinter-portfolio:ci -c \
+              'grep -rIl -e "BEGIN .*PRIVATE KEY" -e "ghp_" -e "sk-ant" /usr/share/nginx/html 2>/dev/null' \
+              | grep -q . || { echo "secret-like content found in image"; exit 1; }
+
+  build_and_push:
+    executor: vm
+    steps:
+      - checkout
+      - run:
+          name: Login to GHCR
+          command: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+      - run:
+          name: Build & push (sha + latest), capture digest
+          command: |
+            IMG="<< pipeline.parameters.image_name >>"
+            docker build -t "$IMG:$CIRCLE_SHA1" -t "$IMG:latest" .
+            docker push "$IMG:$CIRCLE_SHA1"
+            docker push "$IMG:latest"
+            docker inspect --format='{{index .RepoDigests 0}}' "$IMG:$CIRCLE_SHA1" > image-digest.txt
+            echo "pushed $(cat image-digest.txt)"
+      - persist_to_workspace:
+          root: .
+          paths: [image-digest.txt]
+
+  deploy:
+    executor: deployer
+    steps:
+      - attach_workspace:
+          at: .
+      # Registers the deploy@VPS private key added in CircleCI project settings.
+      # Replace the fingerprint after adding the key (see docs/ci-cd.md).
+      - add_ssh_keys:
+          fingerprints:
+            - "SET_ME:deploy-key-fingerprint"
+      - run:
+          name: Pin VPS host key
+          command: |
+            mkdir -p ~/.ssh && chmod 700 ~/.ssh
+            echo "$VPS_KNOWN_HOSTS" | base64 -d >> ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts
+      - run:
+          name: Trigger forced-command deploy (digest only)
+          command: |
+            DIGEST="$(cat image-digest.txt)"
+            echo "deploying $DIGEST"
+            ssh deploy@${VPS_HOST} "$DIGEST"
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - verify
+      - build_and_push:
+          context: ghcr-push
+          requires: [verify]
+          filters:
+            branches:
+              only: main
+      - hold:
+          type: approval
+          requires: [build_and_push]
+          filters:
+            branches:
+              only: main
+      - deploy:
+          context: deploy
+          requires: [hold]
+          filters:
+            branches:
+              only: main

@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Roger Winter portfolio — Caddy site blocks.
+#
+# APPEND these blocks to the shared /etc/caddy/Caddyfile on the VPS. The global
+# options block (email, `acme_dns cloudflare {env.CF_API_TOKEN}`, trusted_proxies
+# = Cloudflare ranges, client_ip_headers) is already present from the shared
+# config and is NOT repeated here.
+#
+# Mirrors the sheetllm.com pattern exactly:
+#   * apex serves the app, www + the .biz mirror redirect to the canonical
+#     https://rogerwinter.dev,
+#   * TLS server cert via Let's Encrypt DNS-01 (global acme_dns),
+#   * mTLS: require Cloudflare's Authenticated Origin Pull client cert so only
+#     real Cloudflare connections complete the handshake,
+#   * reverse_proxy to the loopback-only container on :3001.
+#
+# PRECONDITIONS (see docs/cloudflare-setup.md):
+#   * rogerwinter.dev AND rogerwinter.biz are zones in the SAME Cloudflare
+#     account as CF_API_TOKEN, and the token can edit DNS for both (DNS-01).
+#   * Authenticated Origin Pulls enabled per zone; SSL/TLS mode Full (strict).
+#   * Apex + www proxied (orange-cloud) A/AAAA records -> ${VPS_HOST} / IPv6.
+#   * The portfolio container is up: 127.0.0.1:3001 (docker compose in
+#     /opt/rwinter-portfolio).
+#
+# After appending:  sudo caddy validate --config /etc/caddy/Caddyfile
+#                   sudo systemctl reload caddy
+# ─────────────────────────────────────────────────────────────────────────────
+
+www.rogerwinter.dev {
+	redir https://rogerwinter.dev{uri} permanent
+}
+
+rogerwinter.biz, www.rogerwinter.biz {
+	redir https://rogerwinter.dev{uri} permanent
+}
+
+rogerwinter.dev {
+	encode zstd gzip
+
+	tls {
+		client_auth {
+			mode require_and_verify
+			trust_pool file {
+				pem_file /etc/caddy/cf-origin-pull-ca.pem
+			}
+		}
+	}
+
+	reverse_proxy 127.0.0.1:3001
+}

@@ -1,0 +1,21 @@
+Copyright (c) 2026 Roger Winter. All rights reserved.
+
+This repository is a personal portfolio. It is currently private and intended
+to be made public in future.
+
+Licensing summary (to be finalized before the repository is made public):
+
+  * Infrastructure & tooling — the Dockerfile, nginx config, CircleCI pipeline,
+    deploy scripts, and the build/smoke scripts under scripts/ — are intended to
+    be released under the MIT License for reference and reuse.
+
+  * Site content — the page copy, project writeups, branding, logos, and all
+    images and screenshots under site/portfolio/assets/ — are the original work
+    of Roger Winter and are NOT licensed for reuse. All rights reserved.
+
+  * Third-party vendored libraries under site/vendor/ retain their own licenses
+    (React and Babel — MIT). See https://github.com/facebook/react and
+    https://github.com/babel/babel.
+
+Until a LICENSE is finalized, no permission is granted to copy, modify, or
+redistribute the contents of this repository.
