@@ -9,6 +9,7 @@ woff2 into site/vendor/fonts/, and writes a fonts.css with local URLs.
 Re-runnable. Output (woff2 + fonts.css) is committed; this script needs network
 and is run only when the font set changes. Companion to scripts/fetch-vendor.sh.
 """
+import glob
 import os
 import re
 import sys
@@ -47,6 +48,14 @@ def main():
     if not blocks:
         print("ERROR: no @font-face blocks parsed from css2", file=sys.stderr)
         sys.exit(1)
+    # Fail loudly if any @font-face was NOT paired with a recognized /* name */
+    # label (e.g. Google switching to bracketed axis labels like /* [1] */),
+    # so a partial, silent drop of a needed subset can never ship.
+    total_faces = css.count("@font-face")
+    if len(blocks) != total_faces:
+        print("ERROR: paired %d of %d @font-face blocks; unrecognized subset label?"
+              % (len(blocks), total_faces), file=sys.stderr)
+        sys.exit(1)
 
     kept, downloaded = [], set()
     for subset, block in blocks:
@@ -58,13 +67,22 @@ def main():
         url = m.group(1)
         name = url.rsplit("/", 1)[-1]
         if name not in downloaded:
-            open(os.path.join(OUT, name), "wb").write(fetch(url, ua=False))
+            data = fetch(url, ua=False)
+            if data[:4] != b"wOF2":
+                print("ERROR: %s did not return a woff2 (got %r)" % (url, data[:8]), file=sys.stderr)
+                sys.exit(1)
+            open(os.path.join(OUT, name), "wb").write(data)
             downloaded.add(name)
         kept.append("/* %s */\n%s" % (subset, block.replace(url, "/vendor/fonts/%s" % name)))
 
     if not kept:
         print("ERROR: kept 0 @font-face blocks (subset filter too strict?)", file=sys.stderr)
         sys.exit(1)
+
+    # Prune woff2 no longer referenced (keeps re-runs after a font change clean).
+    for stale in glob.glob(os.path.join(OUT, "*.woff2")):
+        if os.path.basename(stale) not in downloaded:
+            os.remove(stale)
 
     header = (
         "/* Self-hosted Google Fonts — latin, latin-ext, and music subsets.\n"

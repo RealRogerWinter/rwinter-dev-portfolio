@@ -38,6 +38,32 @@ describe('self-hosted fonts', () => {
     for (const f of files) expect(fs.existsSync(path.join(dir, f)), f).toBe(true);
   });
 
+  it('every @font-face uses font-display: swap and keeps a unicode-range', () => {
+    const faces = fs.readFileSync(FONT_CSS, 'utf8').split('@font-face').slice(1);
+    expect(faces.length).toBeGreaterThan(0);
+    for (const f of faces) {
+      expect(f, 'font-display: swap').toMatch(/font-display:\s*swap/);
+      expect(f, 'unicode-range').toMatch(/unicode-range:/);
+    }
+  });
+
+  it('Noto Music covers the clef glyph U+1D11E the demos render', () => {
+    // pricey/sheet-llm render the treble clef (U+1D11E) in 'Noto Music'; the
+    // music subset range U+1D100-1D126 must survive the subset filter.
+    expect(fs.readFileSync(FONT_CSS, 'utf8')).toMatch(/U\+1D100-1D126/);
+  });
+
+  it('no unreferenced (orphan) woff2 files in the fonts dir', () => {
+    const dir = path.dirname(FONT_CSS);
+    const css = fs.readFileSync(FONT_CSS, 'utf8');
+    const referenced = new Set(
+      [...css.matchAll(/url\(\/vendor\/fonts\/([^)'"]+)\)/g)].map((m) => m[1]),
+    );
+    for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.woff2'))) {
+      expect(referenced.has(f), `orphan woff2: ${f}`).toBe(true);
+    }
+  });
+
   it('the families the pages actually use are all defined in fonts.css', () => {
     const css = fs.readFileSync(FONT_CSS, 'utf8');
     for (const fam of [
