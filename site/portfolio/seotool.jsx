@@ -18,7 +18,7 @@ const SEO_PAGE_CSS = `
 .sp-logo{ width:88px; height:88px; flex:0 0 88px; border-radius:18px; border:1px solid var(--line); background:var(--panel2); display:flex; align-items:center; justify-content:center; color:var(--acc); box-shadow:0 14px 40px -16px rgba(0,0,0,.6); }
 .sp-logo svg{ width:52%; height:52%; }
 .sp-eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin:0 0 8px; }
-.sp-title{ font-family:var(--display); font-size:clamp(30px,4.6vw,52px); font-weight:800; letter-spacing:-.03em; line-height:.98; margin:0; }
+.sp-title{ font-family:var(--display); font-size:clamp(26px,4.6vw,52px); font-weight:800; letter-spacing:-.03em; line-height:.98; margin:0; overflow-wrap:break-word; }
 .sp-intro{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; padding:26px 2px 0; }
 .sp-tagline{ font-size:clamp(17px,1.7vw,21px); line-height:1.5; color:color-mix(in oklab,var(--ink) 88%, var(--dim)); margin:0; max-width:48ch; font-weight:500; }
 .sp-actions{ display:flex; gap:11px; flex-wrap:wrap; align-items:center; }
