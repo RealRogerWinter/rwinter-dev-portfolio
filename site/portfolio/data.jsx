@@ -1,4 +1,7 @@
 // Shared content for the Roger Winter portfolio (home + sub-pages).
+// NOTE: the `projects` array is hand-mirrored in src/data/portfolio.js (ESM) for the
+// migrated pages, and a drift test (tests/data-twin.test.js) keeps them identical.
+// This file still drives the un-migrated project pages; delete it once they migrate.
 window.PORTFOLIO = {
   name: "Roger Winter",
   tagline: "AI-native developer & technical content creator",

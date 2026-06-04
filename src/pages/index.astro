@@ -1,0 +1,71 @@
+---
+// Home — migrated from site/portfolio/site.jsx (window.PortfolioSite). Static
+// chrome + card grid; each card's micro-visualization is a client:only React
+// island (the only interactive part). The inert Tweaks panel is dropped.
+import Page from '../layouts/Page.astro';
+import SeoIcon from '../components/SeoIcon.astro';
+import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import { projects, projectHue } from '../data/portfolio.js';
+import '../styles/microviz.css';
+import '../styles/home.css';
+---
+<Page
+  title="Roger Winter — AI-native developer & technical content creator"
+  description="I build AI-native software and write the tutorials that teach people how it works — the projects I ship and document, with writeups, live demos, and code."
+  canonical="https://rogerwinter.dev/"
+  active="home"
+>
+  <header class="hero">
+    <p class="hero-kicker">Building in public</p>
+    <h1 class="hero-h1">AI-native developer &amp; <span class="em">technical content creator</span></h1>
+    <p class="hero-lead">I build AI-native software and write the tutorials that teach people how it works. Each project here is an experiment I shipped <span class="hl">and documented</span> — try the demo, read the writeup, dig through the code.</p>
+  </header>
+
+  <div class="rw-sec">
+    <h2>Selected work</h2>
+    <em>five experiments · demo · code · writeup</em>
+  </div>
+
+  <div class="rw-grid">
+    {projects.map((p, i) => (
+      <article class="pc" style={`--ph: ${projectHue[p.id] || 'var(--acc)'}; animation-delay: ${0.06 + i * 0.07}s`}>
+        <div class="pc-viz">
+          <ProjectVizIsland id={p.id} client:only="react" />
+        </div>
+        <div class="pc-main">
+          <div class="pc-head">
+            {p.logo ? (
+              <div class="pc-logo has-img" style={`background: ${p.logoBg || '#000'}`}>
+                <img src={p.logo} alt={`${p.name} logo`} loading="lazy" />
+              </div>
+            ) : p.id === 'multilingual-seo' ? (
+              <div class="pc-logo seo" aria-label="a globe of languages"><SeoIcon /></div>
+            ) : p.clef ? (
+              <div class="pc-logo clef" aria-label="treble clef">
+                <svg viewBox="0 0 40 54" role="img"><text x="20" y="27" text-anchor="middle" dominant-baseline="central" font-family="'Noto Music', serif" font-size="50" fill="currentColor">{'\u{1D11E}'}</text></svg>
+              </div>
+            ) : (
+              <div class="pc-logo">{p.name.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase()}</div>
+            )}
+            <span class="pc-num">{p.n}</span>
+          </div>
+          <h3 class="pc-name"><a href={`project-${p.id}.html`}>{p.name}</a></h3>
+          <p class="pc-desc">{p.desc} <a class="pc-readmore" href={`project-${p.id}.html`}>Read more →</a></p>
+          <div class="tm-tags pc-tags">{p.tags.map((tg) => <span class="tm-tag">{tg}</span>)}</div>
+          <div class="pc-links">
+            {p.id !== 'multilingual-seo' && (
+              <a class="pc-mini live" href={p.demo} target={p.id === 'pricey' ? '_blank' : undefined} rel="noopener">
+                {p.id === 'pricey' ? 'Watch live' : 'Live demo'} <span class="ar">↗</span>
+              </a>
+            )}
+            <a class="pc-mini" href={p.repo}>GitHub <span class="ar">↗</span></a>
+          </div>
+          <a class="pc-cta" href={`project-${p.id}.html`}>
+            <span>Read the writeup</span>
+            <span class="arr">→</span>
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</Page>

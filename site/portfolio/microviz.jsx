@@ -1,4 +1,8 @@
 // Per-project micro-visualizations. Exports: window.ProjectViz, window.MV_CSS
+// NOTE: hand-mirrored in src/components/viz/microviz.jsx (ESM) + src/styles/microviz.css
+// for the migrated home page. This file still drives the un-migrated project pages;
+// keep the twins in sync until they migrate, then delete this. (MV_CSS is drift-guarded
+// by tests/css-extract.test.js; the component logic is mirrored by hand.)
 const { useState: mvUseState, useEffect: mvUseEffect, useRef: mvUseRef } = React;
 
 const MV_CSS = `

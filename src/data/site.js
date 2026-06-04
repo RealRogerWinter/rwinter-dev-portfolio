@@ -1,7 +1,7 @@
 // Single source of truth for site-wide identity/contact data, mirroring the
 // canonical values in site/portfolio/data.jsx (window.PORTFOLIO). Migrated Astro
-// pages import from here instead of re-hardcoding. The full PORTFOLIO (projects,
-// taglines) joins this module when the home/project pages migrate.
+// pages import from here instead of re-hardcoding. Project data lives in
+// src/data/portfolio.js.
 export const email = 'rogerdwinter@gmail.com';
 
 export const social = {
