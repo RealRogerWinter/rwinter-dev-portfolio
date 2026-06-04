@@ -40,7 +40,7 @@ JSX_ROOT = ["tweaks-panel.jsx"]
 JSX_PORTFOLIO = [
     "data.jsx", "shell.jsx", "microviz.jsx",          # shared
     "site.jsx",                                        # home
-    "contact.jsx",                                     # contact (bio migrated to Astro: src/pages/bio.astro)
+    # bio + contact migrated to Astro (src/pages/*.astro); not regenerated here.
     "seo-viz.jsx", "seo-demo.jsx", "seotool.jsx",      # multilingual-seo
     "os-diagrams.jsx", "onestreamer.jsx",              # onestreamer
     "pg-diagrams.jsx", "pricegames.jsx",               # price-games
@@ -51,9 +51,8 @@ JSX_PORTFOLIO = [
 # --- page rename map (export filename -> deployed filename) ------------------
 PAGES = {
     "Roger Winter - Portfolio.html": "index.html",
-    # "Bio.html" removed: bio is migrated to Astro (src/pages/bio.astro). Pages
-    # migrated to Astro are intentionally NOT regenerated here.
-    "Contact.html": "contact.html",
+    # "Bio.html" + "Contact.html" removed: migrated to Astro (src/pages/*.astro).
+    # Pages migrated to Astro are intentionally NOT regenerated here.
     "project-multilingual-seo.html": "project-multilingual-seo.html",
     "project-onestreamer.html": "project-onestreamer.html",
     "project-price-games.html": "project-price-games.html",

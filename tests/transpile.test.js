@@ -30,8 +30,10 @@ describe('JSX transpiles via the vendored Babel', () => {
     expect(typeof Babel?.transform).toBe('function');
   });
 
+  // The set shrinks as pages migrate to Astro (their .jsx are removed); just
+  // assert the remaining shipped components are found and all transpile.
   const files = walk(SITE, '.jsx');
-  it('finds the full component set', () => expect(files.length).toBeGreaterThanOrEqual(20));
+  it('finds the un-migrated component set', () => expect(files.length).toBeGreaterThan(0));
 
   for (const f of files) {
     const rel = f.slice(SITE.length + 1);
