@@ -1,8 +1,10 @@
 ---
-// Shared site footer — ports window.Footer from site/portfolio/shell.jsx.
-// Text reproduced verbatim for pixel fidelity (existing copy, em dash included).
+// Shared site footer — ports window.Footer from site/portfolio/shell.jsx. Copy
+// reproduced verbatim for pixel fidelity (the em dash is existing site copy;
+// visible-prose em dashes are a separate, deliberate site-wide content decision).
+import { social, repo } from '../data/site.js';
 ---
 <footer class="tm-foot">
   <span>© 2026 Roger Winter — built &amp; documented in public</span>
-  <span><a href="https://github.com/RealRogerWinter" target="_blank" rel="noopener">github</a> · <a href="https://www.linkedin.com/in/roger-winter-content-strategy" target="_blank" rel="noopener">linkedin</a> · <a href="https://github.com/RealRogerWinter/rwinter-dev-portfolio" target="_blank" rel="noopener">site source</a></span>
+  <span><a href={social.github.href} target="_blank" rel="noopener">github</a> · <a href={social.linkedin.href} target="_blank" rel="noopener">linkedin</a> · <a href={repo} target="_blank" rel="noopener">site source</a></span>
 </footer>

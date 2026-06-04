@@ -1,6 +1,9 @@
 ---
 // Shared site nav — ports window.Nav from site/portfolio/shell.jsx. The `active`
-// prop matches a nav item key ("home" | "bio") and marks it current.
+// prop is a page key ("home" | "bio" | "contact" | "project-*"); only keys in the
+// item list highlight, so e.g. "contact" is intentionally a no-op (Contact is the
+// CTA button, not a nav link).
+import { social } from '../data/site.js';
 const { active } = Astro.props;
 const HOME = '/';
 const items = [
@@ -15,7 +18,7 @@ const items = [
   <div class="tm-navright">
     <div class="tm-navlinks">
       {items.map((it) => <a href={it.href} class={active === it.k ? 'active' : undefined}>{it.label}</a>)}
-      <a href="https://github.com/RealRogerWinter" target="_blank" rel="noopener">GitHub</a>
+      <a href={social.github.href} target="_blank" rel="noopener">GitHub</a>
     </div>
     <a class="tm-cta" href="contact.html">Contact</a>
   </div>

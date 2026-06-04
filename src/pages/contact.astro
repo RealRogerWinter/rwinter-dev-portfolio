@@ -3,12 +3,13 @@
 // (window.ContactPage). Info-only/static, so it ships zero framework JS.
 import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
+import { email, social } from '../data/site.js';
 import '../styles/contact.css';
 
 const cards = [
-  { k: 'email', label: 'Email', value: 'rogerdwinter@gmail.com', href: 'mailto:rogerdwinter@gmail.com', icon: 'mail', arrow: '→' },
-  { k: 'github', label: 'GitHub', value: 'RealRogerWinter', href: 'https://github.com/RealRogerWinter', icon: 'github', arrow: '↗' },
-  { k: 'linkedin', label: 'LinkedIn', value: 'in/roger-winter-content-strategy', href: 'https://www.linkedin.com/in/roger-winter-content-strategy', icon: 'linkedin', arrow: '↗' },
+  { k: 'email', label: 'Email', value: email, href: `mailto:${email}`, icon: 'mail', arrow: '→' },
+  { k: 'github', label: 'GitHub', value: social.github.handle, href: social.github.href, icon: 'github', arrow: '↗' },
+  { k: 'linkedin', label: 'LinkedIn', value: social.linkedin.handle, href: social.linkedin.href, icon: 'linkedin', arrow: '↗' },
 ];
 const cx = 190, cy = 104;
 const ends = [
@@ -19,7 +20,7 @@ const ends = [
 ---
 <Page
   title="Contact — Roger Winter"
-  description="Get in touch with Roger Winter — an AI-native developer and technical content creator."
+  description="Get in touch with Roger Winter, an AI-native developer and technical content creator."
   canonical="https://rogerwinter.dev/contact.html"
   active="contact"
 >
