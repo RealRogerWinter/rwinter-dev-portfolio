@@ -87,7 +87,7 @@ jobs:
       # Replace the fingerprint after adding the key (see docs/ci-cd.md).
       - add_ssh_keys:
           fingerprints:
-            - "SET_ME:deploy-key-fingerprint"
+            - "64:02:15:67:16:06:56:f4:a5:27:8c:5b:3b:cc:cb:7a"
       - run:
           name: Pin VPS host key
           command: |
@@ -99,7 +99,7 @@ jobs:
           command: |
             DIGEST="$(cat image-digest.txt)"
             echo "deploying $DIGEST"
-            ssh deploy@5.78.144.63 "$DIGEST"
+            ssh rwinter-deploy@5.78.144.63 "$DIGEST"
 
 workflows:
   build-test-deploy:
