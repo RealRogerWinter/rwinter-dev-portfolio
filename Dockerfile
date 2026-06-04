@@ -1,7 +1,7 @@
 # Roger Winter portfolio — a static site served by hardened, non-root nginx.
 # Single-stage: the site is plain static assets (no build step), so we just copy
 # them into an unprivileged nginx image that already runs as uid 101 on :8080.
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.27-alpine@sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0
 
 # Server config (security headers, gzip, cache policy, /healthz).
 COPY deploy/default.conf /etc/nginx/conf.d/default.conf

@@ -11,8 +11,8 @@ version: 2.1
 #   test            vitest suite, timing-split across parallel nodes;
 #                   JUnit stored → CircleCI Test Insights + flaky-test detection
 #   verify          build the image, run it, smoke-test every page/asset/header,
-#                   and assert no secrets are baked in
-#   build_and_push  build + push the image to GHCR, pinned by sha256
+#                   and scan the image for baked-in secrets
+#   build_and_push  build, re-scan for secrets, then push to GHCR pinned by sha256
 #   hold            MANUAL APPROVAL — gates every production deploy
 #   deploy          SSH the pinned digest to the VPS forced-command
 #
@@ -35,6 +35,21 @@ executors:
   deployer:
     docker:
       - image: cimg/base:current
+
+commands:
+  scan_image_for_secrets:
+    description: "Fail the build if the image contains secret-like content (whole filesystem, broad token shapes)."
+    parameters:
+      image:
+        type: string
+    steps:
+      - run:
+          name: Scan image for baked-in secrets
+          command: |
+            PAT='-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{36}|github_pat_[0-9A-Za-z_]{40,}|gh[osur]_[A-Za-z0-9]{36}|sk-ant-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|CF_API_TOKEN|xox[baprs]-[0-9A-Za-z-]+'
+            HITS=$(docker run --rm --user 0 --entrypoint sh << parameters.image >> -c "grep -rIlE -e \"$PAT\" / --exclude-dir=proc --exclude-dir=sys --exclude-dir=dev 2>/dev/null" || true)
+            if [ -n "$HITS" ]; then echo "FAIL — secret-like content found in image:"; echo "$HITS"; exit 1; fi
+            echo "OK — image is free of secret-like content"
 
 jobs:
   lint:
@@ -93,12 +108,8 @@ jobs:
       - run:
           name: Smoke test (pages, assets, headers, 404s)
           command: python3 scripts/smoke.py http://127.0.0.1:3001
-      - run:
-          name: Verify no secrets baked into the image
-          command: |
-            ! docker run --rm --entrypoint sh rwinter-portfolio:ci -c \
-              'grep -rIl -e "BEGIN .*PRIVATE KEY" -e "ghp_" -e "sk-ant" /usr/share/nginx/html 2>/dev/null' \
-              | grep -q . || { echo "secret-like content found in image"; exit 1; }
+      - scan_image_for_secrets:
+          image: "rwinter-portfolio:ci"
 
   build_and_push:
     executor: vm
@@ -108,10 +119,16 @@ jobs:
           name: Login to GHCR
           command: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
       - run:
-          name: Build & push (sha + latest), capture digest
+          name: Build image (tagged for scan + push)
           command: |
             IMG="<< pipeline.parameters.image_name >>"
-            docker build -t "$IMG:$CIRCLE_SHA1" -t "$IMG:latest" .
+            docker build -t "$IMG:$CIRCLE_SHA1" -t "$IMG:latest" -t rwinter-portfolio:ci .
+      - scan_image_for_secrets:    # gate the EXACT artifact before it reaches public GHCR
+          image: "rwinter-portfolio:ci"
+      - run:
+          name: Push (sha + latest), capture digest
+          command: |
+            IMG="<< pipeline.parameters.image_name >>"
             docker push "$IMG:$CIRCLE_SHA1"
             docker push "$IMG:latest"
             docker inspect --format='{{index .RepoDigests 0}}' "$IMG:$CIRCLE_SHA1" > image-digest.txt

@@ -2,30 +2,27 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Server-side deploy for the Roger Winter portfolio.
 #
-# Runs on the VPS as root, invoked by the least-privilege `deploy` user through
-# an SSH *forced command* + a narrow sudoers rule (see docs/ci-cd.md). The only
-# attacker-controlled input is $SSH_ORIGINAL_COMMAND, which must be the exact
-# GHCR image digest CI wants to roll out. We validate it is one of OUR images
-# (pinned by sha256 digest), then pull + restart the compose stack. Nothing else
-# the SSH key can do but trigger this one script.
+# Runs on the VPS as root, invoked by the least-privilege `rwinter-deploy` user
+# through an SSH *forced command* + a narrow sudoers rule (see docs/ci-cd.md). The
+# only attacker-controlled input is $SSH_ORIGINAL_COMMAND, which must be the exact
+# GHCR image digest CI wants to roll out. We validate it is OUR image pinned by a
+# full sha256 digest, then pull + restart the compose stack with health-gated
+# rollback. Nothing else the SSH key can do but trigger this one script.
 #
 # Install: /usr/local/sbin/rwinter-deploy.sh  (root:root, 0755)
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 STACK_DIR="/opt/rwinter-portfolio"
-ALLOWED_PREFIX="ghcr.io/realrogerwinter/rwinter-dev-portfolio@sha256:"
 
 REF="${SSH_ORIGINAL_COMMAND:-${1:-}}"
 
-# Only accept a digest-pinned reference to our own image. No tags, no other repos.
-case "$REF" in
-	"${ALLOWED_PREFIX}"*[!\ ]) : ;;
-	*) echo "deploy: refusing ref '${REF}'" >&2; exit 2 ;;
-esac
-# Reject anything with shell metacharacters / whitespace beyond the digest.
-if printf '%s' "$REF" | grep -qE '[^a-zA-Z0-9:/@._-]'; then
-	echo "deploy: invalid characters in ref" >&2; exit 2
+# Accept ONLY our own image, pinned by a full sha256:<64 lowercase hex> digest.
+# Anchored + exact length, so a malformed or injected ref fails fast here rather
+# than relying on `docker pull` to reject it later.
+if ! printf '%s' "$REF" | grep -qE '^ghcr\.io/realrogerwinter/rwinter-dev-portfolio@sha256:[0-9a-f]{64}$'; then
+	echo "deploy: refusing ref '${REF}' (must be our image @sha256:<64-hex>)" >&2
+	exit 2
 fi
 
 cd "$STACK_DIR"
