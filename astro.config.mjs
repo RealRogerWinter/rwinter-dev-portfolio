@@ -11,4 +11,14 @@ export default defineConfig({
   outDir: './dist',
   srcDir: './src',
   build: { format: 'file' },
+  markdown: {
+    shikiConfig: {
+      // Dual-theme: each token carries both palettes as CSS vars (--shiki-light/
+      // --shiki-dark); writeup.css applies the right one per data-theme, so code
+      // is readable in BOTH light and dark (a single dark theme is light-on-light
+      // in light mode).
+      themes: { light: 'github-light', dark: 'github-dark' },
+      defaultColor: false,
+    },
+  },
 });

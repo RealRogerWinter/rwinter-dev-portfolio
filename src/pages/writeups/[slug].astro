@@ -1,0 +1,32 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import { fmtDate } from '../../lib/date.js';
+import '../../styles/writeup.css';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('writeups', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const { title, description, date, tags } = entry.data;
+const canonical = `https://rogerwinter.dev/writeups/${entry.slug}.html`;
+---
+<Page title={`${title} — Roger Winter`} description={description} canonical={canonical} active="writeups">
+  <article class="wr">
+    <header class="wr-head">
+      <p class="wr-kicker">
+        <time datetime={date.toISOString()}>{fmtDate(date)}</time>
+        {tags.map((t) => <span class="tag">#{t}</span>)}
+      </p>
+      <h1 class="wr-title">{title}</h1>
+      <p class="wr-desc">{description}</p>
+    </header>
+    <div class="wr-body">
+      <Content />
+    </div>
+    <footer class="wr-foot"><a href="/writeups.html">&larr; All writeups</a></footer>
+  </article>
+</Page>

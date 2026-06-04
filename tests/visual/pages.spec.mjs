@@ -7,8 +7,23 @@ import { test } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
-import { SHOTS, gotoStable, masks, expect } from './_harness.mjs';
+import { SHOTS, gotoStable, masks, expect, FREEZE, DESKTOP } from './_harness.mjs';
 import { maxMeanChannelDelta } from './_pixeldiff.mjs';
+
+// A writeup's code block is a small fraction of the tall article, so a full-page
+// shot's tolerance would miss a code-only regression (e.g. unreadable syntax
+// colours in one theme). Guard it directly with a locator screenshot in both
+// themes, where a colour change IS most of the captured pixels.
+const ARTICLE = '/writeups/visual-regression-as-a-migration-oracle.html';
+for (const [name, tweaks] of [
+  ['writeup-code--dark', FREEZE],
+  ['writeup-code--light', { ...FREEZE, theme: 'light' }],
+]) {
+  test(`visual: ${name}`, async ({ page }) => {
+    await gotoStable(page, { path: ARTICLE, viewport: DESKTOP, tweaks });
+    await expect(page.locator('.wr-body pre').first()).toHaveScreenshot(`${name}.png`);
+  });
+}
 
 const SNAP_DIR = path.join(
   path.dirname(url.fileURLToPath(import.meta.url)),

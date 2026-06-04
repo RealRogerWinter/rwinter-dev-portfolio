@@ -26,15 +26,28 @@ describe('site structure', () => {
     expect(read('robots.txt')).toMatch(/Sitemap:\s*https:\/\/rogerwinter\.dev\/sitemap\.xml/);
   });
 
-  it('no migrated Astro page also keeps a stale verbatim site/ source', () => {
-    // A slug must be served by exactly one source: a migrated src/pages/*.astro
+  it('no migrated Astro route also keeps a stale verbatim site/ source', () => {
+    // A route must be served by exactly one source: a migrated src/pages route
     // overrides the verbatim publicDir copy silently, so a leftover (or one the
-    // design-export script recreated) would ship invisibly. Guard against both.
-    const pagesDir = path.join(import.meta.dirname, '..', 'src', 'pages');
+    // design-export script recreated) would ship invisibly. Walk src/pages
+    // recursively (covers nested routes like /writeups) including dynamic ones.
     const siteDir = path.join(import.meta.dirname, '..', 'site');
-    for (const f of fs.readdirSync(pagesDir).filter((x) => x.endsWith('.astro'))) {
-      const html = f.replace(/\.astro$/, '.html');
-      expect(fs.existsSync(path.join(siteDir, html)), `${html} is in BOTH src/pages and site/`).toBe(false);
-    }
+    const walk = (dir, base = '') => {
+      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (e.isDirectory()) { walk(path.join(dir, e.name), path.join(base, e.name)); continue; }
+        if (!e.name.endsWith('.astro')) continue;
+        if (e.name.includes('[')) {
+          // dynamic route (e.g. writeups/[slug]): a verbatim dir would shadow it
+          expect(fs.existsSync(path.join(siteDir, base)), `site/${base}/ shadows a dynamic Astro route`).toBe(false);
+          continue;
+        }
+        const out =
+          e.name === 'index.astro'
+            ? base === '' ? 'index.html' : `${base}.html`
+            : path.join(base, e.name.replace(/\.astro$/, '.html'));
+        expect(fs.existsSync(path.join(siteDir, out)), `${out} is in BOTH src/pages and site/`).toBe(false);
+      }
+    };
+    walk(path.join(import.meta.dirname, '..', 'src', 'pages'));
   });
 });

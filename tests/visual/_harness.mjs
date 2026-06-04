@@ -19,7 +19,7 @@ const MOBILE = { width: 390, height: 844 };
 
 // vizAnim/blink off is belt-and-suspenders with reducedMotion:'reduce'. Other
 // keys merge over the site's TW_DEFAULTS (shell.jsx), so we set only overrides.
-const FREEZE = { vizAnim: false, blink: false };
+export const FREEZE = { vizAnim: false, blink: false };
 
 // A deliberately small, meaningful matrix: every page in its default look, plus
 // targeted variants that exercise the theme system (light, alternate accent,
@@ -39,6 +39,11 @@ export const SHOTS = [
   { page: PAGES[2], name: 'contact--default-mobile', viewport: MOBILE, tweaks: FREEZE },
   { page: PAGES[0], name: 'index--accent-green', viewport: DESKTOP, tweaks: { ...FREEZE, accent: '#57f08d' } },
   { page: PAGES[0], name: 'index--bg-grid', viewport: DESKTOP, tweaks: { ...FREEZE, background: 'grid' } },
+  // Writeups (net-new Astro pages): index + an article (desktop, light, mobile).
+  { page: { path: '/writeups.html' }, name: 'writeups-index--default-desktop', viewport: DESKTOP, tweaks: FREEZE },
+  { page: { path: '/writeups/visual-regression-as-a-migration-oracle.html' }, name: 'writeup-article--default-desktop', viewport: DESKTOP, tweaks: FREEZE },
+  { page: { path: '/writeups/visual-regression-as-a-migration-oracle.html' }, name: 'writeup-article--light', viewport: DESKTOP, tweaks: { ...FREEZE, theme: 'light' } },
+  { page: { path: '/writeups/visual-regression-as-a-migration-oracle.html' }, name: 'writeup-article--default-mobile', viewport: MOBILE, tweaks: FREEZE },
 ];
 
 // Runs before any page script: seed Math.random (so the one-shot price viz is
