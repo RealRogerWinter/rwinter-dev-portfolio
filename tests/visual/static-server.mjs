@@ -49,9 +49,11 @@ const server = http.createServer((req, res) => {
   }
   if (pathname.endsWith('/')) pathname += 'index.html';
 
-  // Resolve and confine to ROOT (no path traversal).
-  const filePath = path.join(ROOT, pathname);
-  if (!filePath.startsWith(ROOT + path.sep) && filePath !== ROOT) {
+  // Resolve and confine to ROOT using the canonical containment check
+  // (path.relative is separator-safe; no startsWith/prefix ambiguity).
+  const filePath = path.resolve(ROOT, '.' + pathname);
+  const rel = path.relative(ROOT, filePath);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
     res.writeHead(403);
     return res.end('forbidden');
   }

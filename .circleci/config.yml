@@ -98,9 +98,14 @@ jobs:
     executor: playwright
     steps:
       - checkout
+      - restore_cache:
+          keys: ["npm-pw-v1-{{ checksum \"package-lock.json\" }}"]
       - run:
           name: Install deps
           command: npm ci
+      - save_cache:
+          key: "npm-pw-v1-{{ checksum \"package-lock.json\" }}"
+          paths: ["~/.npm"]
       - run:
           name: Visual harness (render-smoke + oracle self-test)
           # Environment-independent specs only. The pixel-parity comparison

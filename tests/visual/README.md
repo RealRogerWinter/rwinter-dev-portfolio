@@ -11,13 +11,17 @@ every page is screenshotted now, and each migrated page must stay pixel-identica
 - `pages.spec.mjs` — full-page screenshots of all eight pages in their default
   look, plus targeted variants that exercise the theme system (light theme, an
   alternate accent, an alternate background) and a mobile width. These compare
-  against committed baselines in `__screenshots__/`. **This is the migration
-  look-gate.**
+  against committed baselines in `__screenshots__/` with two complementary
+  checks: a structural pixel diff (pixelmatch), plus a **mean-colour guard** that
+  catches site-wide uniform colour/contrast drift, which the perceptual pixel
+  diff is deliberately blind to. **This is the migration look-gate.**
 - `rendersmoke.spec.mjs` — proves every page's client render produces real
   content (not an empty `#root`) with no uncaught errors. Environment-independent.
-- `selftest.spec.mjs` — proves the pixel oracle has teeth: it reports zero diff
-  for identical renders and a real diff when a change is injected. This is what
-  stops the harness from silently rotting into an always-pass. Environment-independent.
+- `selftest.spec.mjs` — proves both oracle halves have teeth: pixelmatch detects
+  an injected element, the mean-colour guard detects a subtle uniform shift
+  pixelmatch misses, and neither false-positives on identical renders. This is
+  what stops the harness from silently rotting into an always-pass.
+  Environment-independent.
 
 ## Running it
 

@@ -20,10 +20,12 @@ export default defineConfig({
   snapshotPathTemplate: '{testDir}/__screenshots__/{testFileName}/{arg}{ext}',
   expect: {
     toHaveScreenshot: {
-      // Absorb sub-pixel anti-aliasing noise; real regressions (layout, colour,
-      // missing elements) move far more than 1% of pixels.
+      // Absorb sub-pixel anti-aliasing noise; structural regressions (layout,
+      // moved/missing elements) move far more than 1% of pixels. Subtle UNIFORM
+      // colour drift, which this perceptual diff is blind to, is caught
+      // separately by the mean-colour guard in pages.spec.mjs.
       maxDiffPixelRatio: 0.01,
-      threshold: 0.2,
+      threshold: 0.1,
       animations: 'disabled',
       caret: 'hide',
     },

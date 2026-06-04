@@ -5,11 +5,13 @@
 import { test, expect } from '@playwright/test';
 import { PAGES, gotoStable, DESKTOP } from './_harness.mjs';
 
-// A page-specific token that only renders if the correct root component mounted.
+// A page-UNIQUE token that only renders if the correct root component mounted
+// (the shared Nav/Footer wordmark "Roger Winter" appears on every page, so it
+// would not distinguish a wrong root that still drew the shell).
 const EXPECT_TEXT = {
-  index: 'Roger Winter',
-  bio: 'Roger Winter',
-  contact: 'Roger Winter',
+  index: 'Selected work',
+  bio: 'At a glance',
+  contact: "Let's talk",
   'project-sheet-llm': 'sheet-llm',
   'project-onestreamer': 'OneStreamer',
   'project-price-games': 'Price Games',
@@ -29,7 +31,9 @@ for (const p of PAGES) {
     // Distinguishes a real client render from an empty #root (~0 chars). The
     // sparsest real page (contact) renders ~390 chars.
     expect(text.length, 'body has substantial rendered text').toBeGreaterThan(200);
-    expect(text).toContain(EXPECT_TEXT[p.slug]);
+    // Case-insensitive: several of these tokens are uppercased by CSS
+    // text-transform, which Chromium's innerText reflects.
+    expect(text.toLowerCase()).toContain(EXPECT_TEXT[p.slug].toLowerCase());
     expect(errors, `uncaught page errors: ${errors.join(' | ')}`).toEqual([]);
   });
 }

@@ -34,7 +34,6 @@ test-results/
 # look-oracle and must be tracked.
 playwright-report/
 blob-report/
-/test-results/
 
 # Claude Code session / worktree scratch dir — never project content
 /.claude/

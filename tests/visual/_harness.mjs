@@ -40,6 +40,9 @@ export const SHOTS = [
 // the keyword-rank rotation, which ignores reduced-motion), and seed the saved
 // tweaks so the page boots in the requested theme/accent/background.
 function initScript(tweaks) {
+  // 'rw_tweaks_v1' and the merge-over-defaults semantics mirror useShellTweaks
+  // in site/portfolio/shell.jsx (TW_KEY / TW_DEFAULTS). If that key or shape
+  // changes during the migration, the baselines must be regenerated.
   try {
     localStorage.setItem('rw_tweaks_v1', JSON.stringify(tweaks));
   } catch {}
@@ -67,6 +70,18 @@ export async function gotoStable(page, { path, viewport, tweaks }) {
   });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
+  // Freeze SVG SMIL timelines (the <animateMotion> dot in pricey-viz.jsx).
+  // Playwright's animations:'disabled' only finalizes CSS / Web Animations, and
+  // the site's prefers-reduced-motion paths do not stop SMIL — so pin every SVG
+  // clock to t=0 explicitly, or the Pricey baseline drifts.
+  await page.evaluate(() => {
+    document.querySelectorAll('svg').forEach((s) => {
+      try {
+        s.pauseAnimations();
+        s.setCurrentTime(0);
+      } catch {}
+    });
+  });
 }
 
 // Regions that cannot be made deterministic and are masked in screenshots.
