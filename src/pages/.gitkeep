@@ -1,0 +1,3 @@
+# Keeps src/pages/ present so `astro build` does not warn "Missing pages
+# directory" while the site is still served verbatim from publicDir (site/).
+# Real Astro pages (bio.astro first) arrive in PR #6; this file can then go.

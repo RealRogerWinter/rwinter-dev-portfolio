@@ -1,6 +1,7 @@
 // Zero-dependency static file server for the visual-regression harness.
-// Serves the committed `site/` directory exactly as nginx does in production
-// (the pages render client-side, so a plain static server is sufficient).
+// Serves the Astro build output (`dist/`) exactly as nginx does in production,
+// so the harness gates the deployed artifact (verbatim pages + any migrated
+// Astro pages). Run `npm run build` first; the Playwright webServer does.
 //
 // Usage: node tests/visual/static-server.mjs [port]
 import http from 'node:http';
@@ -8,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 
-const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..', '..', 'site');
+const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..', '..', 'dist');
 const PORT = Number(process.argv[2]) || 4317;
 
 // Content types kept minimal and explicit. .jsx is fetched-as-text by the

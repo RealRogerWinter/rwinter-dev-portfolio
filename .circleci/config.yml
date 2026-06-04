@@ -119,10 +119,29 @@ jobs:
       - store_artifacts:
           path: test-results
 
+  build_site:
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          keys: ["npm-v1-{{ checksum \"package-lock.json\" }}"]
+      - run: npm ci
+      - save_cache:
+          key: "npm-v1-{{ checksum \"package-lock.json\" }}"
+          paths: ["~/.npm"]
+      - run:
+          name: Build site (Astro copies site/ verbatim + renders src/pages into dist/)
+          command: npm run build
+      - persist_to_workspace:    # dist/ is gitignored; downstream jobs attach it for `docker build`
+          root: .
+          paths: [dist]
+
   verify:
     executor: vm
     steps:
       - checkout
+      - attach_workspace:    # brings in the pre-built dist/ (Dockerfile COPYs it)
+          at: .
       - run:
           name: Build image
           command: docker build -t rwinter-portfolio:ci .
@@ -147,6 +166,8 @@ jobs:
     executor: vm
     steps:
       - checkout
+      - attach_workspace:    # the same pre-built dist/ verify validated
+          at: .
       - run:
           name: Login to GHCR
           command: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
@@ -203,7 +224,9 @@ workflows:
       - lint
       - test
       - visual
-      - verify
+      - build_site
+      - verify:
+          requires: [build_site]
       - build_and_push:
           context: ghcr-push
           requires: [lint, test, visual, verify]

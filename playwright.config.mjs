@@ -42,9 +42,11 @@ export default defineConfig({
     locale: 'en-US',
   },
   webServer: {
-    command: `node tests/visual/static-server.mjs ${PORT}`,
+    // Build the site (Astro copies site/ verbatim + renders any src/pages), then
+    // serve dist/ so the harness tests the deployed artifact.
+    command: `npm run build && node tests/visual/static-server.mjs ${PORT}`,
     url: `http://127.0.0.1:${PORT}/healthz`,
     reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    timeout: 90_000,
   },
 });

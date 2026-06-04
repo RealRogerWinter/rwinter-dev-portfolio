@@ -1,0 +1,14 @@
+import { defineConfig } from 'astro/config';
+
+// Incremental migration setup. The existing in-browser-Babel site is served
+// verbatim from `site/` (publicDir): Astro copies it into the build output
+// untouched. Pages migrated to Astro live in `src/pages/` and override the
+// matching path. `format: 'file'` keeps flat URLs (/bio.html, not /bio/).
+// The build output (dist/) is what the container serves.
+export default defineConfig({
+  site: 'https://rogerwinter.dev',
+  publicDir: './site',
+  outDir: './dist',
+  srcDir: './src',
+  build: { format: 'file' },
+});
