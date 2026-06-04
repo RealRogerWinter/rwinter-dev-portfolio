@@ -30,4 +30,14 @@ describe('heavy screenshots optimized to WebP (PNG kept as fallback)', () => {
     expect(onestreamer, 'webp <source>').toContain('onestreamer-stream.webp');
     expect(onestreamer, 'png fallback retained').toContain('onestreamer-stream.png');
   });
+
+  it('the <img> reserve their 2560x1440 dimensions (CLS guard)', () => {
+    const pricey = fs.readFileSync(path.join(ASSETS, '..', 'pricey.jsx'), 'utf8');
+    const onestreamer = fs.readFileSync(path.join(ASSETS, '..', 'onestreamer.jsx'), 'utf8');
+    expect(pricey).toMatch(/pricey-stream\.png" width="2560" height="1440"/);
+    expect(onestreamer).toMatch(/onestreamer-stream\.png" width="2560" height="1440"/);
+    // width:100% needs height:auto or the height attr distorts the image.
+    expect(pricey).toMatch(/\.pcy-tour img\{[^}]*height:auto/);
+    expect(onestreamer).toMatch(/\.os-tour img\{[^}]*height:auto/);
+  });
 });
