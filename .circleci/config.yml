@@ -3,17 +3,21 @@ version: 2.1
 # ─────────────────────────────────────────────────────────────────────────────
 # Roger Winter portfolio — CI/CD
 #
-#   verify          build the image, run it, smoke-test every page/asset/header
-#   build_and_push  (main) build + push the image to GHCR, pinned by sha256
-#   hold            (main) MANUAL APPROVAL — gates every production deploy
-#   deploy          (main) SSH the pinned digest to the VPS forced-command
+#   lint  ─┐
+#   test  ─┼─▶ build_and_push ─▶ hold (manual) ─▶ deploy      (build/deploy: main only)
+#   verify─┘
 #
-# Required CircleCI contexts / project settings (see docs/ci-cd.md):
-#   context "ghcr-push":  GHCR_USER, GHCR_TOKEN   (machine-user classic PAT,
-#                         write:packages ONLY — never the admin PAT)
-#   context "deploy":     VPS_KNOWN_HOSTS         (base64 of `ssh-keyscan ${VPS_HOST}`)
-#   project SSH key:      the `deploy@VPS` private key; put its fingerprint below.
-# No secrets live in this file or in the repo.
+#   lint            HTML lint (htmlhint)
+#   test            vitest suite, timing-split across parallel nodes;
+#                   JUnit stored → CircleCI Test Insights + flaky-test detection
+#   verify          build the image, run it, smoke-test every page/asset/header,
+#                   and assert no secrets are baked in
+#   build_and_push  build + push the image to GHCR, pinned by sha256
+#   hold            MANUAL APPROVAL — gates every production deploy
+#   deploy          SSH the pinned digest to the VPS forced-command
+#
+# Contexts/keys (see docs/ci-cd.md): ghcr-push {GHCR_USER,GHCR_TOKEN},
+# deploy {VPS_KNOWN_HOSTS} + the rwinter-deploy@VPS project SSH key.
 # ─────────────────────────────────────────────────────────────────────────────
 
 parameters:
@@ -25,11 +29,49 @@ executors:
   vm:
     machine:
       image: ubuntu-2404:current
+  node:
+    docker:
+      - image: cimg/node:20.18
   deployer:
     docker:
       - image: cimg/base:current
 
 jobs:
+  lint:
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          keys: ["npm-v1-{{ checksum \"package-lock.json\" }}"]
+      - run: npm ci
+      - save_cache:
+          key: "npm-v1-{{ checksum \"package-lock.json\" }}"
+          paths: ["~/.npm"]
+      - run:
+          name: Lint HTML
+          command: npm run lint
+
+  test:
+    executor: node
+    parallelism: 2
+    steps:
+      - checkout
+      - restore_cache:
+          keys: ["npm-v1-{{ checksum \"package-lock.json\" }}"]
+      - run: npm ci
+      - run:
+          name: Run tests (timing-split across parallel nodes)
+          command: |
+            mkdir -p test-results
+            TESTFILES=$(circleci tests glob "tests/**/*.test.js" | circleci tests split --split-by=timing)
+            if [ -z "$TESTFILES" ]; then echo "no tests assigned to this node"; exit 0; fi
+            echo "this node runs:"; echo "$TESTFILES"
+            CI=1 npx vitest run $TESTFILES
+      - store_test_results:    # JUnit → Test Insights, flaky detection, timing data
+          path: test-results
+      - store_artifacts:
+          path: test-results
+
   verify:
     executor: vm
     steps:
@@ -83,8 +125,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      # Registers the deploy@VPS private key added in CircleCI project settings.
-      # Replace the fingerprint after adding the key (see docs/ci-cd.md).
+      # The rwinter-deploy@VPS private key added in CircleCI project settings.
       - add_ssh_keys:
           fingerprints:
             - "64:02:15:67:16:06:56:f4:a5:27:8c:5b:3b:cc:cb:7a"
@@ -104,10 +145,12 @@ jobs:
 workflows:
   build-test-deploy:
     jobs:
+      - lint
+      - test
       - verify
       - build_and_push:
           context: ghcr-push
-          requires: [verify]
+          requires: [lint, test, verify]
           filters:
             branches:
               only: main

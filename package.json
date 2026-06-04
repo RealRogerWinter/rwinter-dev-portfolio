@@ -1,0 +1,15 @@
+{
+  "name": "rwinter-dev-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Roger Winter portfolio — static site checks (transpile, resources, integrity, SEO).",
+  "scripts": {
+    "test": "vitest run",
+    "lint": "htmlhint \"site/*.html\""
+  },
+  "devDependencies": {
+    "htmlhint": "^1.1.4",
+    "vitest": "^2.1.9"
+  }
+}
