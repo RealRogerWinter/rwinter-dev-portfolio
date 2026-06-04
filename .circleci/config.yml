@@ -63,7 +63,7 @@ jobs:
           name: Run tests (timing-split across parallel nodes)
           command: |
             mkdir -p test-results
-            TESTFILES=$(circleci tests glob "tests/**/*.test.js" | circleci tests split --split-by=timing)
+            TESTFILES=$(circleci tests glob "tests/**/*.test.js" | circleci tests split --split-by=timings)
             if [ -z "$TESTFILES" ]; then echo "no tests assigned to this node"; exit 0; fi
             echo "this node runs:"; echo "$TESTFILES"
             CI=1 npx vitest run $TESTFILES
