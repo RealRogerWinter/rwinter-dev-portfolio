@@ -13,11 +13,13 @@ PAGES = ["/", "/bio.html", "/contact.html",
          "/project-price-games.html", "/project-pricey.html",
          "/project-sheet-llm.html"]
 fails = []
+# A real browser UA: Cloudflare's bot protection 403s the default Python-urllib UA.
+UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 
 def get(path, want=200):
     url = BASE + path
     try:
-        r = urllib.request.urlopen(url, timeout=15)
+        r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=15)
         body = r.read()
         if r.status != want:
             fails.append(f"{path}: status {r.status} != {want}")
