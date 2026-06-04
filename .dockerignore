@@ -1,4 +1,5 @@
-# Keep the build context small — the image only needs site/ and deploy/default.conf.
+# Keep the build context small — the image only needs the pre-built dist/ and
+# deploy/default.conf. dist/ is intentionally NOT ignored (it is the image input).
 .git
 .github
 .circleci
@@ -12,10 +13,17 @@ LICENSE
 .dockerignore
 deploy/Caddyfile.rogerwinter.snippet
 
+# Build inputs/config — the image serves dist/, not these.
+site
+src
+astro.config.mjs
+.astro
+
 # dev/test tooling — never part of the runtime image
 tests
 package.json
 package-lock.json
 vitest.config.js
+playwright.config.mjs
 .htmlhintrc
 test-results

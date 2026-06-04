@@ -7,12 +7,15 @@
   "scripts": {
     "test": "vitest run",
     "lint": "htmlhint \"site/*.html\"",
+    "build": "astro build",
+    "dev": "astro dev",
     "test:visual": "playwright test",
     "test:visual:ci": "playwright test rendersmoke.spec.mjs selftest.spec.mjs",
     "test:visual:update": "playwright test pages.spec.mjs --update-snapshots"
   },
   "devDependencies": {
     "@playwright/test": "1.49.1",
+    "astro": "^4.16.18",
     "htmlhint": "^1.1.4",
     "pixelmatch": "^6.0.0",
     "pngjs": "^7.0.0",
