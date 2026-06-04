@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
 
 // Incremental migration setup. The existing in-browser-Babel site is served
 // verbatim from `site/` (publicDir): Astro copies it into the build output
@@ -11,6 +12,8 @@ export default defineConfig({
   outDir: './dist',
   srcDir: './src',
   build: { format: 'file' },
+  // React islands for the interactive visualizations on the home/project pages.
+  integrations: [react()],
   markdown: {
     shikiConfig: {
       // Dual-theme: each token carries both palettes as CSS vars (--shiki-light/

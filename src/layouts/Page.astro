@@ -17,12 +17,12 @@ const OG_ALT = 'Roger Winter — AI-native developer & technical content creator
 // at cutover (Babel removed) it becomes a CSP hash.
 const themeBoot =
   "(function(){try{var d=document.getElementById('rw-root');" +
-  "var t=Object.assign({theme:'dark',background:'weave',accent:'#5b8cff',display:'Syne',lift:true}," +
+  "var t=Object.assign({theme:'dark',background:'weave',accent:'#5b8cff',display:'Syne',lift:true,vizAnim:true}," +
   "JSON.parse(localStorage.getItem('rw_tweaks_v1')||'{}'));" +
   "var F={'Syne':\"'Syne', sans-serif\",'Space Grotesk':\"'Space Grotesk', sans-serif\",'Bricolage Grotesque':\"'Bricolage Grotesque', sans-serif\"};" +
   "d.setAttribute('data-theme',t.theme);d.setAttribute('data-bg',t.background||'grid');" +
   "d.style.setProperty('--acc',t.accent);d.style.setProperty('--display',F[t.display]||F['Syne']);" +
-  "d.classList.toggle('motion-lift',!!t.lift);}catch(e){}})();";
+  "d.classList.toggle('motion-lift',!!t.lift);d.setAttribute('data-anim',t.vizAnim!==false?'on':'off');}catch(e){}})();";
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +58,7 @@ const themeBoot =
     <meta name="twitter:image:alt" content={OG_ALT} />
   </head>
   <body>
-    <div id="rw-root" class="tm rw motion-lift" data-theme="dark" data-bg="weave" style="--acc:#5b8cff;--display:'Syne', sans-serif">
+    <div id="rw-root" class="tm rw motion-lift" data-theme="dark" data-bg="weave" data-anim="on" style="--acc:#5b8cff;--display:'Syne', sans-serif">
       <script is:inline set:html={themeBoot}></script>
       <div class="tm-wrap">
         <Nav active={active} />
