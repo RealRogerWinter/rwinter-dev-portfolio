@@ -62,71 +62,6 @@ export function SeoIcon() {
   );
 }
 
-const SPARK_PTS = [[10, 92], [46, 84], [82, 88], [118, 72], [154, 76], [190, 58], [226, 62], [262, 42], [298, 34], [330, 20]];
-
-function SparkViz({ animate }) {
-  const ref = mvUseRef(null);
-  mvUseEffect(() => {
-    const dot = ref.current;
-    if (!dot) return;
-    const pts = SPARK_PTS;
-    const segs = [];
-    let total = 0;
-    for (let i = 1; i < pts.length; i++) {
-      const dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1];
-      const l = Math.hypot(dx, dy);
-      segs.push({ l, a: pts[i - 1], b: pts[i] });
-      total += l;
-    }
-    const at = (u) => {
-      let d = u * total;
-      for (let i = 0; i < segs.length; i++) {
-        const s = segs[i];
-        if (d <= s.l || i === segs.length - 1) {
-          const r = s.l ? d / s.l : 0;
-          return [s.a[0] + (s.b[0] - s.a[0]) * r, s.a[1] + (s.b[1] - s.a[1]) * r];
-        }
-        d -= s.l;
-      }
-      return pts[pts.length - 1];
-    };
-    const place = (p) => {
-      dot.style.left = (p[0] / 340 * 100) + '%';
-      dot.style.top = (p[1] / 120 * 100) + '%';
-    };
-    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!animate || reduce) { place(pts[pts.length - 1]); return; }
-    let raf, start;
-    const D = 2800;
-    const ease = (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
-    const frame = (ts) => {
-      if (!start) start = ts;
-      const e = (ts - start) % (2 * D);
-      const ph = e / (2 * D);
-      let u = ph < 0.5 ? ph * 2 : (1 - ph) * 2;
-      place(at(ease(u)));
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, [animate]);
-  const line = SPARK_PTS.map((p) => p.join(',')).join(' ');
-  const area = `10,120 ${line} 330,120`;
-  return (
-    <div className="mv mv-spark">
-      <svg viewBox="0 0 340 120" preserveAspectRatio="none">
-        <defs><linearGradient id="mvGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="currentColor" stopOpacity="0.35" />
-          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
-        </linearGradient></defs>
-        <polygon className="area" points={area} />
-        <polyline className="ln" points={line} />
-      </svg>
-      <span className="mv-spark-dot" ref={ref}></span>
-    </div>
-  );
-}
-
 const PG_STARS = [[20, 28, 1.5], [50, 70, 1], [300, 30, 1.5], [270, 80, 1], [160, 20, 1], [110, 92, 1.2], [230, 24, 1], [330, 64, 1.2], [14, 90, 1]];
 const PG_DOLLARS = [[30, 84, 26], [70, 40, 18], [250, 46, 22], [300, 92, 16], [200, 96, 20], [120, 34, 16]];
 const pgRand = () => String(Math.floor(Math.random() * 900) + 100);
@@ -254,5 +189,3 @@ export function ProjectViz({ id, animate }) {
   if (id === 'multilingual-seo') return <HelloViz />;
   return null;
 }
-
-export { SparkViz };

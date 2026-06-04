@@ -27,8 +27,8 @@ import '../styles/home.css';
   </div>
 
   <div class="rw-grid">
-    {projects.map((p) => (
-      <article class="pc" style={`--ph: ${projectHue[p.id] || 'var(--acc)'}`}>
+    {projects.map((p, i) => (
+      <article class="pc" style={`--ph: ${projectHue[p.id] || 'var(--acc)'}; animation-delay: ${0.06 + i * 0.07}s`}>
         <div class="pc-viz">
           <ProjectVizIsland id={p.id} client:only="react" />
         </div>
