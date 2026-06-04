@@ -1,0 +1,204 @@
+---
+// Project page: Multilingual SEO Tool — migrated from site/portfolio/seotool.jsx
+// (window.SeoToolPage). Static Astro shell; the four diagrams render as static
+// HTML at build (no client directive, zero JS — CSS-only animation gated by
+// [data-anim]); SeoRunDemo hydrates on scroll (client:visible); the micro-viz
+// (band, CTA, prev/next minis) is a client:only island. The inert Tweaks panel
+// is dropped; its vizAnim flag is bridged via [data-anim] in CSS.
+import Page from '../layouts/Page.astro';
+import SeoIcon from '../components/SeoIcon.astro';
+import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import { IntentVariants, PipelineDiagram, HybridLLM, LocaleFanout, SeoRunDemo } from '../components/viz/multilingual-seo.jsx';
+import { projects } from '../data/portfolio.js';
+import '../styles/microviz.css';
+import '../styles/multilingual-seo.css';
+
+const p = projects.find((x) => x.id === 'multilingual-seo');
+const idx = projects.findIndex((x) => x.id === 'multilingual-seo');
+const prev = projects[(idx - 1 + projects.length) % projects.length];
+const next = projects[(idx + 1) % projects.length];
+
+const stack = [
+  { layer: 'Backend', key: ['Python 3.12', 'FastAPI', 'LangGraph'], rest: ['LangSmith (opt-in)'] },
+  { layer: 'Persistence', key: ['SQLite checkpointer'], rest: ['AsyncSqliteSaver', '24h SERP cache'], note: 'Repeat runs replay from disk' },
+  { layer: 'Frontend', key: ['Next.js 15', 'React 19'], rest: ['TypeScript', 'Tailwind'] },
+  { layer: 'LLMs', key: ['Groq Llama 4 Scout', 'Claude Sonnet 4.6'], rest: ['prompt caching'], note: 'Extraction · translation' },
+  { layer: 'SERP', key: ['DataForSEO'], rest: ['Live Search Volume'], note: 'Batched per locale' },
+  { layer: 'CI / test', key: ['CircleCI'], rest: ['pytest', 'respx', 'syrupy', 'vitest'], note: 'Hybrid TDD' },
+];
+---
+<Page
+  title="Multilingual SEO Tool — Roger Winter"
+  description={p.desc}
+  canonical="https://rogerwinter.dev/project-multilingual-seo.html"
+  active=""
+  ogType="article"
+  ogImage="https://rogerwinter.dev/portfolio/assets/seo-results.png"
+>
+  {/* hero */}
+  <header class="sp-hero">
+    <div class="sp-band">
+      <ProjectVizIsland id="multilingual-seo" client:only="react" />
+      <div class="sp-scrim"></div>
+      <div class="sp-status"><i></i> {p.status}</div>
+      <div class="sp-titlewrap">
+        <div class="sp-logo" aria-label="a globe of languages">
+          <SeoIcon />
+        </div>
+        <div>
+          <p class="sp-eyebrow">Project {p.n}</p>
+          <h1 class="sp-title">Multilingual SEO Tool</h1>
+        </div>
+      </div>
+    </div>
+    <div class="sp-intro">
+      <p class="sp-tagline">It decides which content is worth translating into another language, before anyone pays for the translation.</p>
+      <div class="sp-actions">
+        <a class="tm-btn demo" href={p.repo}>GitHub ↗</a>
+        <a class="tm-btn ghost" href="/">← All projects</a>
+      </div>
+    </div>
+  </header>
+
+  {/* lede */}
+  <section class="sp-lede">
+    <p>Translating a page into five languages costs real money. The hard question is which five, and which pages are even worth it.</p>
+    <p>This tool answers that before the work starts. Give it a URL, and it <span class="hl">finds the page's keywords, translates them per locale, checks real search demand, and ranks what's worth translating</span> first.</p>
+  </section>
+
+  {/* interactive demo */}
+  <section class="sp-sec">
+    <p class="sp-kicker">Try it</p>
+    <h2 class="sp-h2">A URL in, ranked targets out</h2>
+    <p class="sp-p">Pick a few target locales and run it. For each one, the tool returns the best keyword to translate toward, its monthly search volume, and a score ranking which locales are worth the translation budget first.</p>
+    <figure class="sp-figure" style="margin-top:8px">
+      <SeoRunDemo client:visible />
+      <figcaption class="sp-figcap">Interactive sample · illustrative volumes</figcaption>
+    </figure>
+  </section>
+
+  {/* pipeline */}
+  <section class="sp-sec">
+    <p class="sp-kicker">The pipeline</p>
+    <h2 class="sp-h2">Six steps, one stream</h2>
+    <p class="sp-p">A LangGraph agent runs the page through a linear pipeline. The pure-code steps, fetching and scoring, stay deterministic, and the two language-model steps do the work that actually needs judgment. Everything streams to the UI as it finishes, so results show up step by step instead of after one long wait.</p>
+    <figure class="sp-figure" style="margin-top:8px">
+      <div class="sp-figbox"><PipelineDiagram /></div>
+      <figcaption class="sp-figcap">URL → fetch → extract → translate → volume → score → stream</figcaption>
+    </figure>
+  </section>
+
+  {/* hybrid LLMs */}
+  <section class="sp-sec">
+    <div class="sp-split rev">
+      <figure class="sp-figure">
+        <div class="sp-figbox"><HybridLLM /></div>
+        <figcaption class="sp-figcap">Fast model to extract, strong model to translate</figcaption>
+      </figure>
+      <div>
+        <p class="sp-kicker">Two models, on purpose</p>
+        <h2 class="sp-h2">The right model for each job</h2>
+        <p class="sp-p">Pulling keywords out of a page is fast, high-volume work, so that runs on Groq's Llama 4 Scout. Translating those keywords while keeping the search intent intact is where quality matters, so that runs on Claude Sonnet 4.6.</p>
+        <p class="sp-p">Claude's translation prompts are cached, so the repeated, shared parts of each request don't get paid for twice.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* intent over literal translation */}
+  <section class="sp-sec">
+    <p class="sp-kicker">Meaning, not words</p>
+    <h2 class="sp-h2">The literal translation rarely ranks</h2>
+    <p class="sp-p">A word-for-word translation often lands on a phrase nobody searches. "Running shoes" rendered literally into German is "rennende Schuhe," which no one types. The term German shoppers actually search is "Laufschuhe."</p>
+    <p class="sp-p">So the translator proposes several intent-preserving variants for each locale instead of one literal guess. The search-volume check then picks between them, and the winner is the phrase that keeps the original meaning <strong>and</strong> has real demand on that country's search engine, not the first translation that came back.</p>
+    <figure class="sp-figure" style="margin-top:8px">
+      <IntentVariants />
+      <figcaption class="sp-figcap">Candidate variants per locale, ranked by real search volume</figcaption>
+    </figure>
+  </section>
+
+  {/* locale fan-out + cost */}
+  <section class="sp-sec">
+    <div class="sp-split">
+      <div>
+        <p class="sp-kicker">Validate before you pay</p>
+        <h2 class="sp-h2">One source, many locales, one call each</h2>
+        <p class="sp-p">Search volume comes from DataForSEO. To keep it cheap, every locale resolves in a single batched request of up to 1,000 keywords that bills one cent, instead of one call per keyword.</p>
+        <p class="sp-p">The whole point is to spend a few cents checking real demand before spending a translator's time on a page nobody searches for.</p>
+      </div>
+      <figure class="sp-figure">
+        <div class="sp-figbox"><LocaleFanout /></div>
+        <figcaption class="sp-figcap">One batched DataForSEO call per locale</figcaption>
+      </figure>
+    </div>
+    <div class="sp-callout">
+      <div>
+        <h3>Run it twice, pay once</h3>
+        <p>A SQLite checkpointer saves each run's final state. Submitting the same URL and locale set again replays the saved result straight from disk, with no repeat model or search-volume cost.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* screens */}
+  <section class="sp-sec">
+    <p class="sp-kicker">In the UI</p>
+    <h2 class="sp-h2">Results as they arrive</h2>
+    <p class="sp-p">The front end renders each locale's result the moment its score lands. Beyond the ranked list, it surfaces hreflang gaps the page hasn't covered yet and flags where dialects split on the actual term, like Spain's "zapatillas" against Mexico's "tenis".</p>
+    <figure class="sp-frame">
+      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">multilingual-seo · results + cross-dialect divergence</span></div>
+      <div class="frame"><img src="portfolio/assets/seo-results.png" alt="The results view: opportunity stat band, hreflang coverage with already-served versus missing locales, and side-by-side cross-dialect divergence cards" /></div>
+      <figcaption class="cap"><b>Run summary</b> — opportunity stats, hreflang coverage gaps, and side-by-side dialect divergence.</figcaption>
+    </figure>
+    <figure class="sp-frame">
+      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">multilingual-seo · keyword opportunities</span></div>
+      <div class="frame"><img src="portfolio/assets/seo-opps.png" alt="The keyword opportunities table: each translated variant scored on volume, competition, CPC, intent and traffic value, with a why-this-variant note" /></div>
+      <figcaption class="cap"><b>Keyword opportunities</b> — every variant scored on volume, competition, CPC, intent, and traffic value, with a note on why it wins its locale.</figcaption>
+    </figure>
+    <div class="sp-callout">
+      <div>
+        <h3>Download it and run it locally</h3>
+        <p>The tool is open source. Clone the repo, drop in API keys for the models and the search-volume provider, and run the whole pipeline on a local machine. There's no hosted service to sign up for.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* tech stack */}
+  <section class="sp-sec">
+    <p class="sp-kicker">Under the hood</p>
+    <h2 class="sp-h2">Tech stack</h2>
+    <dl class="sp-stack">
+      {stack.map((r) => (
+        <div class="sp-row">
+          <dt>{r.layer}</dt>
+          <dd>{r.key.map((k) => <span class="sp-chip key">{k}</span>)}{r.rest.map((k) => <span class="sp-chip">{k}</span>)}{r.note && <span class="note">{r.note}</span>}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  {/* CTA */}
+  <section class="sp-cta">
+    <div class="mvbg"><ProjectVizIsland id="multilingual-seo" client:only="react" /></div>
+    <div class="inner">
+      <div>
+        <h2>Know before you translate.</h2>
+        <p>Check real demand per language in a single run.</p>
+        <span class="url">open source · run it locally</span>
+      </div>
+      <a class="tm-btn demo big" href={p.repo}>Get it on GitHub ↗</a>
+    </div>
+  </section>
+
+  {/* prev/next */}
+  <nav class="sp-nav">
+    <a class="sp-navcard prev" href={`project-${prev.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
+    </a>
+    <a class="sp-navcard next" href={`project-${next.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>
+    </a>
+  </nav>
+</Page>

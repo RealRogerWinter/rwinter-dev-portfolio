@@ -1,55 +1,20 @@
-// Multilingual SEO Tool — pipeline + hybrid-LLM + locale fan-out diagrams.
-// Exports: window.SEO_VIZ_CSS, PipelineDiagram, HybridLLM, LocaleFanout
-const SEO_VIZ_CSS = `
-.sev{ width:100%; display:block; color:var(--acc); }
-.sev svg{ width:100%; height:auto; display:block; overflow:visible; }
-.sev .pnl{ fill:color-mix(in srgb,var(--acc) 9%, var(--panel2)); stroke:var(--line); stroke-width:1.4; }
-.sev .pnl-a{ fill:color-mix(in srgb,var(--acc) 18%, var(--panel2)); stroke:var(--acc); stroke-width:1.7; }
-.sev .lbl{ fill:var(--ink); font-family:var(--mono); font-size:11px; letter-spacing:.02em; }
-.sev .lbl-s{ fill:var(--ink); font-family:var(--mono); font-size:10px; }
-.sev .lbl-d{ fill:var(--dim); font-family:var(--mono); font-size:8.5px; letter-spacing:.04em; }
-.sev .lbl-a{ fill:var(--acc); font-family:var(--mono); font-size:9px; letter-spacing:.06em; }
-.sev .wire{ fill:none; stroke:var(--line); stroke-width:1.6; }
-.sev .flow{ fill:none; stroke:var(--acc); stroke-width:1.8; stroke-dasharray:3 8; opacity:.85; }
-.sev-anim .flow{ animation:sevFlow 1.1s linear infinite; }
-@keyframes sevFlow{ to{ stroke-dashoffset:-22; } }
-.sev .sig{ fill:var(--acc); opacity:0; }
-.sev-anim .sig{ animation:sevSig 3s linear infinite; }
-@keyframes sevSig{ 0%{opacity:0;} 7%{opacity:1;} 92%{opacity:1;} 100%{opacity:0;} }
-.sev .ahead{ fill:var(--acc); opacity:.75; }
-@media (prefers-reduced-motion: reduce){ .sev *{ animation:none !important; } }
-
-/* intent variants (html) */
-.iv{ border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--panel); }
-.iv-head{ display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:1px solid var(--line); background:var(--panel2); }
-.iv-head .loc{ font-family:var(--mono); font-size:11px; font-weight:600; color:#0a130f; background:var(--acc); border-radius:6px; padding:5px 8px; text-transform:uppercase; }
-.iv-head .src{ font-family:var(--mono); font-size:12px; color:var(--dim); }
-.iv-head .src b{ color:var(--ink); }
-.iv-body{ padding:8px 18px 16px; }
-.iv-row{ display:grid; grid-template-columns:1fr auto; gap:8px 16px; align-items:center; padding:14px 0; border-top:1px solid var(--line); }
-.iv-row:first-child{ border-top:0; }
-.iv-row.win{ position:relative; }
-.iv-kw{ display:flex; align-items:center; gap:10px; min-width:0; }
-.iv-kw .t{ min-width:0; }
-.iv-kw .mk{ width:20px; height:20px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
-.iv-kw .mk.no{ background:color-mix(in srgb,#f2545b 18%, transparent); color:#f2545b; }
-.iv-kw .mk.mid{ background:color-mix(in srgb,var(--dim) 22%, transparent); color:var(--dim); }
-.iv-kw .mk.yes{ background:var(--acc); color:#0a130f; }
-.iv-kw .t .k{ font-size:14.5px; color:var(--ink); font-weight:500; }
-.iv-kw .t .k s{ color:var(--dim); text-decoration-color:color-mix(in srgb,#f2545b 70%, transparent); }
-.iv-kw .t .g{ font-size:12px; color:var(--dim); margin-top:2px; }
-.iv-vol{ text-align:right; min-width:104px; }
-.iv-vol .track{ height:7px; border-radius:4px; background:var(--bg); border:1px solid var(--line); overflow:hidden; }
-.iv-vol .track i{ display:block; height:100%; border-radius:4px; }
-.iv-vol .n{ font-family:var(--mono); font-size:11px; color:var(--dim); margin-top:6px; display:block; }
-.iv-row.win .iv-kw .t .k{ color:var(--acc); }
-.iv-tag{ font-family:var(--mono); font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:#0a130f; background:var(--acc); border-radius:5px; padding:2px 7px; margin-left:8px; }
-`;
+// Multilingual SEO Tool diagrams + demo — ESM port of the window-global pair
+// site/portfolio/seo-viz.jsx + seo-demo.jsx, co-located in one module so the
+// page's islands share a single bundle chunk.
+//
+// Only SeoRunDemo carries state (the page's one client:visible island). The four
+// viz components (IntentVariants, PipelineDiagram, HybridLLM, LocaleFanout) are
+// pure functions — the Astro page renders them with no client directive, so they
+// ship as static HTML with zero JS. Bodies reproduced verbatim from the originals
+// (CSS extracted to src/styles/multilingual-seo.css; the `.sev-anim` gate is
+// rekeyed there to the pre-painted [data-anim] attribute).
+import React, { useState, useRef } from 'react';
+const seoUseState = useState, seoUseRef = useRef;
 
 // ---- intent-preserving variant search ----
-function IntentVariants(){
+export function IntentVariants(){
   const rows = [
-    { k: "rennende Schuhe", g: "\u201crunning shoes,\u201d word for word", vol: 0, mark: "no", note: "literal — nobody types it", strike: true },
+    { k: "rennende Schuhe", g: "“running shoes,” word for word", vol: 0, mark: "no", note: "literal — nobody types it", strike: true },
     { k: "Schuhe zum Joggen", g: "shoes for jogging", vol: 1300, mark: "mid", note: "related, thin demand" },
     { k: "Laufschuhe", g: "what German shoppers actually search", vol: 18100, mark: "yes", note: "intent-preserving", win: true },
   ];
@@ -89,7 +54,7 @@ const SEO_STAGES = [
   { t: "score", d: "pure Python" },
   { t: "stream", d: "Next.js SSE" },
 ];
-function PipelineDiagram(){
+export function PipelineDiagram(){
   const W = 92, H = 46, gap = 14, x0 = 4, y = 14;
   const X = (i)=> x0 + i*(W+gap);
   return (
@@ -113,7 +78,7 @@ function PipelineDiagram(){
 }
 
 // ---- hybrid LLM split ----
-function HybridLLM(){
+export function HybridLLM(){
   return (
     <div className="sev sev-hybrid">
       <svg viewBox="0 0 520 188" role="img" aria-label="Hybrid model split: page text goes to Groq Llama 4 Scout for fast keyword extraction, then keywords go to Claude Sonnet 4.6 for translation with prompt caching">
@@ -148,7 +113,7 @@ function HybridLLM(){
 
 // ---- locale fan-out ----
 const SEO_LOCALES = ["es", "fr", "de", "it", "pt"];
-function LocaleFanout(){
+export function LocaleFanout(){
   const cx = 70, cy = 110, n = SEO_LOCALES.length;
   const rx = 360, y0 = 18, rowH = 38;
   return (
@@ -176,4 +141,91 @@ function LocaleFanout(){
   );
 }
 
-Object.assign(window, { SEO_VIZ_CSS, PipelineDiagram, HybridLLM, LocaleFanout, IntentVariants });
+// ---- interactive "run the pipeline" demo ----
+const SEO_DATA = {
+  de: { kw: "beste Laufschuhe", vol: 18100, score: 92 },
+  es: { kw: "mejores zapatillas para correr", vol: 27400, score: 95 },
+  fr: { kw: "meilleures chaussures de running", vol: 12300, score: 84 },
+  it: { kw: "scarpe da corsa", vol: 6800, score: 79 },
+  pt: { kw: "melhores tênis de corrida", vol: 14800, score: 88 },
+};
+const SEO_ALL = ["de", "es", "fr", "it", "pt"];
+const SEO_STAGE_NAMES = ["fetch", "extract", "translate", "volume", "score"];
+
+export function SeoRunDemo(){
+  const [picked, setPicked] = seoUseState(["de", "es", "fr", "it"]);
+  const [phase, setPhase] = seoUseState("idle"); // idle | running | done
+  const [stage, setStage] = seoUseState(-1);
+  const timers = seoUseRef([]);
+
+  const toggle = (loc)=>{
+    if (phase === "running") return;
+    setPicked((p)=> p.includes(loc) ? p.filter(x=>x!==loc) : [...p, loc]);
+  };
+  const clearTimers = ()=>{ timers.current.forEach(clearTimeout); timers.current = []; };
+  const run = ()=>{
+    if (!picked.length) return;
+    clearTimers();
+    setPhase("running"); setStage(0);
+    SEO_STAGE_NAMES.forEach((_,i)=>{
+      timers.current.push(setTimeout(()=> setStage(i+1), (i+1)*560));
+    });
+    timers.current.push(setTimeout(()=>{ setPhase("done"); setStage(SEO_STAGE_NAMES.length); }, SEO_STAGE_NAMES.length*560 + 200));
+  };
+
+  const ranked = picked.map(loc=>({ loc, ...SEO_DATA[loc] })).sort((a,b)=> b.score - a.score);
+  const maxVol = Math.max(...SEO_ALL.map(l=>SEO_DATA[l].vol));
+
+  return (
+    <div className="seo-demo">
+      <div className="bar">
+        <div className="urlbox"><span className="g">https://</span>blog.example.com/best-running-shoes</div>
+        <button className="run" onClick={run} disabled={phase==="running" || !picked.length}>
+          {phase==="running" ? "Running…" : phase==="done" ? "Run again" : "Run pipeline ↵"}
+        </button>
+      </div>
+      <div className="locales">
+        <span className="lab">Target locales</span>
+        {SEO_ALL.map(loc=>(
+          <button key={loc} className={"seo-chip" + (picked.includes(loc) ? " on" : "")} onClick={()=>toggle(loc)}>{loc.toUpperCase()}</button>
+        ))}
+      </div>
+      {phase !== "idle" && (
+        <div className="seo-stages">
+          {SEO_STAGE_NAMES.map((nm,i)=>(
+            <div key={nm} className={"seo-stage" + (stage>i ? " done" : stage===i ? " active" : "")}>
+              <i></i><span>{nm}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="seo-results">
+        {phase === "idle" && <p className="empty">Pick a few locales and run the pipeline. It extracts the page's keywords, translates them, checks real search volume, and ranks what's worth translating.</p>}
+        {phase === "running" && <p className="empty">Streaming results over SSE…</p>}
+        {phase === "done" && (
+          <React.Fragment>
+            <div className="rh"><span className="src">source keyword: <b>best running shoes</b></span><span className="src">{ranked.length} locales · ranked by score</span></div>
+            {ranked.map((r,i)=>(
+              <div className={"seo-res" + (i===0 ? " top" : "")} key={r.loc} style={{ animationDelay:`${i*0.08}s` }}>
+                <div className="loc">{r.loc}</div>
+                <div className="mid">
+                  <div className="kw">{r.kw}</div>
+                  <div className="vol">
+                    <div className="track"><i style={{ width:`${(r.vol/maxVol)*100}%` }}></i></div>
+                    <span className="vn">{r.vol.toLocaleString()}/mo</span>
+                  </div>
+                </div>
+                <div className="score">
+                  <div className="n">{r.score}</div>
+                  <div className="l">score</div>
+                  {i===0 && <span className="tag">translate first</span>}
+                </div>
+              </div>
+            ))}
+            <p className="seo-note">Illustrative data — real runs pull live volume from DataForSEO.</p>
+          </React.Fragment>
+        )}
+      </div>
+    </div>
+  );
+}
