@@ -1,106 +1,19 @@
-// Price Games — mode icons, diagrams, lobby mock, interactive price-guess demo.
-// Exports: window.PG_DIAG_CSS, window.MODE_ICON, window.PairingDiagram,
-//   window.AgentPipelineDiagram, window.LobbyMock, window.PriceGuessDemo
-const { useState: pgUseState } = React;
-
-const PG_DIAG_CSS = `
-.pgd{ width:100%; display:block; color:var(--acc); }
-.pgd svg{ width:100%; height:auto; display:block; overflow:visible; }
-.pgd .pnl{ fill:color-mix(in srgb,var(--acc) 9%, var(--panel2)); stroke:var(--line); stroke-width:1.4; }
-.pgd .pnl-a{ fill:color-mix(in srgb,var(--acc) 18%, var(--panel2)); stroke:var(--acc); stroke-width:1.8; }
-.pgd .lbl{ fill:var(--ink); font-family:var(--mono); font-size:11px; letter-spacing:.04em; }
-.pgd .lbl-d{ fill:var(--dim); font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; }
-.pgd .lbl-a{ fill:var(--acc); font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
-.pgd .wire{ fill:none; stroke:var(--line); stroke-width:1.6; }
-.pgd .flow{ fill:none; stroke:var(--acc); stroke-width:1.8; stroke-dasharray:3 8; opacity:.85; }
-.pgd-anim .flow{ animation:pgFlow 1.1s linear infinite; }
-@keyframes pgFlow{ to{ stroke-dashoffset:-22; } }
-.pgd .ico{ fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
-.pgd .chk{ fill:none; stroke:var(--acc); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.pgd .sig{ fill:var(--acc); opacity:0; }
-.pgd-anim .sig{ animation:pgSig 3.2s linear infinite; }
-@keyframes pgSig{ 0%{ opacity:0; } 6%{ opacity:1; } 94%{ opacity:1; } 100%{ opacity:0; } }
-.pgd .loop{ fill:none; stroke:var(--acc); stroke-width:1.4; stroke-dasharray:4 4; opacity:.6; }
-.pgd .ahead{ fill:var(--acc); opacity:.8; }
-
-/* mode icons */
-.pg-modeicon{ width:26px; height:26px; color:var(--acc); flex:0 0 auto; }
-.pg-modeicon svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
-
-/* lobby mock (html) */
-.pg-lobby{ background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
-.pg-lobby .top{ display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line);
-  background:color-mix(in srgb,var(--acc) 6%, var(--panel2)); }
-.pg-lobby .room{ font-family:var(--display); font-weight:600; font-size:15px; color:var(--ink); }
-.pg-lobby .priv{ font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--acc);
-  border:1px solid color-mix(in srgb,var(--acc) 45%, var(--line)); border-radius:100px; padding:4px 10px; }
-.pg-lobby .players{ padding:8px 0; }
-.pg-lobby .pl{ display:flex; align-items:center; gap:12px; padding:10px 18px; }
-.pg-lobby .av{ width:30px; height:30px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
-  font-family:var(--mono); font-size:12px; font-weight:600; color:#0a130f; background:var(--acc); }
-.pg-lobby .av.bot{ background:transparent; border:1.5px dashed color-mix(in srgb,var(--acc) 55%, var(--line)); color:var(--acc); }
-.pg-lobby .nm{ flex:1; font-size:14px; color:var(--ink); }
-.pg-lobby .tag{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--dim); }
-.pg-lobby .ready{ color:var(--acc); }
-.pg-lobby .invite{ display:flex; align-items:center; gap:10px; margin:6px 18px 16px; padding:11px 14px; border-radius:10px;
-  border:1px dashed var(--line); background:var(--panel2); }
-.pg-lobby .invite .lk{ flex:1; font-family:var(--mono); font-size:12px; color:var(--dim); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-.pg-lobby .invite .lk b{ color:var(--acc); font-weight:500; }
-.pg-lobby .invite .lk b.blur{ filter:blur(4px); user-select:none; -webkit-user-select:none; pointer-events:none; }
-.pg-lobby .invite .cp{ font-family:var(--mono); font-size:11px; color:var(--acc); border:1px solid color-mix(in srgb,var(--acc) 45%, var(--line));
-  border-radius:7px; padding:5px 10px; }
-
-/* price guess demo */
-.pgx{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:24px; }
-.pgx .q{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
-.pgx .q h4{ font-family:var(--display); font-weight:600; font-size:18px; color:var(--ink); margin:0; }
-.pgx .streak{ font-family:var(--mono); font-size:12px; color:var(--dim); }
-.pgx .streak b{ color:var(--acc); }
-.pgx .pair{ display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:stretch; }
-.pgx .vs{ align-self:center; font-family:var(--mono); font-size:12px; color:var(--dim); letter-spacing:.1em; }
-.pgx .card{ text-align:left; cursor:pointer; border:1.5px solid var(--line); border-radius:14px; padding:18px; background:var(--panel2);
-  transition:border-color .15s, transform .15s; font:inherit; color:inherit; }
-.pgx .card:hover:not(:disabled){ border-color:var(--acc); transform:translateY(-2px); }
-.pgx .card:disabled{ cursor:default; }
-.pgx .card .pic{ height:74px; border-radius:9px; border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
-  color:var(--dim); margin-bottom:14px; background:color-mix(in srgb,var(--acc) 4%, transparent); }
-.pgx .card .pic svg{ width:34px; height:34px; opacity:.7; }
-.pgx .card .nm{ font-size:14px; color:var(--ink); font-weight:500; line-height:1.35; }
-.pgx .card .pr{ font-family:var(--display); font-weight:700; font-size:24px; margin-top:10px; height:28px; color:var(--acc); }
-.pgx .card .pr.hidden{ color:var(--dim); }
-.pgx .card.win{ border-color:var(--acc); box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 30%, transparent); }
-.pgx .card.lose{ border-color:color-mix(in srgb, #f2545b 60%, var(--line)); }
-.pgx .foot{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; min-height:40px; flex-wrap:wrap; }
-.pgx .verdict{ font-family:var(--display); font-weight:600; font-size:15px; }
-.pgx .verdict.ok{ color:var(--acc); } .pgx .verdict.no{ color:#f2545b; }
-.pgx .hint{ font-size:13px; color:var(--dim); }
-.pgx .next{ font-family:var(--body); font-weight:600; font-size:13px; color:#0a130f; background:var(--acc); border:0; border-radius:9px;
-  padding:10px 18px; cursor:pointer; }
-.pgx .next:hover{ filter:brightness(1.08); }
-@media (max-width:520px){ .pgx .pair{ grid-template-columns:1fr; } .pgx .vs{ justify-self:center; } }
-`;
-
-// ---- mode icons (concept-matched monoline) ----
-const MODE_ICON_PATHS = {
-  precision: <g><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/><path d="M12 1.5V4M12 20v2.5M1.5 12H4M20 12h2.5"/></g>,
-  higherlower: <g><path d="M7 4v11M7 4 4 7.5M7 4l3 3.5"/><path d="M17 20V9M17 20l3-3.5M17 20l-3-3.5"/></g>,
-  comparison: <g><rect x="3" y="6" width="7" height="12" rx="1.5"/><rect x="14" y="6" width="7" height="12" rx="1.5"/><path d="M12 9v6"/></g>,
-  underbid: <g><path d="M4 7h16"/><path d="M12 20v-8M12 12l-3.2 3.2M12 12l3.2 3.2"/></g>,
-  pricematch: <g><circle cx="6" cy="7" r="2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="18" cy="17" r="2"/><path d="M8 7h8M8 17h8M8 8.5l8 7"/></g>,
-  riser: <g><path d="M4 19 9 12l3 3 7-9"/><path d="M19 6v4h-4"/><path d="M4 21h16"/></g>,
-  oddoneout: <g><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><rect x="14.6" y="14.6" width="6.8" height="6.8" rx="1.4"/></g>,
-  basket: <g><path d="M5 9h14l-1.4 9.5a2 2 0 0 1-2 1.5H8.4a2 2 0 0 1-2-1.5L5 9Z"/><path d="M9 9 11 4M15 9 13 4"/><path d="M10 13v3M14 13v3"/></g>,
-  sort: <g><path d="M4 7h6M4 12h10M4 17h14"/><path d="M19 8V20M19 20l-2.4-2.4M19 20l2.4-2.4"/></g>,
-  budget: <g><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1.4"/></g>,
-  chain: <g><rect x="3.5" y="13" width="7.5" height="5.2" rx="2.6"/><rect x="13" y="6" width="7.5" height="5.2" rx="2.6"/><path d="M9.5 14.6 14.5 9.6"/></g>,
-  bidding: <g><path d="M13 11 7 17a2 2 0 0 1-3-3l6-6"/><path d="M11 5l8 8M9.5 6.5l3-3M17.5 14.5l3-3"/><path d="M4 21h9"/></g>,
-};
-function MODE_ICON({ kind }){
-  return (<span className="pg-modeicon"><svg viewBox="0 0 24 24">{MODE_ICON_PATHS[kind] || MODE_ICON_PATHS.precision}</svg></span>);
-}
+// Price Games diagrams + interactive demo — ESM port of the window-global
+// site/portfolio/pg-diagrams.jsx, co-located in one module so the page's islands
+// share a single bundle chunk.
+//
+// Only PriceGuessDemo carries state (the page's one client:visible island; its
+// initial render i=0/picked=null/streak=0 is deterministic). PairingDiagram,
+// AgentPipelineDiagram and LobbyMock are pure — the Astro page renders them with
+// no client directive (static HTML, zero JS). Bodies reproduced verbatim from the
+// original (CSS extracted to src/styles/price-games.css; the `.pgd-anim` gate is
+// rekeyed there to the pre-painted [data-anim] attribute). The original's
+// MODE_ICON export is omitted: it is unused (the page's mode grid uses images).
+import React, { useState } from 'react';
+const pgUseState = useState;
 
 // ---- AI product-pairing pipeline ----
-function PairingDiagram(){
+export function PairingDiagram(){
   return (
     <div className="pgd pgd-pair">
       <svg viewBox="0 0 480 168" role="img" aria-label="Pairing pipeline: scrape Amazon listings, classify with AI, match similar products into a game round">
@@ -133,7 +46,7 @@ function PairingDiagram(){
 }
 
 // ---- agent CI/CD pipeline ----
-function AgentPipelineDiagram(){
+export function AgentPipelineDiagram(){
   const steps = [
     { x: 8,   t: "Failing tests", d: "TDD first" },
     { x: 124, t: "Write code", d: "make it pass" },
@@ -183,7 +96,7 @@ function AgentPipelineDiagram(){
 }
 
 // ---- multiplayer lobby (HTML mock) ----
-function LobbyMock(){
+export function LobbyMock(){
   return (
     <div className="pg-lobby">
       <div className="top">
@@ -231,7 +144,7 @@ function PgIcon({ kind }){
   return (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{PG_ICONS[kind] || PG_ICONS.keyboard}</svg>);
 }
 
-function PriceGuessDemo(){
+export function PriceGuessDemo(){
   const [i, setI] = pgUseState(0);
   const [picked, setPicked] = pgUseState(null);
   const [streak, setStreak] = pgUseState(0);
@@ -283,5 +196,3 @@ function PriceGuessDemo(){
     </div>
   );
 }
-
-Object.assign(window, { PG_DIAG_CSS, MODE_ICON, PairingDiagram, AgentPipelineDiagram, LobbyMock, PriceGuessDemo });

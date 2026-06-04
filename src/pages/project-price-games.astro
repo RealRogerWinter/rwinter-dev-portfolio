@@ -1,0 +1,258 @@
+---
+// Project page: Price Games — migrated from site/portfolio/pricegames.jsx
+// (window.PriceGamesPage). Static Astro shell; PairingDiagram, AgentPipelineDiagram
+// and LobbyMock render as static HTML at build (no client directive, zero JS);
+// PriceGuessDemo hydrates on scroll (client:visible, deterministic initial round);
+// the micro-viz (band, CTA, related-card, prev/next minis) is a client:only island.
+// The inert Tweaks panel is dropped; its vizAnim flag is bridged via [data-anim].
+import Page from '../layouts/Page.astro';
+import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import { PairingDiagram, AgentPipelineDiagram, LobbyMock, PriceGuessDemo } from '../components/viz/price-games.jsx';
+import { projects } from '../data/portfolio.js';
+import '../styles/microviz.css';
+import '../styles/price-games.css';
+
+const p = projects.find((x) => x.id === 'price-games');
+const idx = projects.findIndex((x) => x.id === 'price-games');
+const prev = projects[(idx - 1 + projects.length) % projects.length];
+const next = projects[(idx + 1) % projects.length];
+const pricey = projects.find((x) => x.id === 'pricey');
+const SITE = 'https://price.games';
+
+const PG_MODES = [
+  { n: 'Precision', d: 'Guess the exact price of a product.', href: '/play/classic', img: 'portfolio/assets/modes/precision.webp' },
+  { n: 'Higher or Lower', d: 'Is the next price higher or lower?', href: '/play/higher-lower', img: 'portfolio/assets/modes/higher-or-lower.webp' },
+  { n: 'Comparison', d: 'Pick which product costs more, or less.', href: '/play/comparison', img: 'portfolio/assets/modes/comparison.webp' },
+  { n: 'Price Match', d: 'Match four products to four prices.', href: '/play/price-match', img: 'portfolio/assets/modes/price-match.webp' },
+  { n: 'Riser', d: "Stop the rising price before it's over.", href: '/play/riser', img: 'portfolio/assets/modes/riser.webp' },
+  { n: 'Budget Builder', d: 'Fill a budget without going over.', href: '/play/budget-builder', img: 'portfolio/assets/modes/budget-builder.webp' },
+  { n: 'Bidding War', d: 'Bid in turns; closest under wins.', href: '/mp', img: 'portfolio/assets/modes/bidding-war.webp' },
+];
+
+const stack = [
+  { layer: 'Frontend', key: ['React 18', 'Vite 7', 'TypeScript 5.4+'], rest: ['React Router 7'] },
+  { layer: 'Backend', key: ['Express', 'Socket.IO'], rest: ['TypeScript'] },
+  { layer: 'Database', key: ['SQLite'], rest: ['better-sqlite3'] },
+  { layer: 'Auth', key: ['OAuth 2.0'], rest: ['bcryptjs', 'httpOnly sessions', 'Cloudflare Turnstile', 'TOTP (admins)'], note: 'Google · Facebook · Amazon' },
+  { layer: 'Email', key: ['Resend'], rest: [], note: 'Verification, reset, notifications' },
+  { layer: 'Push', key: ['Web Push'], rest: ['VAPID'] },
+  { layer: 'Testing', key: ['Vitest'], rest: ['@vitest/coverage-v8', 'React Testing Library'] },
+  { layer: 'Infra', key: ['Docker'], rest: ['docker-compose', 'Caddy (auto HTTPS)', 'Tailscale (admin)'] },
+  { layer: 'CI/CD', key: ['CircleCI'], rest: [], note: 'build → tests → docker push → deploy' },
+  { layer: 'Monorepo', key: ['npm workspaces'], rest: [] },
+];
+---
+<Page
+  title="Price Games — Roger Winter"
+  description={p.desc}
+  canonical="https://rogerwinter.dev/project-price-games.html"
+  active=""
+  ogType="article"
+  ogImage="https://rogerwinter.dev/portfolio/assets/pg-hero.png"
+>
+  {/* hero */}
+  <header class="pg-hero">
+    <div class="pg-band">
+      <ProjectVizIsland id="price-games" client:only="react" />
+      <div class="pg-scrim"></div>
+      <div class="pg-status"><i></i> {p.status}</div>
+      <div class="pg-titlewrap">
+        <div class="pg-logo"><img src={p.logo} alt="Price Games logo" /></div>
+        <div>
+          <p class="pg-eyebrow">Project {p.n}</p>
+          <h1 class="pg-title">Price Games</h1>
+        </div>
+      </div>
+    </div>
+    <div class="pg-intro">
+      <p class="pg-tagline">{p.tagline}</p>
+      <div class="pg-actions">
+        <a class="tm-btn demo" href={SITE} target="_blank" rel="noopener">Play the games ↗</a>
+        <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="tm-btn ghost" href="/">← All projects</a>
+      </div>
+    </div>
+  </header>
+
+  {/* lede */}
+  <section class="pg-lede">
+    <p>Price Games is a free browser game about one tricky skill: knowing what things actually cost.</p>
+    <p>It's a side-project with two jobs. As a game, it has <span class="hl">seven game modes, real Amazon prices, and live multiplayer</span>. As an engineering project, it's where I test marketing instrumentation and an agent-run build pipeline on something real people play.</p>
+  </section>
+
+  {/* game modes */}
+  <section class="pg-sec">
+    <p class="pg-kicker">The games</p>
+    <h2 class="pg-h2">Seven ways to test your price instincts</h2>
+    <p class="pg-p">Every mode runs on the same real-price data, so the skill carries from one to the next. No signup to play, whether solo or in multiplayer.</p>
+    <div class="pg-modes">
+      {PG_MODES.map((m) => (
+        <a class="pg-mode" href={SITE + m.href} target="_blank" rel="noopener">
+          <img class="pg-modeimg" src={m.img} alt="" />
+          <div>
+            <p class="mt">{m.n} <span class="arr">↗</span></p>
+            <p>{m.d}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  {/* try a round */}
+  <section class="pg-sec">
+    <div class="pg-split">
+      <div>
+        <p class="pg-kicker">Try a round</p>
+        <h2 class="pg-h2">Comparison mode, right here</h2>
+        <p class="pg-p">Two real products, one question: which one costs more? It's the same loop the full game runs, just without leaving the page. Build a streak, then take it to the real thing.</p>
+      </div>
+      <figure class="pg-figure">
+        <PriceGuessDemo client:visible />
+        <figcaption class="pg-figcap">Live sample · prices are illustrative</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* real screens */}
+  <section class="pg-sec">
+    <p class="pg-kicker">The real thing</p>
+    <h2 class="pg-h2">Straight from price.games</h2>
+    <p class="pg-p">These are screenshots straight from the live web app: the game picker, and a round in progress. The interface keeps the action in one centered column, so a guess, a timer, and the field of players all stay in view at once.</p>
+    <div class="pg-gallery">
+      <div class="pg-shot">
+        <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>price.games</b></span></div>
+        <div class="frame"><img src="portfolio/assets/pg-hero.png" alt="The Price Games home screen with the daily challenge and the grid of game modes" /></div>
+        <div class="cap"><b>Pick a game</b> — daily challenge, multiplayer, and every mode</div>
+      </div>
+      <div class="pg-shot">
+        <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>price.games</b>/mp</span></div>
+        <div class="frame"><img src="portfolio/assets/pg-round.png" alt="A Price Games round in progress: a Magna-Tiles set to price, a guess slider, a turn timer, and three players" /></div>
+        <div class="cap"><b>In a round</b> — guess the price before the timer runs out</div>
+      </div>
+    </div>
+  </section>
+
+  {/* real prices + pairing */}
+  <section class="pg-sec">
+    <div class="pg-split rev">
+      <figure class="pg-figure">
+        <div class="pg-figbox"><PairingDiagram /></div>
+        <figcaption class="pg-figcap">Scrape listings → AI classify → match a round</figcaption>
+      </figure>
+      <div>
+        <p class="pg-kicker">Real data</p>
+        <h2 class="pg-h2">Real prices, matched on purpose</h2>
+        <p class="pg-p">Every product and price comes from an actual Amazon listing. An AI pipeline scrapes those listings, then classifies each product by category and price tier.</p>
+        <p class="pg-p">The game engine uses those labels to build matchups worth playing. In Comparison mode that means two genuinely comparable items, not a random pair where the answer is obvious.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* multiplayer */}
+  <section class="pg-sec">
+    <div class="pg-split">
+      <div>
+        <p class="pg-kicker">Multiplayer</p>
+        <h2 class="pg-h2">Bring friends, or fill seats with bots</h2>
+        <p class="pg-p">Public and private lobbies run on shareable links: open a room, send the link, and play together in real time. Short on players? Add bots at a difficulty that fits the table.</p>
+        <div class="pg-bw">
+          <img class="pg-bwimg" src="portfolio/assets/modes/bidding-war.webp" alt="" />
+          <span><b>Bidding War</b> is the multiplayer headliner: players bid in turns on one product, closest under the real price wins.</span>
+        </div>
+      </div>
+      <figure class="pg-figure">
+        <LobbyMock />
+        <figcaption class="pg-figcap">Private lobby with a shareable invite link</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* engagement */}
+  <section class="pg-sec">
+    <p class="pg-kicker">Built to bring people back</p>
+    <h2 class="pg-h2">Marketing instrumentation, built in</h2>
+    <p class="pg-p">Price Games doubles as a test bed for growth tooling. The site tracks where players come from and gives them reasons to return, all on systems built for the project.</p>
+    <div class="pg-cells">
+      <div class="pg-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15 15 9M10.5 6.5 12 5a4 4 0 0 1 6 6l-1.5 1.5M13.5 17.5 12 19a4 4 0 0 1-6-6l1.5-1.5"/></svg><span>UTM tracking</span></div><p>A custom tagging and tracking system attributes every visit to its source campaign.</p></div>
+      <div class="pg-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M17 21h4M21 17v4" stroke-linecap="round"/></svg><span>QR + short links</span></div><p>Short links and QR codes carry UTM data from print and screens into the same pipeline.</p></div>
+      <div class="pg-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Custom analytics</span></div><p>A purpose-built analytics layer records games played and how sessions move between modes.</p></div>
+      <div class="pg-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8M10.3 21a2 2 0 0 0 3.4 0"/></svg><span>Push notifications</span></div><p>A self-hosted Web Push setup (VAPID) brings players back for giveaways and new modes.</p></div>
+      <div class="pg-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Email</span></div><p>Resend handles verification, password resets, and notification emails.</p></div>
+      <div class="pg-cell"><div class="ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0V4ZM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3M9 19h6M10 19v-3M14 19v-3M8 22h8"/></svg><span>Leaderboard + giveaway</span></div><p>A running leaderboard and a monthly giveaway give regulars something to chase.</p></div>
+    </div>
+    <div class="pg-dash">
+      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url">Analytics</span><span class="tag">Admin</span></div>
+      <div class="frame"><img src="portfolio/assets/pg-analytics.png" alt="The custom analytics dashboard: games completed by variant over time, games completed by mode, and game starts by source" /></div>
+      <div class="cap"><b>The custom analytics dashboard</b> — games by variant and mode over time, and where each game started: homepage, room link, quickplay, or the game browser.</div>
+    </div>
+  </section>
+
+  {/* AI dev pipeline (standout) */}
+  <section class="pg-sec">
+    <p class="pg-kicker">How it's built</p>
+    <h2 class="pg-h2">Made by agents, test-first</h2>
+    <p class="pg-p">Price Games was written end to end with Claude Code, mostly Opus 4.7 and 4.8. It's the project where I push how much of a real build agents can own, from the first failing test to the deploy.</p>
+    <figure class="pg-figure" style="margin-top:24px">
+      <div class="pg-figbox"><AgentPipelineDiagram /></div>
+      <figcaption class="pg-figcap">Test-driven loop · agent-authored PRs · sub-agent review · CI watched over MCP</figcaption>
+    </figure>
+    <p class="pg-p" style="margin-top:24px">Every change follows test-driven development: a failing test first, then the code to pass it. An agent opens the PR, spawns sub-agents for code and security review, implements their findings, and watches CI through to green over MCP before a human approves the merge. CircleCI builds, tests, pushes the Docker image, and deploys. The agents document the work in PR comments and the project docs as they go.</p>
+  </section>
+
+  {/* pricey cross-link */}
+  <a class="pg-related" href="project-pricey.html">
+    <div class="rv"><ProjectVizIsland id="pricey" client:only="react" /></div>
+    <div class="ri"><img src={pricey.logo} alt="Pricey logo" /></div>
+    <div class="rt">
+      <div class="k">Related project</div>
+      <h3>Pricey plays this on Twitch</h3>
+      <p>An AI streamer powered by a neural network that plays Price Games and improves as it goes.</p>
+    </div>
+    <span class="rgo">See Pricey →</span>
+  </a>
+
+  {/* tech stack */}
+  <section class="pg-sec">
+    <p class="pg-kicker">Under the hood</p>
+    <h2 class="pg-h2">Tech stack</h2>
+    <dl class="pg-stack">
+      {stack.map((r) => (
+        <div class="pg-row">
+          <dt>{r.layer}</dt>
+          <dd>
+            {r.key.map((k) => <span class="pg-chip key">{k}</span>)}
+            {r.rest.map((k) => <span class="pg-chip">{k}</span>)}
+            {r.note && <span class="note">{r.note}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  {/* CTA */}
+  <section class="pg-cta">
+    <div class="mvbg"><ProjectVizIsland id="price-games" client:only="react" /></div>
+    <div class="inner">
+      <div>
+        <h2>Think you know what things cost?</h2>
+        <p>Seven modes, real prices, no signup. Find out in a minute.</p>
+        <span class="url">price.games</span>
+      </div>
+      <a class="tm-btn demo big" href={SITE} target="_blank" rel="noopener">Play the games ↗</a>
+    </div>
+  </section>
+
+  {/* prev/next */}
+  <nav class="pg-nav">
+    <a class="pg-navcard prev" href={`project-${prev.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
+    </a>
+    <a class="pg-navcard next" href={`project-${next.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>
+    </a>
+  </nav>
+</Page>
