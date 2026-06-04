@@ -33,6 +33,12 @@ npm run test:visual:ci       # render-smoke + self-test only (environment-indepe
 
 Playwright's Chromium is installed once with `npx playwright install chromium`.
 
+The Playwright `webServer` runs `npm run build` first and serves the Astro build
+output (`dist/`), so the harness gates the **deployed** artifact, not the source.
+Locally, `reuseExistingServer` skips the rebuild if a server is already up on the
+harness port, so after editing `site/` (or `src/`) restart it (kill the port) or
+the run tests a stale `dist/`. CI always rebuilds.
+
 ## Determinism model
 
 The migration is performed in the authoring environment, so the committed
