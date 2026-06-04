@@ -1,0 +1,72 @@
+---
+// Contact — second page migrated from site/portfolio/contact.jsx
+// (window.ContactPage). Info-only/static, so it ships zero framework JS.
+import Page from '../layouts/Page.astro';
+import Icon from '../components/Icon.astro';
+import { email, social } from '../data/site.js';
+import '../styles/contact.css';
+
+const cards = [
+  { k: 'email', label: 'Email', value: email, href: `mailto:${email}`, icon: 'mail', arrow: '→' },
+  { k: 'github', label: 'GitHub', value: social.github.handle, href: social.github.href, icon: 'github', arrow: '↗' },
+  { k: 'linkedin', label: 'LinkedIn', value: social.linkedin.handle, href: social.linkedin.href, icon: 'linkedin', arrow: '↗' },
+];
+const cx = 190, cy = 104;
+const ends = [
+  { x: 58, y: 44, icon: 'mail' },
+  { x: 320, y: 70, icon: 'github' },
+  { x: 84, y: 168, icon: 'linkedin' },
+];
+---
+<Page
+  title="Contact — Roger Winter"
+  description="Get in touch with Roger Winter, an AI-native developer and technical content creator."
+  canonical="https://rogerwinter.dev/contact.html"
+  active="contact"
+>
+  <header class="pg">
+    <p class="pg-kicker">Contact</p>
+    <h1 class="pg-h1">Let's talk.</h1>
+  </header>
+
+  <div class="ct-wrap">
+    <div>
+      <div class="ct-avail"><i></i> Open to select work &amp; collaboration</div>
+      <p class="ct-lead">Building something AI-native, or need someone who can ship it <span class="hl">and</span> explain it? Here's where to find me.</p>
+      <div class="ct-cards">
+        {cards.map((c) => (
+          <a class="ct-card" href={c.href} target={c.k === 'email' ? undefined : '_blank'} rel="noopener">
+            <span class="ic"><Icon name={c.icon} /></span>
+            <span class="tx"><span class="l">{c.label}</span><span class="v">{c.value}</span></span>
+            <span class="go">{c.arrow}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="ct-anim" aria-hidden="true">
+      <svg viewBox="0 0 380 208" role="img">
+        {ends.map((e, i) => (
+          <g>
+            <path class="ct-line" d={`M${cx} ${cy} L${e.x} ${e.y}`} />
+            <path class={`ct-flow f${i + 1}`} d={`M${cx} ${cy} L${e.x} ${e.y}`} />
+          </g>
+        ))}
+        <circle class="ct-ring r1" cx={cx} cy={cy} r="74" />
+        <circle class="ct-ring r2" cx={cx} cy={cy} r="74" />
+        <circle class="ct-ring r3" cx={cx} cy={cy} r="74" />
+        {ends.map((e) => (
+          <g>
+            <circle class="ct-end" cx={e.x} cy={e.y} r="17" />
+            <foreignObject x={e.x - 9} y={e.y - 9} width="18" height="18">
+              <div class="ct-endic" style="width:18px;height:18px;display:flex;align-items:center;justify-content:center"><Icon name={e.icon} /></div>
+            </foreignObject>
+          </g>
+        ))}
+        <circle class="ct-coreglow" cx={cx} cy={cy} r="22" />
+        <circle class="ct-core" cx={cx} cy={cy} r="17" />
+        <text class="ct-wm" x={cx} y={cy + 4} text-anchor="middle">RW</text>
+      </svg>
+    </div>
+  </div>
+</Page>

@@ -35,6 +35,8 @@ export const SHOTS = [
   // future bio-only regression in these states is caught (it is the template).
   { page: PAGES[1], name: 'bio--default-mobile', viewport: MOBILE, tweaks: FREEZE },
   { page: PAGES[1], name: 'bio--accent-green', viewport: DESKTOP, tweaks: { ...FREEZE, accent: '#57f08d' } },
+  // contact migrated to Astro; cover its responsive 2->1 column layout.
+  { page: PAGES[2], name: 'contact--default-mobile', viewport: MOBILE, tweaks: FREEZE },
   { page: PAGES[0], name: 'index--accent-green', viewport: DESKTOP, tweaks: { ...FREEZE, accent: '#57f08d' } },
   { page: PAGES[0], name: 'index--bg-grid', viewport: DESKTOP, tweaks: { ...FREEZE, background: 'grid' } },
 ];
