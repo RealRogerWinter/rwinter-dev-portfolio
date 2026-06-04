@@ -6,9 +6,15 @@ import '../styles/shell.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
-const { title, description, canonical, active } = Astro.props;
+const { title, description, canonical, active, rootClass = '', ogType = 'website', ogImage } = Astro.props;
 const OG_IMG = 'https://rogerwinter.dev/portfolio/assets/og-cover.png';
 const OG_ALT = 'Roger Winter — AI-native developer & technical content creator';
+// Project pages unfurl as articles with a per-project image. Only the generic
+// site cover has known 1200x630 dimensions, so the image:type/width/height/alt
+// meta is emitted for that default alone (the old project pages omitted it
+// rather than assert wrong dimensions for a differently-sized hero shot).
+const ogImg = ogImage || OG_IMG;
+const ogDefaultImg = !ogImage;
 
 // Pre-paint theme bootstrap: runs synchronously INSIDE #rw-root (right after its
 // opening tag, before the content paints), so a returning visitor's saved theme
@@ -41,24 +47,28 @@ const themeBoot =
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#0b0d0c" />
     <meta name="author" content="Roger Winter" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="Roger Winter" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={OG_IMG} />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={OG_ALT} />
+    <meta property="og:image" content={ogImg} />
+    {ogDefaultImg && (
+      <>
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={OG_ALT} />
+      </>
+    )}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={OG_IMG} />
-    <meta name="twitter:image:alt" content={OG_ALT} />
+    <meta name="twitter:image" content={ogImg} />
+    {ogDefaultImg && <meta name="twitter:image:alt" content={OG_ALT} />}
   </head>
   <body>
-    <div id="rw-root" class="tm rw motion-lift" data-theme="dark" data-bg="weave" data-anim="on" style="--acc:#5b8cff;--display:'Syne', sans-serif">
+    <div id="rw-root" class:list={['tm', 'rw', 'motion-lift', rootClass]} data-theme="dark" data-bg="weave" data-anim="on" style="--acc:#5b8cff;--display:'Syne', sans-serif">
       <script is:inline set:html={themeBoot}></script>
       <div class="tm-wrap">
         <Nav active={active} />

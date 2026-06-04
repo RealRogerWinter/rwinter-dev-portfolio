@@ -1,0 +1,227 @@
+---
+// Project page: sheet-llm — migrated from site/portfolio/sheetllm.jsx
+// (window.SheetLlmPage). Static Astro shell; the diagrams render as static HTML
+// at build time (no client directive), the two interactive demos hydrate on
+// scroll (client:visible), and the micro-viz is a client:only island (its
+// animation is random-seeded, which must not be server-rendered). The inert
+// Tweaks panel is dropped; its vizAnim flag is bridged via [data-anim] in CSS.
+import Page from '../layouts/Page.astro';
+import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import {
+  AdditiveEditDemo, WorkflowSteps, OrchestratorFlow, ModelRouter,
+  ProviderAgnostic, ScoreSpine, ChatDemo,
+} from '../components/viz/sheet-llm.jsx';
+import { projects } from '../data/portfolio.js';
+import '../styles/microviz.css';
+import '../styles/sheet-llm.css';
+
+const p = projects.find((x) => x.id === 'sheet-llm');
+const idx = projects.findIndex((x) => x.id === 'sheet-llm');
+const prev = projects[(idx - 1 + projects.length) % projects.length];
+const next = projects[(idx + 1) % projects.length];
+
+const stack = [
+  { layer: 'Framework', key: ['Next.js 16', 'React 19'], rest: ['TypeScript 5', 'App Router'] },
+  { layer: 'Notation', key: ['abcjs 6'], rest: ['ABC → SVG', 'synth playback'] },
+  { layer: 'Data model', key: ['Zod 4'], rest: ['Score schema + subtree'] },
+  { layer: 'Persistence', key: ['SQLite'], rest: ['better-sqlite3', 'Drizzle ORM'] },
+  { layer: 'Client state', key: ['Zustand 5'], rest: [] },
+  { layer: 'LLM', key: ['Anthropic SDK'], rest: ['multi-provider abstraction'], note: 'Swap in local or hosted models' },
+  { layer: 'Auth', key: ['jose session JWT'], rest: ['argon2id', 'OAuth (arctic)'], note: 'Anon by default, optional accounts' },
+  { layer: 'Export / import', key: ['MusicXML'], rest: ['MIDI', 'PDF (jspdf, svg2pdf)', 'import via fast-xml-parser'] },
+  { layer: 'Tooling', key: ['pnpm 9'], rest: ['Node ≥ 20.9'] },
+  { layer: 'Infra', key: ['Docker'], rest: ['docker compose', 'Caddy (auto HTTPS)', 'Cloudflare + Litestream → R2'], note: 'Self-hosted VPS, origin mTLS' },
+  { layer: 'CI/CD', key: ['CircleCI'], rest: ['public GHCR image'], note: 'verify gate → image push → manual-approval deploy' },
+];
+---
+<Page
+  title="sheet-llm — Roger Winter"
+  description={p.desc}
+  canonical="https://rogerwinter.dev/project-sheet-llm.html"
+  active=""
+  rootClass="sl"
+  ogType="article"
+  ogImage="https://rogerwinter.dev/portfolio/assets/sl-compose.png"
+>
+  {/* hero */}
+  <header class="slp-hero">
+    <div class="slp-band">
+      <ProjectVizIsland id="sheet-llm" client:only="react" />
+      <div class="slp-scrim"></div>
+      <div class="slp-status"><i></i> {p.status}</div>
+      <div class="slp-titlewrap">
+        <div class="slp-logo" aria-label="treble clef"><svg viewBox="0 0 40 54"><text x="20" y="27" text-anchor="middle" dominant-baseline="central" font-family="'Noto Music', serif" font-size="50" fill="currentColor">{'\u{1D11E}'}</text></svg></div>
+        <div>
+          <p class="slp-eyebrow">Project {p.n}</p>
+          <h1 class="slp-title">sheet-llm</h1>
+        </div>
+      </div>
+    </div>
+    <div class="slp-intro">
+      <p class="slp-tagline">A publisher-grade notation editor you talk to. Describe the music; a language model writes it onto the staff.</p>
+      <div class="slp-actions">
+        <a class="tm-btn demo" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+        <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="tm-btn ghost" href="/">← All projects</a>
+      </div>
+    </div>
+  </header>
+
+  {/* lede */}
+  <section class="slp-lede">
+    <p>sheet-llm is a music notation editor that works like a conversation. Describe the music in plain language, and a language model writes it onto the staff.</p>
+    <p>It's real notation under the hood, with one rule that shapes everything: <span class="hl">the editor changes only what it's asked to change.</span> Ask to rewrite bars 5 through 8, and bars 1 through 4 stay exactly as they were.</p>
+  </section>
+
+  {/* signature: additive editing */}
+  <section class="slp-sec">
+    <p class="slp-kicker">The idea</p>
+    <h2 class="slp-h2">It changes only what's asked</h2>
+    <p class="slp-p">Most AI editing tools rewrite the whole thing. sheet-llm treats every edit as additive: new bars get added, named bars get rewritten, and everything else is left alone. A check on the server hashes the bars that should stay and refuses the edit if any of them moved. A full rewrite can still happen, but only behind a confirmation, never by surprise.</p>
+    <figure class="slp-figure" style="margin-top:8px">
+      <AdditiveEditDemo client:visible />
+      <figcaption class="slp-figcap">Interactive · compose, then rewrite bars 5–8 and watch what stays</figcaption>
+    </figure>
+    <div class="sl-frame">
+      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">AI proposal · 48 changes</span></div>
+      <img src="portfolio/assets/sl-proposal.png" alt="An AI proposal in sheet-llm: a new sixteenth-note arpeggio run highlighted in amber across the last bars, with Accept all and Reject controls" />
+      <div class="cap"><b>The real preview</b> — the new arpeggio bars glow amber as a staged proposal. Accept or reject before anything touches the saved score; untouched bars never move.</div>
+    </div>
+  </section>
+
+  {/* workflow */}
+  <section class="slp-sec">
+    <p class="slp-kicker">How it works</p>
+    <h2 class="slp-h2">From a sentence to a score</h2>
+    <p class="slp-p">The loop is short, and the score keeps up at every step. Describe the music, refine it in chat, review each AI edit, then reach in by hand whenever a note needs moving.</p>
+    <WorkflowSteps />
+    <div class="sl-frame">
+      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">sheet-llm — Simple Waltz in A Major</span></div>
+      <img src="portfolio/assets/sl-compose.png" alt="The sheet-llm editor with a composed waltz on the staff and the running conversation of edits on the right" />
+      <div class="cap"><b>The editor</b> — the score on the left, the running chat of edits on the right, every turn revertible, with export to MIDI, PDF, and MusicXML.</div>
+    </div>
+  </section>
+
+  {/* orchestrator */}
+  <section class="slp-sec">
+    <p class="slp-kicker">The orchestrator</p>
+    <h2 class="slp-h2">One brain behind every request</h2>
+    <p class="slp-p">Every chat request runs through an orchestrator. It reads the prompt and the current score, clears a copyright filter, then reasons about which edit to make and carries it out.</p>
+    <figure class="slp-figure" style="margin-top:8px">
+      <div class="slp-figbox"><OrchestratorFlow /></div>
+      <figcaption class="slp-figcap">Prompt → filter → reasoning → safety gates → ghost preview → saved turn</figcaption>
+    </figure>
+    <p class="slp-p" style="margin-top:24px">Before a change reaches the score, two gates run on the server. One verifies that the bars meant to stay were left untouched. The other catches wholesale rewrites and holds them behind a confirmation. Whatever passes is staged as a ghost preview a musician can accept or reject, and every turn is saved as a versioned checkpoint that can be replayed.</p>
+  </section>
+
+  {/* model routing */}
+  <section class="slp-sec">
+    <div class="slp-split">
+      <div>
+        <p class="slp-kicker">Classify, then route</p>
+        <h2 class="slp-h2">The right model for each request</h2>
+        <p class="slp-p">The orchestrator's first job is to read intent. It classifies each request, then sends it to the model that fits. A small change like "make bar 2 staccato" doesn't need a frontier model, so it goes to a smaller, faster one. "Harmonize this melody as a chorale" does, so it goes to a more capable model.</p>
+        <p class="slp-p">Questions take a third path entirely. The same classifier spots when a request isn't an edit at all and routes it to a conversational model that answers in words. <strong>One orchestrator, several models, picked per request</strong>, so the work matches the cost and the capability every time.</p>
+      </div>
+      <figure class="slp-figure">
+        <div class="slp-figbox"><ModelRouter /></div>
+        <figcaption class="slp-figcap">Classify by complexity → route to the fitting model</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* conversational / educational */}
+  <section class="slp-sec">
+    <p class="slp-kicker">Talk to the score</p>
+    <h2 class="slp-h2">Ask it about the music</h2>
+    <p class="slp-p">Because questions get their own path, the editor doubles as something to talk to. A musician can ask what key a piece is in, why a bar sounds tense, or what a ii–V–I is, and get a plain-language answer with the open score as the reference point.</p>
+    <p class="slp-p">It can also teach by doing. Ask for a concept and it writes the example straight onto the staff, so an explanation of a scale or a cadence comes with the notes to see and play. That turns the tool into a patient music tutor as much as an editor.</p>
+    <figure class="slp-figure" style="margin-top:8px">
+      <ChatDemo client:visible />
+      <figcaption class="slp-figcap">Interactive · ask a question, get an answer or a staff demo</figcaption>
+    </figure>
+    <div class="sl-frame">
+      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">Converse mode · music theory</span></div>
+      <img src="portfolio/assets/sl-converse.png" alt="sheet-llm in converse mode giving a full music-theory breakdown of the open score, with a debug panel showing the request routed to a converse model" />
+      <div class="cap"><b>In the editor</b> — a full theory breakdown of the open score. The debug panel shows the turn classified as a simple converse request and routed to its model.</div>
+    </div>
+  </section>
+
+  {/* score is the spine */}
+  <section class="slp-sec">
+    <div class="slp-split rev">
+      <figure class="slp-figure">
+        <div class="slp-figbox"><ScoreSpine /></div>
+        <figcaption class="slp-figcap">One Score, many derived views</figcaption>
+      </figure>
+      <div>
+        <p class="slp-kicker">Under the notes</p>
+        <h2 class="slp-h2">The score is the spine</h2>
+        <p class="slp-p">Everything operates on one structured Score, written as validated JSON. The model is asked to emit that Score, not the notation markup.</p>
+        <p class="slp-p">The staff a musician sees is rendered from it, and so are the playback and the export files. The data stays the single source of truth, and the notation never drifts away from it.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* provider-agnostic */}
+  <section class="slp-sec">
+    <div class="slp-split">
+      <div>
+        <p class="slp-kicker">Yours to run</p>
+        <h2 class="slp-h2">Open source, and yours to run</h2>
+        <p class="slp-p">sheet-llm is open source and runs locally. The model provider is swappable: a local model on the same machine, an API key for any provider, or a hosted model all work.</p>
+        <p class="slp-p">Nothing about the editor is locked to one vendor, so a musician keeps the score, the software, and the model choice in their own hands.</p>
+        <p class="slp-p">It's built in the open, on purpose: the repo, the CircleCI pipeline, and the runtime image are all public, on the principle that a control that only works because it's hidden isn't a control. Secrets are excluded by construction, never living in the repo, image, or logs, and every deploy still waits on an explicit human approval.</p>
+      </div>
+      <figure class="slp-figure">
+        <div class="slp-figbox"><ProviderAgnostic /></div>
+        <figcaption class="slp-figcap">Swap the model, keep the editor</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* tech stack */}
+  <section class="slp-sec">
+    <p class="slp-kicker">Under the hood</p>
+    <h2 class="slp-h2">Tech stack</h2>
+    <dl class="slp-stack">
+      {stack.map((r) => (
+        <div class="slp-row">
+          <dt>{r.layer}</dt>
+          <dd>
+            {r.key.map((k) => <span class="slp-chip key">{k}</span>)}
+            {r.rest.map((k) => <span class="slp-chip">{k}</span>)}
+            {r.note && <span class="note">{r.note}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  {/* CTA */}
+  <section class="slp-cta">
+    <div class="mvbg"><ProjectVizIsland id="sheet-llm" client:only="react" /></div>
+    <div class="inner">
+      <div>
+        <h2>Describe the music. Get the score.</h2>
+        <p>A notation editor that listens, and only changes what it's asked to.</p>
+        <span class="url">sheetllm.com</span>
+      </div>
+      <a class="tm-btn demo big" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+    </div>
+  </section>
+
+  {/* prev/next */}
+  <nav class="slp-nav">
+    <a class="slp-navcard prev" href={`project-${prev.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
+    </a>
+    <a class="slp-navcard next" href={`project-${next.id}.html`}>
+      <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>
+    </a>
+  </nav>
+</Page>
