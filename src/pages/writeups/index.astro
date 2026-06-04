@@ -1,0 +1,36 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import '../../styles/writeup.css';
+
+const entries = (await getCollection('writeups', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+<Page
+  title="Writeups — Roger Winter"
+  description="Tutorials and deep-dives by Roger Winter on building AI-native software and how it works."
+  canonical="https://rogerwinter.dev/writeups.html"
+  active="writeups"
+>
+  <div class="wr-index">
+    <header class="pg">
+      <p class="pg-kicker">Writeups</p>
+      <h1 class="pg-h1">Tutorials &amp; deep-dives.</h1>
+    </header>
+    <div class="wr-list">
+      {entries.length === 0 && <p class="wr-empty">Nothing published yet.</p>}
+      {entries.map((e) => (
+        <a class="wr-item" href={`/writeups/${e.slug}.html`}>
+          <p class="meta">
+            <time datetime={e.data.date.toISOString()}>{fmt(e.data.date)}</time>
+            {e.data.tags.map((t) => <span class="tag">#{t}</span>)}
+          </p>
+          <h2>{e.data.title}</h2>
+          <p>{e.data.description}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Page>
