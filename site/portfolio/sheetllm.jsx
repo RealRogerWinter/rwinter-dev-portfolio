@@ -144,8 +144,8 @@ function SheetLlmPage(){
           <div className="slp-intro">
             <p className="slp-tagline">A publisher-grade notation editor you talk to. Describe the music; a language model writes it onto the staff.</p>
             <div className="slp-actions">
-              <a className="tm-btn demo" href={p.demo}>Try the live demo ↗</a>
-              <a className="tm-btn ghost" href={p.repo}>GitHub ↗</a>
+              <a className="tm-btn demo" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+              <a className="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
               <a className="tm-btn ghost" href={window.HOME_FILE}>← All projects</a>
             </div>
           </div>
@@ -288,9 +288,9 @@ function SheetLlmPage(){
             <div>
               <h2>Describe the music. Get the score.</h2>
               <p>A notation editor that listens, and only changes what it's asked to.</p>
-              <span className="url">demo coming soon</span>
+              <span className="url">sheetllm.com</span>
             </div>
-            <a className="tm-btn demo big" href={p.demo}>Try the live demo ↗</a>
+            <a className="tm-btn demo big" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
           </div>
         </section>
 
