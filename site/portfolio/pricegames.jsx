@@ -35,7 +35,7 @@ const PG_PAGE_CSS = `
   background:#14152b; display:flex; align-items:center; justify-content:center; padding:9px; box-shadow:0 14px 40px -16px rgba(0,0,0,.6); }
 .pg-logo img{ width:100%; height:100%; object-fit:contain; display:block; }
 .pg-eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin:0 0 8px; }
-.pg-title{ font-family:var(--display); font-size:clamp(38px,6vw,66px); font-weight:800; letter-spacing:-.03em; line-height:.96; margin:0; }
+.pg-title{ font-family:var(--display); font-size:clamp(26px,7vw,66px); font-weight:800; letter-spacing:-.03em; line-height:.98; margin:0; overflow-wrap:break-word; }
 .pg-intro{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; padding:26px 2px 0; }
 .pg-tagline{ font-size:clamp(17px,1.7vw,21px); line-height:1.5; color:color-mix(in oklab,var(--ink) 88%, var(--dim)); margin:0; max-width:44ch; font-weight:500; }
 .pg-actions{ display:flex; gap:11px; flex-wrap:wrap; align-items:center; }
@@ -137,7 +137,7 @@ const PG_PAGE_CSS = `
 .pg-related .rv{ position:absolute; inset:0; opacity:.16; color:var(--acc); }
 .pg-related .ri{ position:relative; z-index:2; width:58px; height:58px; flex:0 0 58px; border-radius:14px; overflow:hidden; border:1px solid var(--line); background:#1d1518; padding:7px; }
 .pg-related .ri img{ width:100%; height:100%; object-fit:contain; }
-.pg-related .rt{ position:relative; z-index:2; flex:1; }
+.pg-related .rt{ position:relative; z-index:2; flex:1; min-width:0; }
 .pg-related .rt .k{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--acc); }
 .pg-related .rt h3{ font-family:var(--display); font-weight:700; font-size:21px; color:var(--ink); margin:5px 0 4px; }
 .pg-related .rt p{ margin:0; font-size:14px; color:color-mix(in oklab,var(--ink) 78%, var(--dim)); }

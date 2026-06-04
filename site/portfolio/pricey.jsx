@@ -21,7 +21,7 @@ const PCY_PAGE_CSS = `
 .pcy-logo{ width:88px; height:88px; flex:0 0 88px; border-radius:18px; border:1px solid var(--line); overflow:hidden; background:#1d1518; display:flex; align-items:center; justify-content:center; padding:7px; box-shadow:0 14px 40px -16px rgba(0,0,0,.6); }
 .pcy-logo img{ width:100%; height:100%; object-fit:contain; display:block; }
 .pcy-eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin:0 0 8px; }
-.pcy-title{ font-family:var(--display); font-size:clamp(38px,6vw,66px); font-weight:800; letter-spacing:-.03em; line-height:.96; margin:0; }
+.pcy-title{ font-family:var(--display); font-size:clamp(26px,7vw,66px); font-weight:800; letter-spacing:-.03em; line-height:.98; margin:0; overflow-wrap:break-word; }
 .pcy-intro{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; padding:26px 2px 0; }
 .pcy-tagline{ font-size:clamp(17px,1.7vw,21px); line-height:1.5; color:color-mix(in oklab,var(--ink) 88%, var(--dim)); margin:0; max-width:48ch; font-weight:500; }
 .pcy-actions{ display:flex; gap:11px; flex-wrap:wrap; align-items:center; }
@@ -34,7 +34,8 @@ const PCY_PAGE_CSS = `
 
 /* stat band */
 .pcy-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:34px; }
-@media (max-width:760px){ .pcy-stats{ grid-template-columns:1fr 1fr; } }
+@media (max-width:900px){ .pcy-stats{ grid-template-columns:1fr 1fr; } }
+@media (max-width:480px){ .pcy-stats{ grid-template-columns:1fr; } }
 .pcy-stat{ border:1px solid var(--line); border-radius:14px; padding:20px; background:var(--panel); }
 .pcy-stat .v{ font-family:var(--display); font-weight:800; font-size:clamp(26px,3.2vw,34px); letter-spacing:-.02em; color:var(--acc); line-height:1; white-space:nowrap; }
 .pcy-stat .l{ font-size:13px; color:color-mix(in oklab,var(--ink) 78%, var(--dim)); margin-top:8px; }
