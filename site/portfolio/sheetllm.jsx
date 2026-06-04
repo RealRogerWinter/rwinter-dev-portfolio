@@ -20,7 +20,7 @@ const SL_PAGE_CSS = `
 .slp-logo{ width:88px; height:88px; flex:0 0 88px; border-radius:18px; border:1px solid var(--line); background:var(--panel2); display:flex; align-items:center; justify-content:center; color:var(--acc); box-shadow:0 14px 40px -16px rgba(0,0,0,.6); }
 .slp-logo svg{ width:58%; height:58%; overflow:visible; }
 .slp-eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin:0 0 8px; }
-.slp-title{ font-family:var(--display); font-size:clamp(38px,6vw,66px); font-weight:800; letter-spacing:-.03em; line-height:.96; margin:0; }
+.slp-title{ font-family:var(--display); font-size:clamp(26px,7vw,66px); font-weight:800; letter-spacing:-.03em; line-height:.98; margin:0; overflow-wrap:break-word; }
 .slp-intro{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; padding:26px 2px 0; }
 .slp-tagline{ font-size:clamp(17px,1.7vw,21px); line-height:1.5; color:color-mix(in oklab,var(--ink) 88%, var(--dim)); margin:0; max-width:46ch; font-weight:500; }
 .slp-actions{ display:flex; gap:11px; flex-wrap:wrap; align-items:center; }
@@ -119,6 +119,8 @@ function SheetLlmPage(){
     { layer: "Auth", key: ["jose session JWT"], rest: ["argon2id", "OAuth (arctic)"], note: "Anon by default, optional accounts" },
     { layer: "Export / import", key: ["MusicXML"], rest: ["MIDI", "PDF (jspdf, svg2pdf)", "import via fast-xml-parser"] },
     { layer: "Tooling", key: ["pnpm 9"], rest: ["Node ≥ 20.9"] },
+    { layer: "Infra", key: ["Docker"], rest: ["docker compose", "Caddy (auto HTTPS)", "Cloudflare + Litestream → R2"], note: "Self-hosted VPS, origin mTLS" },
+    { layer: "CI/CD", key: ["CircleCI"], rest: ["public GHCR image"], note: "verify gate → image push → manual-approval deploy" },
   ];
 
   return (
@@ -255,6 +257,7 @@ function SheetLlmPage(){
               <h2 className="slp-h2">Open source, and yours to run</h2>
               <p className="slp-p">sheet-llm is open source and runs locally. The model provider is swappable: a local model on the same machine, an API key for any provider, or a hosted model all work.</p>
               <p className="slp-p">Nothing about the editor is locked to one vendor, so a musician keeps the score, the software, and the model choice in their own hands.</p>
+              <p className="slp-p">It's built in the open, on purpose: the repo, the CircleCI pipeline, and the runtime image are all public, on the principle that a control that only works because it's hidden isn't a control. Secrets are excluded by construction, never living in the repo, image, or logs, and every deploy still waits on an explicit human approval.</p>
             </div>
             <figure className={"slp-figure" + dgc}>
               <div className="slp-figbox"><ProviderAgnostic /></div>

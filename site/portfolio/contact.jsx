@@ -21,6 +21,7 @@ function ContactPage(){
 
   const EXTRA = `
   .ct-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(28px,5vw,64px); align-items:center; padding:36px 0 10px; }
+  .ct-wrap > *{ min-width:0; }
   @media (max-width:820px){ .ct-wrap{ grid-template-columns:1fr; gap:36px; } }
   .ct-avail{ display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:12px; letter-spacing:.08em;
     text-transform:uppercase; color:var(--ink); border:1px solid var(--line); border-radius:100px; padding:8px 15px; margin-bottom:26px; }
@@ -36,7 +37,7 @@ function ContactPage(){
   .ct-card .ic svg{ width:21px; height:21px; }
   .ct-card .tx{ flex:1; min-width:0; }
   .ct-card .tx .l{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); }
-  .ct-card .tx .v{ font-family:var(--display); font-weight:600; font-size:17px; color:var(--ink); margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ct-card .tx .v{ display:block; font-family:var(--display); font-weight:600; font-size:17px; color:var(--ink); margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .ct-card .go{ font-family:var(--mono); font-size:16px; color:var(--acc); flex:0 0 auto; transition:transform .18s; }
   .ct-card:hover .go{ transform:translate(2px,-2px); }
 
