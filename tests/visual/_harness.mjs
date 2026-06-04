@@ -70,6 +70,20 @@ export async function gotoStable(page, { path, viewport, tweaks }) {
   });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
+  // Full-page screenshots race loading="lazy" images: scroll the page to force
+  // them to start, then wait for every <img> to finish, so below-the-fold
+  // images are present and at full height in the capture.
+  await page.evaluate(async () => {
+    const h = document.body.scrollHeight;
+    for (let y = 0; y <= h; y += 600) {
+      window.scrollTo(0, y);
+      await new Promise((r) => setTimeout(r, 30));
+    }
+    window.scrollTo(0, 0);
+  });
+  // Let the lazy images that the scroll just triggered finish fetching/decoding.
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(200);
   // Freeze SVG SMIL timelines (the <animateMotion> dot in pricey-viz.jsx).
   // Playwright's animations:'disabled' only finalizes CSS / Web Animations, and
   // the site's prefers-reduced-motion paths do not stop SMIL — so pin every SVG
