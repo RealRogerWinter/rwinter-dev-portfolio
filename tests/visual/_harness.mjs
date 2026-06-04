@@ -64,9 +64,12 @@ export async function gotoStable(page, { path, viewport, tweaks }) {
   await page.setViewportSize(viewport);
   await page.addInitScript(initScript, tweaks);
   await page.goto(path, { waitUntil: 'networkidle' });
+  // Wait for the themed root to have content. Works for both rendering models:
+  // old pages mount React into #root producing a .tm div; migrated Astro pages
+  // ship the .tm root (#rw-root) as static HTML.
   await page.waitForFunction(() => {
-    const root = document.getElementById('root');
-    return root && root.children.length > 0;
+    const tm = document.querySelector('.tm');
+    return tm && tm.children.length > 0;
   });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);

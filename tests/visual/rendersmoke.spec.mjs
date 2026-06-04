@@ -26,7 +26,7 @@ for (const p of PAGES) {
 
     await gotoStable(page, { path: p.path, viewport: DESKTOP, tweaks: {} });
 
-    expect(await page.locator('#root > *').count(), 'root has rendered children').toBeGreaterThan(0);
+    expect(await page.locator('.tm > *').count(), 'themed root has rendered children').toBeGreaterThan(0);
     const text = await page.evaluate(() => document.body.innerText);
     // Distinguishes a real client render from an empty #root (~0 chars). The
     // sparsest real page (contact) renders ~390 chars.

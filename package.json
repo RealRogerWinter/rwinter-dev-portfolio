@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Roger Winter portfolio — static site checks (transpile, resources, integrity, SEO).",
   "scripts": {
+    "pretest": "npm run build",
     "test": "vitest run",
     "lint": "htmlhint \"site/*.html\"",
     "build": "astro build",
