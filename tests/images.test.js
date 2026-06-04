@@ -5,8 +5,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SITE } from './_lib.js';
 
+const ROOT = path.join(SITE, '..');
 const ASSETS = path.join(SITE, 'portfolio', 'assets');
 const HEAVY = ['onestreamer-stream', 'pricey-stream'];
+const readRoot = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 
 describe('heavy screenshots optimized to WebP (PNG kept as fallback)', () => {
   it('each heavy screenshot has a much-smaller WebP sibling', () => {
@@ -21,8 +23,10 @@ describe('heavy screenshots optimized to WebP (PNG kept as fallback)', () => {
   });
 
   it('components serve the WebP with a PNG fallback intact', () => {
-    const pricey = fs.readFileSync(path.join(ASSETS, '..', 'pricey.jsx'), 'utf8');
-    const onestreamer = fs.readFileSync(path.join(ASSETS, '..', 'onestreamer.jsx'), 'utf8');
+    // pricey is still a window-global component; onestreamer migrated to Astro
+    // (markup in the page, the .os-tour rule in its stylesheet).
+    const pricey = readRoot('site/portfolio/pricey.jsx');
+    const onestreamer = readRoot('src/pages/project-onestreamer.astro');
     // pricey uses the image as a CSS background (image-set) and in <picture>.
     expect(pricey, 'bg uses image-set with webp').toMatch(/image-set\([^;]*pricey-stream\.webp/);
     expect(pricey, 'webp <source>').toContain('pricey-stream.webp');
@@ -32,12 +36,12 @@ describe('heavy screenshots optimized to WebP (PNG kept as fallback)', () => {
   });
 
   it('the <img> reserve their 2560x1440 dimensions (CLS guard)', () => {
-    const pricey = fs.readFileSync(path.join(ASSETS, '..', 'pricey.jsx'), 'utf8');
-    const onestreamer = fs.readFileSync(path.join(ASSETS, '..', 'onestreamer.jsx'), 'utf8');
+    const pricey = readRoot('site/portfolio/pricey.jsx');
+    const onestreamer = readRoot('src/pages/project-onestreamer.astro');
     expect(pricey).toMatch(/pricey-stream\.png" width="2560" height="1440"/);
     expect(onestreamer).toMatch(/onestreamer-stream\.png" width="2560" height="1440"/);
     // width:100% needs height:auto or the height attr distorts the image.
     expect(pricey).toMatch(/\.pcy-tour img\{[^}]*height:auto/);
-    expect(onestreamer).toMatch(/\.os-tour img\{[^}]*height:auto/);
+    expect(readRoot('src/styles/onestreamer.css')).toMatch(/\.os-tour img\{[^}]*height:auto/);
   });
 });
