@@ -63,7 +63,7 @@ const OS_PAGE_CSS = `
 .os-figbox{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:26px 24px; }
 .os-figcap{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--dim); margin-top:14px; text-transform:uppercase; }
 .os-tour{ position:relative; margin-top:16px; border:1px solid var(--line); border-radius:16px; overflow:hidden; }
-.os-tour img{ width:100%; display:block; }
+.os-tour img{ width:100%; height:auto; display:block; }
 .os-tour .pin{ position:absolute; transform:translateY(-50%); display:flex; align-items:center; gap:8px; z-index:2; }
 .os-tour .pin.r{ flex-direction:row-reverse; transform:translate(-100%,-50%); }
 .os-tour .pin .dot{ width:12px; height:12px; border-radius:50%; flex:0 0 auto; background:var(--acc); box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 24%, transparent), 0 0 12px var(--acc); }
@@ -233,7 +233,7 @@ function OneStreamerPage(){
           <h2 className="os-h2">One stream, wrapped in a control room</h2>
           <p className="os-p">Every viewer sees the same thing: the live game full-bleed, the streamer's own cam, a switch timer counting down to the next takeover, and a chat where real people and AI viewers talk over each other.</p>
           <figure className="os-tour" style={{ margin: '8px 0 0' }}>
-            <img src="portfolio/assets/onestreamer-stream.png" alt="An annotated frame of the OneStreamer interface" />
+            <picture><source srcSet="portfolio/assets/onestreamer-stream.webp" type="image/webp" /><img src="portfolio/assets/onestreamer-stream.png" width="2560" height="1440" alt="An annotated frame of the OneStreamer interface" loading="lazy" /></picture>
             {[
               { left: 48, top: 3.4, l: "Next-switch timer" },
               { left: 46, top: 46, l: "The live game" },

@@ -51,7 +51,7 @@ for p in PAGES:
 jsx = [r for r in resources if r.endswith(".jsx")]
 for j in jsx:
     _, body = get(j)
-    for a in re.findall(r'portfolio/assets/[A-Za-z0-9 _./-]+\.(?:png|webp|jpe?g|gif|svg|ico)', body.decode("utf-8", "replace")):
+    for a in re.findall(r'portfolio/assets/[A-Za-z0-9 _./-]+\.(?:png|webp|avif|jpe?g|gif|svg|ico)', body.decode("utf-8", "replace")):
         resources.add("/" + a)
 
 # 3) every referenced resource must 200

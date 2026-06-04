@@ -49,7 +49,7 @@ const PCY_PAGE_CSS = `
 .ps-live i{ width:8px; height:8px; border-radius:50%; background:#e23b3b; box-shadow:0 0 8px #e23b3b; animation:pcyLive 1.4s ease-in-out infinite; }
 .ps-ch{ font-family:var(--mono); font-size:12px; color:var(--dim); }
 .ps-cta{ margin-left:auto; font-family:var(--body); font-weight:600; font-size:12px; color:#0a130f; background:var(--acc); border-radius:8px; padding:8px 14px; white-space:nowrap; }
-.ps-video{ position:relative; aspect-ratio:16 / 9; background:#000 center/cover no-repeat; background-image:url("portfolio/assets/pricey-stream.png"); }
+.ps-video{ position:relative; aspect-ratio:16 / 9; background:#000 center/cover no-repeat; background-image:url("portfolio/assets/pricey-stream.png"); background-image:image-set(url("portfolio/assets/pricey-stream.webp") type("image/webp"), url("portfolio/assets/pricey-stream.png") type("image/png")); }
 .ps-video img{ width:100%; height:100%; object-fit:cover; display:block; }
 .ps-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
 .ps-fallback{ position:absolute; inset:0; display:block; }
@@ -96,7 +96,7 @@ const PCY_PAGE_CSS = `
 .pcy-tags2{ display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
 .pcy-tags2 span{ font-family:var(--mono); font-size:11px; color:var(--acc-dim); border:1px solid var(--line); border-radius:20px; padding:5px 11px; }
 .pcy-tour{ position:relative; margin-top:16px; border:1px solid var(--line); border-radius:16px; overflow:hidden; }
-.pcy-tour img{ width:100%; display:block; }
+.pcy-tour img{ width:100%; height:auto; display:block; }
 .pcy-tour .pin{ position:absolute; transform:translateY(-50%); display:flex; align-items:center; gap:8px; z-index:2; }
 .pcy-tour .pin .dot{ width:12px; height:12px; border-radius:50%; flex:0 0 auto; background:var(--acc); box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 24%, transparent), 0 0 12px var(--acc); }
 .pcy-tour .pin .lab{ font-family:var(--mono); font-size:10.5px; font-weight:600; color:#0a130f; background:var(--acc); border-radius:6px; padding:3px 8px; white-space:nowrap; }
@@ -220,7 +220,7 @@ function PriceyPage(){
             <div className="ps-video">
               {twHost
                 ? <iframe title="Pricey live on Twitch" src={`https://player.twitch.tv/?channel=pricegamespricey&parent=${twHost}&muted=true&autoplay=true`} allowFullScreen frameBorder="0" scrolling="no"></iframe>
-                : <a className="ps-fallback" href={TWITCH} target="_blank" rel="noopener"><img src="portfolio/assets/pricey-stream.png" alt="Pricey playing Price Games live on Twitch, with her avatar, mood wheel, neural-network brain panel, and a price-guess slider" /><span className="ps-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></a>}
+                : <a className="ps-fallback" href={TWITCH} target="_blank" rel="noopener"><picture><source srcSet="portfolio/assets/pricey-stream.webp" type="image/webp" /><img src="portfolio/assets/pricey-stream.png" width="2560" height="1440" alt="Pricey playing Price Games live on Twitch, with her avatar, mood wheel, neural-network brain panel, and a price-guess slider" /></picture><span className="ps-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></a>}
             </div>
           </div>
         </section>
@@ -338,7 +338,7 @@ function PriceyPage(){
             </div>
           </div>
           <figure className="pcy-tour" style={{ margin: 0 }}>
-            <img src="portfolio/assets/pricey-stream.png" alt="An annotated frame of Pricey's stream overlay" />
+            <picture><source srcSet="portfolio/assets/pricey-stream.webp" type="image/webp" /><img src="portfolio/assets/pricey-stream.png" width="2560" height="1440" alt="An annotated frame of Pricey's stream overlay" loading="lazy" /></picture>
             {[
               { left: 23, top: 17, l: "Thought bubble" },
               { left: 10, top: 51, l: "Mood wheel" },
