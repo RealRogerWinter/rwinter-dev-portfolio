@@ -131,7 +131,13 @@ jobs:
             IMG="<< pipeline.parameters.image_name >>"
             docker push "$IMG:$CIRCLE_SHA1"
             docker push "$IMG:latest"
-            docker inspect --format='{{index .RepoDigests 0}}' "$IMG:$CIRCLE_SHA1" > image-digest.txt
+            # Resolve the pushed manifest digest from the registry and build the
+            # canonical GHCR ref. RepoDigests[0] is unreliable here: the local
+            # `rwinter-portfolio:ci` scan tag also lands in RepoDigests, which is
+            # what made the first hardened deploy send a non-GHCR ref.
+            SHA="$(docker buildx imagetools inspect "$IMG:$CIRCLE_SHA1" --format '{{.Manifest.Digest}}')"
+            case "$SHA" in sha256:*) : ;; *) echo "ERROR: bad digest '$SHA'"; exit 1 ;; esac
+            echo "${IMG}@${SHA}" > image-digest.txt
             echo "pushed $(cat image-digest.txt)"
       - persist_to_workspace:
           root: .
