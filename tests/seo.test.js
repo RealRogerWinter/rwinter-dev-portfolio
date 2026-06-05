@@ -23,11 +23,11 @@ describe('SEO / OpenGraph / Twitter meta present on every page', () => {
 // so each migrated project page must override both ogType and ogImage. (PR #15;
 // the un-migrated pages already satisfy this from their static <head>.)
 const PROJECT_OG = {
-  'project-sheet-llm.html': 'sl-compose.png',
-  'project-onestreamer.html': 'onestreamer.png',
-  'project-price-games.html': 'pg-hero.png',
-  'project-pricey.html': 'pricey.webp',
-  'project-multilingual-seo.html': 'seo-results.png',
+  'projects/sheet-llm.html': 'sl-compose.png',
+  'projects/onestreamer.html': 'onestreamer.png',
+  'projects/price-games.html': 'pg-hero.png',
+  'projects/pricey.html': 'pricey.webp',
+  'projects/multilingual-seo.html': 'seo-results.png',
 };
 
 describe('project pages unfurl as articles with a per-project image', () => {

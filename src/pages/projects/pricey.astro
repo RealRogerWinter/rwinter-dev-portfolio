@@ -8,14 +8,14 @@
 // background (the old page rendered it client-side from window.location.hostname;
 // the poster shows through whether or not the embed loads). Tweaks panel dropped;
 // vizAnim bridged via [data-anim] in CSS.
-import Page from '../layouts/Page.astro';
-import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import Page from '../../layouts/Page.astro';
+import ProjectVizIsland from '../../components/viz/ProjectVizIsland.jsx';
 import {
   BrainTopology, LearningCurve, MoodBars, ArchPipeline, MoodGains, MoodWheel, MoodLines,
-} from '../components/viz/pricey.jsx';
-import { projects } from '../data/portfolio.js';
-import '../styles/microviz.css';
-import '../styles/pricey.css';
+} from '../../components/viz/pricey.jsx';
+import { projects } from '../../data/portfolio.js';
+import '../../styles/microviz.css';
+import '../../styles/pricey.css';
 
 const p = projects.find((x) => x.id === 'pricey');
 const idx = projects.findIndex((x) => x.id === 'pricey');
@@ -51,7 +51,7 @@ const personaPins = [
 <Page
   title="Pricey — Roger Winter"
   description={p.desc}
-  canonical="https://rogerwinter.dev/project-pricey.html"
+  canonical="https://rogerwinter.dev/projects/pricey"
   active=""
   ogType="article"
   ogImage="https://rogerwinter.dev/portfolio/assets/pricey.webp"
@@ -82,7 +82,7 @@ const personaPins = [
 
   {/* lede + stats */}
   <section class="pcy-lede">
-    <p>Pricey is a 24/7 AI streamer. She logs into <a href="project-price-games.html" style="color: var(--acc); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--acc) 40%, transparent)">Price Games</a> like any other player, guesses the prices of real products round after round, narrates her reasoning out loud, and broadcasts the whole thing to Twitch.</p>
+    <p>Pricey is a 24/7 AI streamer. She logs into <a href="/projects/price-games" style="color: var(--acc); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--acc) 40%, transparent)">Price Games</a> like any other player, guesses the prices of real products round after round, narrates her reasoning out loud, and broadcasts the whole thing to Twitch.</p>
     <p>Two things make her more than a bot playing a game: <span class="hl">a tiny neural network that learns on stream</span>, and a simulated mood wired straight into it that changes both what she says and how she plays.</p>
     <div class="pcy-stats">
       {stats.map((s) => (<div class="pcy-stat"><div class="v">{s.v}</div><div class="l">{s.l}</div><div class="s">{s.s}</div></div>))}
@@ -219,7 +219,7 @@ const personaPins = [
       </div>
     </div>
     <figure class="pcy-tour" style="margin:0">
-      <picture><source srcset="portfolio/assets/pricey-stream.webp" type="image/webp" /><img src="portfolio/assets/pricey-stream.png" width="2560" height="1440" alt="An annotated frame of Pricey's stream overlay" loading="lazy" /></picture>
+      <picture><source srcset="/portfolio/assets/pricey-stream.webp" type="image/webp" /><img src="/portfolio/assets/pricey-stream.png" width="2560" height="1440" alt="An annotated frame of Pricey's stream overlay" loading="lazy" /></picture>
       {personaPins.map((pin) => (
         <span class="pin" style={`left:${pin.left}%;top:${pin.top}%`}>
           <span class="dot"></span><span class="lab">{pin.l}</span>
@@ -230,7 +230,7 @@ const personaPins = [
   </section>
 
   {/* related: price games */}
-  <a class="pcy-related" href="project-price-games.html">
+  <a class="pcy-related" href="/projects/price-games">
     <div class="rv"><ProjectVizIsland id="price-games" client:only="react" /></div>
     <div class="ri"><img src={priceGames.logo} alt="Price Games logo" /></div>
     <div class="rt">
@@ -256,12 +256,12 @@ const personaPins = [
 
   {/* prev/next */}
   <nav class="pcy-nav">
-    <a class="pcy-navcard prev" href={`project-${prev.id}.html`}>
+    <a class="pcy-navcard prev" href={`/projects/${prev.id}`}>
       <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
     </a>
-    <a class="pcy-navcard next" href={`project-${next.id}.html`}>
+    <a class="pcy-navcard next" href={`/projects/${next.id}`}>
       <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>

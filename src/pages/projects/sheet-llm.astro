@@ -5,15 +5,15 @@
 // scroll (client:visible), and the micro-viz is a client:only island (its
 // animation is random-seeded, which must not be server-rendered). The inert
 // Tweaks panel is dropped; its vizAnim flag is bridged via [data-anim] in CSS.
-import Page from '../layouts/Page.astro';
-import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
+import Page from '../../layouts/Page.astro';
+import ProjectVizIsland from '../../components/viz/ProjectVizIsland.jsx';
 import {
   AdditiveEditDemo, WorkflowSteps, OrchestratorFlow, ModelRouter,
   ProviderAgnostic, ScoreSpine, ChatDemo,
-} from '../components/viz/sheet-llm.jsx';
-import { projects } from '../data/portfolio.js';
-import '../styles/microviz.css';
-import '../styles/sheet-llm.css';
+} from '../../components/viz/sheet-llm.jsx';
+import { projects } from '../../data/portfolio.js';
+import '../../styles/microviz.css';
+import '../../styles/sheet-llm.css';
 
 const p = projects.find((x) => x.id === 'sheet-llm');
 const idx = projects.findIndex((x) => x.id === 'sheet-llm');
@@ -37,7 +37,7 @@ const stack = [
 <Page
   title="sheet-llm — Roger Winter"
   description={p.desc}
-  canonical="https://rogerwinter.dev/project-sheet-llm.html"
+  canonical="https://rogerwinter.dev/projects/sheet-llm"
   active=""
   rootClass="sl"
   ogType="article"
@@ -84,7 +84,7 @@ const stack = [
     </figure>
     <div class="sl-frame">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">AI proposal · 48 changes</span></div>
-      <img src="portfolio/assets/sl-proposal.png" alt="An AI proposal in sheet-llm: a new sixteenth-note arpeggio run highlighted in amber across the last bars, with Accept all and Reject controls" />
+      <img src="/portfolio/assets/sl-proposal.png" alt="An AI proposal in sheet-llm: a new sixteenth-note arpeggio run highlighted in amber across the last bars, with Accept all and Reject controls" />
       <div class="cap"><b>The real preview</b> — the new arpeggio bars glow amber as a staged proposal. Accept or reject before anything touches the saved score; untouched bars never move.</div>
     </div>
   </section>
@@ -97,7 +97,7 @@ const stack = [
     <WorkflowSteps />
     <div class="sl-frame">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">sheet-llm — Simple Waltz in A Major</span></div>
-      <img src="portfolio/assets/sl-compose.png" alt="The sheet-llm editor with a composed waltz on the staff and the running conversation of edits on the right" />
+      <img src="/portfolio/assets/sl-compose.png" alt="The sheet-llm editor with a composed waltz on the staff and the running conversation of edits on the right" />
       <div class="cap"><b>The editor</b> — the score on the left, the running chat of edits on the right, every turn revertible, with export to MIDI, PDF, and MusicXML.</div>
     </div>
   </section>
@@ -142,7 +142,7 @@ const stack = [
     </figure>
     <div class="sl-frame">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">Converse mode · music theory</span></div>
-      <img src="portfolio/assets/sl-converse.png" alt="sheet-llm in converse mode giving a full music-theory breakdown of the open score, with a debug panel showing the request routed to a converse model" />
+      <img src="/portfolio/assets/sl-converse.png" alt="sheet-llm in converse mode giving a full music-theory breakdown of the open score, with a debug panel showing the request routed to a converse model" />
       <div class="cap"><b>In the editor</b> — a full theory breakdown of the open score. The debug panel shows the turn classified as a simple converse request and routed to its model.</div>
     </div>
   </section>
@@ -213,12 +213,12 @@ const stack = [
 
   {/* prev/next */}
   <nav class="slp-nav">
-    <a class="slp-navcard prev" href={`project-${prev.id}.html`}>
+    <a class="slp-navcard prev" href={`/projects/${prev.id}`}>
       <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
     </a>
-    <a class="slp-navcard next" href={`project-${next.id}.html`}>
+    <a class="slp-navcard next" href={`/projects/${next.id}`}>
       <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>

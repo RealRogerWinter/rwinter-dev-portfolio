@@ -6,9 +6,12 @@
 import { social } from '../data/site.js';
 const { active } = Astro.props;
 const HOME = '/';
+// Root-absolute links: the nav renders on every page, including the deeper
+// /projects/<id> routes where a relative "bio.html" would resolve under
+// /projects/. (The brand/Projects link is the apex "/".)
 const items = [
   { k: 'home', label: 'Projects', href: HOME },
-  { k: 'bio', label: 'Bio', href: 'bio.html' },
+  { k: 'bio', label: 'Bio', href: '/bio.html' },
 ];
 ---
 <nav class="tm-nav">
@@ -20,6 +23,6 @@ const items = [
       {items.map((it) => <a href={it.href} class={active === it.k ? 'active' : undefined}>{it.label}</a>)}
       <a href={social.github.href} target="_blank" rel="noopener">GitHub</a>
     </div>
-    <a class="tm-cta" href="contact.html">Contact</a>
+    <a class="tm-cta" href="/contact.html">Contact</a>
   </div>
 </nav>

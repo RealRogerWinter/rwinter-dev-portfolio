@@ -9,9 +9,9 @@ import sys, re, urllib.request, urllib.error
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:3001").rstrip("/")
 PAGES = ["/", "/bio.html", "/contact.html",
-         "/project-multilingual-seo.html", "/project-onestreamer.html",
-         "/project-price-games.html", "/project-pricey.html",
-         "/project-sheet-llm.html"]
+         "/projects/multilingual-seo", "/projects/onestreamer",
+         "/projects/price-games", "/projects/pricey",
+         "/projects/sheet-llm"]
 fails = []
 # A real browser UA: Cloudflare's bot protection 403s the default Python-urllib UA.
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
@@ -74,6 +74,34 @@ if r is not None:
 
 # 6) negative: unknown path 404
 get("/this-should-not-exist-xyz", want=404)
+
+# 7) clean-URL plumbing: the page-less /projects index and the old flat
+#    /project-<id>.html URLs must 301 to their clean target. No-follow, so we
+#    assert the redirect itself rather than where it lands.
+import urllib.parse
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k):
+        return None
+
+_no_follow = urllib.request.build_opener(_NoRedirect)
+
+def redirects_to(path, location):
+    try:
+        _no_follow.open(urllib.request.Request(BASE + path, headers={"User-Agent": UA}), timeout=15)
+        fails.append(f"{path}: expected 301 -> {location}, got a non-redirect response")
+    except urllib.error.HTTPError as e:
+        got = urllib.parse.urlsplit(e.headers.get("Location", "")).path
+        if e.code not in (301, 308):
+            fails.append(f"{path}: expected 301 -> {location}, got HTTP {e.code}")
+        elif got != location:
+            fails.append(f"{path}: 301 Location path {got!r} != {location!r}")
+    except Exception as e:
+        fails.append(f"{path}: {e}")
+
+for _src, _dst in [("/projects", "/"), ("/projects/", "/"),
+                   ("/project-sheet-llm.html", "/projects/sheet-llm")]:
+    redirects_to(_src, _dst)
 
 print(f"checked {len(PAGES)} pages + {len(resources)} resources at {BASE}")
 if fails:

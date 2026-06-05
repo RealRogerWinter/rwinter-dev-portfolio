@@ -5,13 +5,13 @@
 // [data-anim]); SeoRunDemo hydrates on scroll (client:visible); the micro-viz
 // (band, CTA, prev/next minis) is a client:only island. The inert Tweaks panel
 // is dropped; its vizAnim flag is bridged via [data-anim] in CSS.
-import Page from '../layouts/Page.astro';
-import SeoIcon from '../components/SeoIcon.astro';
-import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
-import { IntentVariants, PipelineDiagram, HybridLLM, LocaleFanout, SeoRunDemo } from '../components/viz/multilingual-seo.jsx';
-import { projects } from '../data/portfolio.js';
-import '../styles/microviz.css';
-import '../styles/multilingual-seo.css';
+import Page from '../../layouts/Page.astro';
+import SeoIcon from '../../components/SeoIcon.astro';
+import ProjectVizIsland from '../../components/viz/ProjectVizIsland.jsx';
+import { IntentVariants, PipelineDiagram, HybridLLM, LocaleFanout, SeoRunDemo } from '../../components/viz/multilingual-seo.jsx';
+import { projects } from '../../data/portfolio.js';
+import '../../styles/microviz.css';
+import '../../styles/multilingual-seo.css';
 
 const p = projects.find((x) => x.id === 'multilingual-seo');
 const idx = projects.findIndex((x) => x.id === 'multilingual-seo');
@@ -30,7 +30,7 @@ const stack = [
 <Page
   title="Multilingual SEO Tool — Roger Winter"
   description={p.desc}
-  canonical="https://rogerwinter.dev/project-multilingual-seo.html"
+  canonical="https://rogerwinter.dev/projects/multilingual-seo"
   active=""
   ogType="article"
   ogImage="https://rogerwinter.dev/portfolio/assets/seo-results.png"
@@ -145,12 +145,12 @@ const stack = [
     <p class="sp-p">The front end renders each locale's result the moment its score lands. Beyond the ranked list, it surfaces hreflang gaps the page hasn't covered yet and flags where dialects split on the actual term, like Spain's "zapatillas" against Mexico's "tenis".</p>
     <figure class="sp-frame">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">multilingual-seo · results + cross-dialect divergence</span></div>
-      <div class="frame"><img src="portfolio/assets/seo-results.png" alt="The results view: opportunity stat band, hreflang coverage with already-served versus missing locales, and side-by-side cross-dialect divergence cards" /></div>
+      <div class="frame"><img src="/portfolio/assets/seo-results.png" alt="The results view: opportunity stat band, hreflang coverage with already-served versus missing locales, and side-by-side cross-dialect divergence cards" /></div>
       <figcaption class="cap"><b>Run summary</b> — opportunity stats, hreflang coverage gaps, and side-by-side dialect divergence.</figcaption>
     </figure>
     <figure class="sp-frame">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">multilingual-seo · keyword opportunities</span></div>
-      <div class="frame"><img src="portfolio/assets/seo-opps.png" alt="The keyword opportunities table: each translated variant scored on volume, competition, CPC, intent and traffic value, with a why-this-variant note" /></div>
+      <div class="frame"><img src="/portfolio/assets/seo-opps.png" alt="The keyword opportunities table: each translated variant scored on volume, competition, CPC, intent and traffic value, with a why-this-variant note" /></div>
       <figcaption class="cap"><b>Keyword opportunities</b> — every variant scored on volume, competition, CPC, intent, and traffic value, with a note on why it wins its locale.</figcaption>
     </figure>
     <div class="sp-callout">
@@ -190,12 +190,12 @@ const stack = [
 
   {/* prev/next */}
   <nav class="sp-nav">
-    <a class="sp-navcard prev" href={`project-${prev.id}.html`}>
+    <a class="sp-navcard prev" href={`/projects/${prev.id}`}>
       <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
     </a>
-    <a class="sp-navcard next" href={`project-${next.id}.html`}>
+    <a class="sp-navcard next" href={`/projects/${next.id}`}>
       <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>

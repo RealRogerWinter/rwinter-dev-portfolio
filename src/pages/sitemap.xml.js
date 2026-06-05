@@ -6,8 +6,8 @@ import { getCollection } from 'astro:content';
 const SITE = 'https://rogerwinter.dev';
 const MAIN = [
   '/', '/bio.html', '/contact.html',
-  '/project-multilingual-seo.html', '/project-onestreamer.html',
-  '/project-price-games.html', '/project-pricey.html', '/project-sheet-llm.html',
+  '/projects/multilingual-seo', '/projects/onestreamer',
+  '/projects/price-games', '/projects/pricey', '/projects/sheet-llm',
   '/writeups.html',
 ];
 

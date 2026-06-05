@@ -5,12 +5,12 @@
 // PriceGuessDemo hydrates on scroll (client:visible, deterministic initial round);
 // the micro-viz (band, CTA, related-card, prev/next minis) is a client:only island.
 // The inert Tweaks panel is dropped; its vizAnim flag is bridged via [data-anim].
-import Page from '../layouts/Page.astro';
-import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
-import { PairingDiagram, AgentPipelineDiagram, LobbyMock, PriceGuessDemo } from '../components/viz/price-games.jsx';
-import { projects } from '../data/portfolio.js';
-import '../styles/microviz.css';
-import '../styles/price-games.css';
+import Page from '../../layouts/Page.astro';
+import ProjectVizIsland from '../../components/viz/ProjectVizIsland.jsx';
+import { PairingDiagram, AgentPipelineDiagram, LobbyMock, PriceGuessDemo } from '../../components/viz/price-games.jsx';
+import { projects } from '../../data/portfolio.js';
+import '../../styles/microviz.css';
+import '../../styles/price-games.css';
 
 const p = projects.find((x) => x.id === 'price-games');
 const idx = projects.findIndex((x) => x.id === 'price-games');
@@ -20,13 +20,13 @@ const pricey = projects.find((x) => x.id === 'pricey');
 const SITE = 'https://price.games';
 
 const PG_MODES = [
-  { n: 'Precision', d: 'Guess the exact price of a product.', href: '/play/classic', img: 'portfolio/assets/modes/precision.webp' },
-  { n: 'Higher or Lower', d: 'Is the next price higher or lower?', href: '/play/higher-lower', img: 'portfolio/assets/modes/higher-or-lower.webp' },
-  { n: 'Comparison', d: 'Pick which product costs more, or less.', href: '/play/comparison', img: 'portfolio/assets/modes/comparison.webp' },
-  { n: 'Price Match', d: 'Match four products to four prices.', href: '/play/price-match', img: 'portfolio/assets/modes/price-match.webp' },
-  { n: 'Riser', d: "Stop the rising price before it's over.", href: '/play/riser', img: 'portfolio/assets/modes/riser.webp' },
-  { n: 'Budget Builder', d: 'Fill a budget without going over.', href: '/play/budget-builder', img: 'portfolio/assets/modes/budget-builder.webp' },
-  { n: 'Bidding War', d: 'Bid in turns; closest under wins.', href: '/mp', img: 'portfolio/assets/modes/bidding-war.webp' },
+  { n: 'Precision', d: 'Guess the exact price of a product.', href: '/play/classic', img: '/portfolio/assets/modes/precision.webp' },
+  { n: 'Higher or Lower', d: 'Is the next price higher or lower?', href: '/play/higher-lower', img: '/portfolio/assets/modes/higher-or-lower.webp' },
+  { n: 'Comparison', d: 'Pick which product costs more, or less.', href: '/play/comparison', img: '/portfolio/assets/modes/comparison.webp' },
+  { n: 'Price Match', d: 'Match four products to four prices.', href: '/play/price-match', img: '/portfolio/assets/modes/price-match.webp' },
+  { n: 'Riser', d: "Stop the rising price before it's over.", href: '/play/riser', img: '/portfolio/assets/modes/riser.webp' },
+  { n: 'Budget Builder', d: 'Fill a budget without going over.', href: '/play/budget-builder', img: '/portfolio/assets/modes/budget-builder.webp' },
+  { n: 'Bidding War', d: 'Bid in turns; closest under wins.', href: '/mp', img: '/portfolio/assets/modes/bidding-war.webp' },
 ];
 
 const stack = [
@@ -45,7 +45,7 @@ const stack = [
 <Page
   title="Price Games — Roger Winter"
   description={p.desc}
-  canonical="https://rogerwinter.dev/project-price-games.html"
+  canonical="https://rogerwinter.dev/projects/price-games"
   active=""
   ogType="article"
   ogImage="https://rogerwinter.dev/portfolio/assets/pg-hero.png"
@@ -121,12 +121,12 @@ const stack = [
     <div class="pg-gallery">
       <div class="pg-shot">
         <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>price.games</b></span></div>
-        <div class="frame"><img src="portfolio/assets/pg-hero.png" alt="The Price Games home screen with the daily challenge and the grid of game modes" /></div>
+        <div class="frame"><img src="/portfolio/assets/pg-hero.png" alt="The Price Games home screen with the daily challenge and the grid of game modes" /></div>
         <div class="cap"><b>Pick a game</b> — daily challenge, multiplayer, and every mode</div>
       </div>
       <div class="pg-shot">
         <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>price.games</b>/mp</span></div>
-        <div class="frame"><img src="portfolio/assets/pg-round.png" alt="A Price Games round in progress: a Magna-Tiles set to price, a guess slider, a turn timer, and three players" /></div>
+        <div class="frame"><img src="/portfolio/assets/pg-round.png" alt="A Price Games round in progress: a Magna-Tiles set to price, a guess slider, a turn timer, and three players" /></div>
         <div class="cap"><b>In a round</b> — guess the price before the timer runs out</div>
       </div>
     </div>
@@ -156,7 +156,7 @@ const stack = [
         <h2 class="pg-h2">Bring friends, or fill seats with bots</h2>
         <p class="pg-p">Public and private lobbies run on shareable links: open a room, send the link, and play together in real time. Short on players? Add bots at a difficulty that fits the table.</p>
         <div class="pg-bw">
-          <img class="pg-bwimg" src="portfolio/assets/modes/bidding-war.webp" alt="" />
+          <img class="pg-bwimg" src="/portfolio/assets/modes/bidding-war.webp" alt="" />
           <span><b>Bidding War</b> is the multiplayer headliner: players bid in turns on one product, closest under the real price wins.</span>
         </div>
       </div>
@@ -182,7 +182,7 @@ const stack = [
     </div>
     <div class="pg-dash">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url">Analytics</span><span class="tag">Admin</span></div>
-      <div class="frame"><img src="portfolio/assets/pg-analytics.png" alt="The custom analytics dashboard: games completed by variant over time, games completed by mode, and game starts by source" /></div>
+      <div class="frame"><img src="/portfolio/assets/pg-analytics.png" alt="The custom analytics dashboard: games completed by variant over time, games completed by mode, and game starts by source" /></div>
       <div class="cap"><b>The custom analytics dashboard</b> — games by variant and mode over time, and where each game started: homepage, room link, quickplay, or the game browser.</div>
     </div>
   </section>
@@ -200,7 +200,7 @@ const stack = [
   </section>
 
   {/* pricey cross-link */}
-  <a class="pg-related" href="project-pricey.html">
+  <a class="pg-related" href="/projects/pricey">
     <div class="rv"><ProjectVizIsland id="pricey" client:only="react" /></div>
     <div class="ri"><img src={pricey.logo} alt="Pricey logo" /></div>
     <div class="rt">
@@ -244,12 +244,12 @@ const stack = [
 
   {/* prev/next */}
   <nav class="pg-nav">
-    <a class="pg-navcard prev" href={`project-${prev.id}.html`}>
+    <a class="pg-navcard prev" href={`/projects/${prev.id}`}>
       <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
     </a>
-    <a class="pg-navcard next" href={`project-${next.id}.html`}>
+    <a class="pg-navcard next" href={`/projects/${next.id}`}>
       <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>

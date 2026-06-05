@@ -49,8 +49,8 @@ import '../styles/home.css';
             )}
             <span class="pc-num">{p.n}</span>
           </div>
-          <h3 class="pc-name"><a href={`project-${p.id}.html`}>{p.name}</a></h3>
-          <p class="pc-desc">{p.desc} <a class="pc-readmore" href={`project-${p.id}.html`}>Read more →</a></p>
+          <h3 class="pc-name"><a href={`/projects/${p.id}`}>{p.name}</a></h3>
+          <p class="pc-desc">{p.desc} <a class="pc-readmore" href={`/projects/${p.id}`}>Read more →</a></p>
           <div class="tm-tags pc-tags">{p.tags.map((tg) => <span class="tm-tag">{tg}</span>)}</div>
           <div class="pc-links">
             {p.id !== 'multilingual-seo' && (
@@ -60,7 +60,7 @@ import '../styles/home.css';
             )}
             <a class="pc-mini" href={p.repo}>GitHub <span class="ar">↗</span></a>
           </div>
-          <a class="pc-cta" href={`project-${p.id}.html`}>
+          <a class="pc-cta" href={`/projects/${p.id}`}>
             <span>Read the writeup</span>
             <span class="arr">→</span>
           </a>
