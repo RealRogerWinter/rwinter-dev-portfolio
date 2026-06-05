@@ -8,6 +8,7 @@
     "pretest": "npm run build",
     "test": "vitest run",
     "lint": "astro build && htmlhint \"dist/**/*.html\"",
+    "csp:hashes": "astro build && node scripts/print-csp-hashes.mjs",
     "build": "astro build",
     "dev": "astro dev",
     "test:visual": "playwright test",

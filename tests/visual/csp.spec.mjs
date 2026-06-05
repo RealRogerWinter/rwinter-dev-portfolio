@@ -48,14 +48,17 @@ for (const p of CSP_PAGES) {
     page.on('pageerror', (e) => pageErrors.push(e.message));
 
     await page.goto(p, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(400); // let islands hydrate
 
+    // The client:only micro-viz only renders if its inline runtime executed; wait
+    // on it as the hydration signal (auto-retrying, no fixed sleep). If a hash were
+    // wrong the runtime is blocked and `.mv` never appears.
+    await expect(page.locator('.mv').first(), `${p}: a client:only viz island hydrated under CSP`).toBeVisible({ timeout: 6000 });
+
+    // Violations fire synchronously as the browser blocks a script during load, so
+    // by now any would be recorded.
     const violations = await page.evaluate(() => window.__csp || []);
     const scriptViolations = violations.filter((v) => /script/i.test(v.directive));
     expect(scriptViolations, `script-src CSP violations on ${p}`).toEqual([]);
-
-    // The client:only micro-viz only renders if its inline runtime executed.
-    expect(await page.locator('.mv').count(), `${p}: a client:only viz island hydrated under CSP`).toBeGreaterThan(0);
     expect(pageErrors, `uncaught page errors on ${p}`).toEqual([]);
   });
 }

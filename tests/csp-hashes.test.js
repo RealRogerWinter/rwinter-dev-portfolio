@@ -17,7 +17,11 @@ const CONF = path.join(DIST, '..', 'deploy', 'default.conf');
 // or a JS MIME) or a module. Non-executable data blocks (application/json that
 // Astro could emit for island props, ld+json structured data, importmaps) are not
 // hash-checked by the browser, so they must not be required in the allowlist.
+// The current build emits only bare `<script>` tags, so the type filter is
+// defensive — it future-proofs the guard against an Astro change that adds a data
+// block. (Keep this set in sync with scripts/print-csp-hashes.mjs.)
 const EXECUTABLE = new Set(['', 'module', 'text/javascript', 'application/javascript', 'text/ecmascript', 'application/ecmascript']);
+const REGEN = 'run `npm run csp:hashes` and paste the result into deploy/default.conf script-src';
 
 // sha256-base64 of every distinct executable inline <script> (no src) across all
 // built pages, matching exactly what a browser hashes for a CSP script-src allowlist.
@@ -62,8 +66,8 @@ describe('hash-locked CSP covers exactly the built inline scripts', () => {
     const csp = new Set([...cspScriptSrc().matchAll(/'(sha256-[^']+)'/g)].map((m) => m[1]));
     expect(built.size, 'the build emits at least one inline script').toBeGreaterThan(0);
     // No built inline script may be blocked (missing from the CSP)...
-    for (const h of built) expect([...csp], `built inline script ${h} is not allowlisted in default.conf`).toContain(h);
+    for (const h of built) expect([...csp], `built inline script ${h} is not allowlisted in default.conf — ${REGEN}`).toContain(h);
     // ...and no CSP hash may be stale (allowlisting a script no page emits).
-    for (const h of csp) expect([...built], `CSP hash ${h} matches no built inline script (stale)`).toContain(h);
+    for (const h of csp) expect([...built], `CSP hash ${h} matches no built inline script (stale) — ${REGEN}`).toContain(h);
   });
 });
