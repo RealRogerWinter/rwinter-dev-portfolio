@@ -25,11 +25,12 @@ Browser ──TLS──▶ Cloudflare edge (proxy / WAF / cache)
                    └ serves the static site on :8080
 ```
 
-The site renders client-side: each HTML page boots React (self-hosted) and
-transpiles its JSX component graph with Babel in the browser — exactly as the
-design preview ran, so it is visually faithful. Vendor libraries are
-**self-hosted** (no runtime CDN dependency); React is the production build and
-Babel is byte-verified against the design's Subresource-Integrity hash.
+The site is an [Astro](https://astro.build) app: every page is prerendered to
+static HTML at build time, and JavaScript ships **only** for the interactive
+React-island visualizations (bundled to content-hashed `/_astro/*`, served
+same-origin). There is no runtime CDN dependency and no in-browser transpile, so
+`script-src` carries neither `'unsafe-eval'` nor `'unsafe-inline'`. Project pages
+are served at clean, extensionless URLs — `/projects/<id>`.
 
 See [`docs/architecture.md`](docs/architecture.md) for the full picture and the
 migration decisions (incl. the `HOME_FILE` fix and what was dropped from the
@@ -38,28 +39,31 @@ export).
 ## Repository layout
 
 ```
-site/                     deployable static site (the source of truth)
-  index.html              home  (renamed from "Roger Winter - Portfolio.html")
-  bio.html  contact.html
-  project-*.html          5 project pages
-  tweaks-panel.jsx        design theme engine (panel is inert in production)
-  portfolio/*.jsx         21 React components (shell, data, per-project)
+src/                      Astro source — what `npm run build` renders to dist/
+  pages/                  routes: index, bio, contact, projects/<id>, writeups/, sitemap.xml.js
+  layouts/  components/   shared shell + chrome + React-island viz (components/viz/)
+  content/  data/         writeups collection + project metadata
+  styles/                 per-page stylesheets the pages link
+site/                     publicDir — copied verbatim into the build output
   portfolio/assets/       images used by the site
-  vendor/                 self-hosted React (prod) + Babel  (+ VENDOR.lock)
-  favicon.svg robots.txt sitemap.xml
+  vendor/fonts/           self-hosted, subset web fonts
+  favicon.svg  robots.txt
+astro.config.mjs          build config (publicDir=site, outDir=dist, format=file)
 deploy/
-  default.conf            nginx server block (headers, CSP, gzip, cache, health)
+  default.conf            nginx server block (headers, CSP, gzip, cache, clean URLs, health)
   Caddyfile.rogerwinter.snippet   site block to append to the shared Caddyfile
   deploy.sh               server-side forced-command deploy (root, via sudo)
-Dockerfile                non-root nginx image
+Dockerfile                non-root nginx image (serves the prebuilt dist/)
 docker-compose.yml        loopback-only stack (127.0.0.1:3001), hardened
-.circleci/config.yml      build → verify → push → APPROVE → deploy
+.circleci/config.yml      lint/test/visual/verify → build → push → APPROVE → deploy
 scripts/
   fetch-fonts.py              (re)download + subset the self-hosted web fonts
   optimize-images.py          generate WebP variants of the heavy screenshots
   make-og-image.py            render the OpenGraph share card
-  smoke.py                    post-deploy smoke test (pages/assets/headers/404)
-docs/                     architecture, deploy runbook, security, CI/CD, Cloudflare
+  print-csp-hashes.mjs        recompute the CSP script-src hashes from the build
+  smoke.py                    post-deploy smoke test (pages/assets/headers/404s)
+tests/                    vitest (structure/SEO/integrity/…) + Playwright visual harness
+docs/                     architecture, deploy runbook, security, CI/CD, Cloudflare, ADRs
 ```
 
 ## Local development
@@ -84,8 +88,9 @@ docker compose up -d --build
 python3 scripts/smoke.py http://127.0.0.1:3001
 ```
 
-Open <http://127.0.0.1:3001/>. `site/` and `vendor/` are committed, so steps 1–2
-are only needed when the design or vendored libs change.
+Open <http://127.0.0.1:3001/>. The tests and the container both consume the built
+`dist/`, so `npm run build` must run first; `npm test` does it automatically via
+its `pretest` hook.
 
 ## Deployment
 
