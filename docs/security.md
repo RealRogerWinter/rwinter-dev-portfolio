@@ -68,9 +68,9 @@ The Content-Security-Policy is scoped to exactly what the site loads:
 
 ```
 default-src 'self';
-script-src 'self' 'unsafe-inline' 'unsafe-eval';
-style-src  'self' 'unsafe-inline' https://fonts.googleapis.com;
-font-src   'self' https://fonts.gstatic.com;
+script-src 'self' 'unsafe-inline';
+style-src  'self' 'unsafe-inline';
+font-src   'self';
 img-src    'self' data:;
 connect-src 'self';
 frame-src  https://player.twitch.tv;
@@ -78,15 +78,18 @@ frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 ```
 
 - `default-src 'self'` — deny-by-default; everything falls back to same-origin.
-- `script-src 'self' 'unsafe-inline' 'unsafe-eval'` — **`'unsafe-inline'` and
-  `'unsafe-eval'` are required ONLY by the in-browser Babel runtime.** Each page boots
-  React and transpiles its JSX with `@babel/standalone` in the browser; Babel
-  compiles JSX to JS strings and evaluates them, which needs `eval`, and the inline
-  bootstrap scripts need `'unsafe-inline'`. **Precompiling the JSX to plain JS at
-  build time removes Babel entirely and lets us tighten this to `'self'` (ideally
-  nonce/hash-based).** This is the single biggest CSP weakening today.
-- `style-src`/`font-src` — `'self'` plus Google Fonts (`fonts.googleapis.com`
-  stylesheet, `fonts.gstatic.com` font files).
+- `script-src 'self' 'unsafe-inline'` — **`'unsafe-eval'` is gone.** It existed
+  only for the in-browser `@babel/standalone` transpiler, which the Astro migration
+  removed; the React islands now ship a prebuilt production bundle under
+  content-hashed `/_astro/` (covered by `'self'`) and never `eval`. The remaining
+  `'unsafe-inline'` covers the two inline scripts every page emits — the pre-paint
+  theme bootstrap and Astro's island-hydration runtime. The follow-up cutover step
+  replaces it with their `sha256-…` hashes (and a CI drift-guard), tightening this
+  to `'self' 'sha256-…'`.
+- `style-src 'self' 'unsafe-inline'` / `font-src 'self'` — fonts are **self-hosted**
+  under `/vendor/fonts`, so no Google Fonts origins (`fonts.googleapis.com` /
+  `fonts.gstatic.com`) appear. `'unsafe-inline'` on `style-src` covers Astro's
+  scoped-style and the small inline `<style>` reset.
 - `img-src 'self' data:` — same-origin images (only `portfolio/assets/`) plus inline
   `data:` images.
 - `connect-src 'self'` — no third-party fetch/XHR/WebSocket egress.
@@ -123,12 +126,13 @@ no runtime secrets/`.env`.
 
 ## 5. Supply Chain
 
-- **Vendored front-end libs** — React 18.3.1 (production UMD) and
-  `@babel/standalone` 7.29.0 are **self-hosted in `site/vendor/`**; there is no
-  runtime CDN dependency.
-- **`site/vendor/VENDOR.lock`** records each file's exact SHA-384 SRI hash and byte
-  size; Babel was **byte-verified against the design export's Subresource-Integrity
-  hash**, so the bundle we ship is provably the one we vetted.
+- **React is build-bundled, not vendored at runtime** — the in-browser Babel +
+  vendored React UMD scripts were removed at cutover. React 18.3.1 now comes from
+  `node_modules` (pinned in `package-lock.json`), and Astro/Vite bundles only the
+  island code into **content-hashed `/_astro/*.js`** served same-origin. There is no
+  runtime CDN dependency and no `eval`.
+- **Self-hosted fonts** — the only remaining `site/vendor/` payload is the subset
+  web fonts under `vendor/fonts/`, referenced solely by same-origin `@font-face`.
 - **Pinned nginx base** — `nginxinc/nginx-unprivileged:1.27-alpine`.
 - **Image pinned by digest at deploy** — CI captures `RepoDigests` after push, and
   the VPS only ever runs a `@sha256:...` digest, so deploys are immutable and
@@ -144,17 +148,17 @@ no runtime secrets/`.env`.
 - [x] Security headers + tightly scoped CSP.
 - [x] No secrets in repo/image/logs; CI secret-scan; contexts; forced-command +
       digest-validated deploy; narrow sudoers.
-- [x] Vendored libs with SRI hashes in `VENDOR.lock`; base image + deploy image
-      pinned.
+- [x] React build-bundled to content-hashed `/_astro/` (no runtime CDN, no `eval`);
+      base image + deploy image pinned.
 
 ## Residual Risks & Future Work
 
-- **In-browser Babel forces `'unsafe-inline'`/`'unsafe-eval'`.** *Highest priority:*
-  precompile JSX to JS at build time, drop `@babel/standalone`, and tighten
-  `script-src` to `'self'` (nonce/hash-based, no `eval`).
-- **Vendor `<script>` tags do not yet carry `integrity=` SRI attributes.** The hashes
-  are recorded in `VENDOR.lock`; wire them onto the actual `<script>` tags so a
-  tampered local file fails closed.
+- **`script-src` still allows `'unsafe-inline'`.** In-browser Babel is gone and
+  `'unsafe-eval'` with it; the remaining `'unsafe-inline'` is needed only by the two
+  inline scripts each page emits (the pre-paint theme bootstrap and Astro's
+  island-hydration runtime). *Next step:* replace it with their `sha256-…` hashes,
+  guarded by a CI test that recomputes the hashes from the built output so a drift
+  fails closed.
 - **No edge WAF / rate limiting yet.** Enable Cloudflare WAF managed rules and a
   rate-limit rule once the zones are onboarded, since the origin has no app-layer
   throttling.

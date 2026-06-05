@@ -7,8 +7,7 @@
   "scripts": {
     "pretest": "npm run build",
     "test": "vitest run",
-    "//lint": "TODO(#13): all pages migrated to Astro, so site/*.html is now empty and this lint is vacuous (scans 0 files). The cutover repoints htmlhint at the built dist/ HTML so it lints what actually ships.",
-    "lint": "htmlhint \"site/*.html\"",
+    "lint": "astro build && htmlhint \"dist/**/*.html\"",
     "build": "astro build",
     "dev": "astro dev",
     "test:visual": "playwright test",
