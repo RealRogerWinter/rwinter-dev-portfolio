@@ -91,7 +91,8 @@ Container hardening (`docker-compose.yml`): `read_only` rootfs with tmpfs for `/
 
 ## 5. Known limitations & future work
 
-- **Precompile JSX to drop in-browser Babel.** `babel.min.js` is ~3 MB shipped to every visitor and transpiles on each load. Precompiling JSX to JS at build time would remove that payload **and** let the CSP drop `'unsafe-eval'`/`'unsafe-inline'` from `script-src` (currently required only by the runtime Babel transform).
-- **SEO of client-rendered pages.** Content is rendered client-side, so crawlers see an empty `<div id="root">` plus the meta tags. Consider SSR or build-time prerendering to emit real HTML.
-- **Optimize large screenshots.** `portfolio/assets/onestreamer-stream.png` (~4.4 MB) and `pricey-stream.png` (~1.5 MB) dominate page weight; recompress and/or convert to WebP/AVIF with responsive sizes.
-- **Self-host Google Fonts.** Fonts currently load from `fonts.googleapis.com`/`fonts.gstatic.com`. Self-hosting them would remove the third-party dependency and tighten `style-src`/`font-src`.
+The original pre-migration limitations were all resolved by the Astro migration: the ~3 MB in-browser Babel payload is gone (pages prerender to static HTML and ship JS only for the island viz), so crawlers get real content and `script-src` dropped both `'unsafe-eval'` and `'unsafe-inline'`; the heavy screenshots serve as WebP with a PNG fallback; and the web fonts are self-hosted and subset under `/vendor/fonts/`.
+
+Remaining:
+
+- **Responsive & AVIF images.** The heavy screenshots (`onestreamer-stream`, `pricey-stream`) ship as WebP with a PNG fallback, but not yet as AVIF or responsive `srcset` sizes. Routing them through Astro's `<Image>`/`<Picture>` pipeline would cut more bytes on smaller viewports.
