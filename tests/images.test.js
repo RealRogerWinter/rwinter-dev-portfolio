@@ -25,9 +25,9 @@ describe('heavy screenshots optimized to WebP (PNG kept as fallback)', () => {
   it('components serve the WebP with a PNG fallback intact', () => {
     // Both pages migrated to Astro: <picture> markup in the page, the CSS
     // image-set background + .{os,pcy}-tour rule in the stylesheet.
-    const pricey = readRoot('src/pages/project-pricey.astro');
+    const pricey = readRoot('src/pages/projects/pricey.astro');
     const priceyCss = readRoot('src/styles/pricey.css');
-    const onestreamer = readRoot('src/pages/project-onestreamer.astro');
+    const onestreamer = readRoot('src/pages/projects/onestreamer.astro');
     // pricey uses the image as a CSS background (image-set) and in <picture>.
     expect(priceyCss, 'bg uses image-set with webp').toMatch(/image-set\([^;]*pricey-stream\.webp/);
     expect(pricey, 'webp <source>').toContain('pricey-stream.webp');
@@ -37,8 +37,8 @@ describe('heavy screenshots optimized to WebP (PNG kept as fallback)', () => {
   });
 
   it('the <img> reserve their 2560x1440 dimensions (CLS guard)', () => {
-    const pricey = readRoot('src/pages/project-pricey.astro');
-    const onestreamer = readRoot('src/pages/project-onestreamer.astro');
+    const pricey = readRoot('src/pages/projects/pricey.astro');
+    const onestreamer = readRoot('src/pages/projects/onestreamer.astro');
     expect(pricey).toMatch(/pricey-stream\.png" width="2560" height="1440"/);
     expect(onestreamer).toMatch(/onestreamer-stream\.png" width="2560" height="1440"/);
     // width:100% needs height:auto or the height attr distorts the image.

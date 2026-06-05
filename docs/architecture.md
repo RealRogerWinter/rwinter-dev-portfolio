@@ -17,7 +17,7 @@ This document describes how the Roger Winter portfolio is built, structured, and
 
 ## 1. What the site is
 
-The portfolio at [rogerwinter.dev](https://rogerwinter.dev) is a **lightweight, multi-page static site**. It has eight deployed pages — `index.html` (home), `bio.html`, `contact.html`, and five project pages (`project-multilingual-seo.html`, `project-onestreamer.html`, `project-price-games.html`, `project-pricey.html`, `project-sheet-llm.html`) — plus a `writeups/` section, `favicon.svg`, `robots.txt`, and a generated `sitemap.xml`. `npm run build` (Astro) renders these to `dist/`, which is what the nginx image serves; there is **no server-side application**. *(Originally — pre-migration — `site/` was the committed HTML and there was no build step; the rest of this section describes that historical model.)*
+The portfolio at [rogerwinter.dev](https://rogerwinter.dev) is a **lightweight, multi-page static site**. It has eight deployed pages — `index.html` (home), `bio.html`, `contact.html`, and five project pages served at clean, extensionless URLs (`/projects/sheet-llm`, `/projects/onestreamer`, `/projects/price-games`, `/projects/pricey`, `/projects/multilingual-seo`) — plus a `writeups/` section, `favicon.svg`, `robots.txt`, and a generated `sitemap.xml`. `npm run build` (Astro) renders these to `dist/` (the project pages as `dist/projects/<id>.html`), which is what the nginx image serves; there is **no server-side application**. *(Originally — pre-migration — `site/` was the committed HTML and there was no build step; the rest of this section describes that historical model.)*
 
 ### Client-side React-via-Babel rendering model (historical — replaced by Astro islands)
 
@@ -87,7 +87,7 @@ The site is served by a hardened, non-root nginx container (`nginxinc/nginx-unpr
                └ serves static site on :8080  ·  /healthz probe
 ```
 
-Container hardening (`docker-compose.yml`): `read_only` rootfs with tmpfs for `/tmp`, `/var/cache/nginx`, `/var/run`; `cap_drop: ALL`; `no-new-privileges:true`; `mem_limit: 128m`; HEALTHCHECK on `/healthz`; json-file log rotation (10m × 5). The site needs **no runtime secrets**. `nginx` (`deploy/default.conf`) sets a strict CSP and cache policy: HTML/JSX revalidate every request so deploys are picked up immediately, while `/vendor/*`, images, and fonts cache for a week.
+Container hardening (`docker-compose.yml`): `read_only` rootfs with tmpfs for `/tmp`, `/var/cache/nginx`, `/var/run`; `cap_drop: ALL`; `no-new-privileges:true`; `mem_limit: 128m`; HEALTHCHECK on `/healthz`; json-file log rotation (10m × 5). The site needs **no runtime secrets**. `nginx` (`deploy/default.conf`) sets a strict CSP and cache policy: HTML/JSX revalidate every request so deploys are picked up immediately, while `/vendor/*`, images, and fonts cache for a week. It also serves the project pages at clean, extensionless `/projects/<id>` URLs (mapped onto the built `/projects/<id>.html`) and 301-redirects the page-less `/projects` and any legacy `/project-<id>.html` links to their canonical target.
 
 ## 5. Known limitations & future work
 

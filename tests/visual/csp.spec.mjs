@@ -22,7 +22,7 @@ const CSP = process.env.CSP_OVERRIDE || (() => {
 
 // '/' exercises the theme bootstrap + Astro's client:only runtime; the pricey page
 // adds the client:visible runtime (BrainTopology/MoodWheel) — all three hashes.
-const CSP_PAGES = ['/', '/project-pricey.html'];
+const CSP_PAGES = ['/', '/projects/pricey'];
 
 for (const p of CSP_PAGES) {
   test(`CSP runs every inline script: ${p} @ci`, async ({ page }) => {

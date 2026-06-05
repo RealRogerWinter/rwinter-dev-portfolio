@@ -5,12 +5,12 @@
 // CSS-only, gated by [data-anim]); the micro-viz (band, CTA, prev/next minis)
 // is a client:only island. No interactive demos on this page. The inert Tweaks
 // panel is dropped; its vizAnim flag is bridged via [data-anim] in CSS.
-import Page from '../layouts/Page.astro';
-import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
-import { TakeoverDiagram, ViewerPipelineDiagram, ArchitectureDiagram } from '../components/viz/onestreamer.jsx';
-import { projects } from '../data/portfolio.js';
-import '../styles/microviz.css';
-import '../styles/onestreamer.css';
+import Page from '../../layouts/Page.astro';
+import ProjectVizIsland from '../../components/viz/ProjectVizIsland.jsx';
+import { TakeoverDiagram, ViewerPipelineDiagram, ArchitectureDiagram } from '../../components/viz/onestreamer.jsx';
+import { projects } from '../../data/portfolio.js';
+import '../../styles/microviz.css';
+import '../../styles/onestreamer.css';
 
 const p = projects.find((x) => x.id === 'onestreamer');
 const idx = projects.findIndex((x) => x.id === 'onestreamer');
@@ -40,7 +40,7 @@ const tourPins = [
 <Page
   title="OneStreamer — Roger Winter"
   description={p.desc}
-  canonical="https://rogerwinter.dev/project-onestreamer.html"
+  canonical="https://rogerwinter.dev/projects/onestreamer"
   active=""
   ogType="article"
   ogImage="https://rogerwinter.dev/portfolio/assets/onestreamer.png"
@@ -81,7 +81,7 @@ const tourPins = [
     <h2 class="os-h2">One stream, wrapped in a control room</h2>
     <p class="os-p">Every viewer sees the same thing: the live game full-bleed, the streamer's own cam, a switch timer counting down to the next takeover, and a chat where real people and AI viewers talk over each other.</p>
     <figure class="os-tour" style="margin:8px 0 0">
-      <picture><source srcset="portfolio/assets/onestreamer-stream.webp" type="image/webp" /><img src="portfolio/assets/onestreamer-stream.png" width="2560" height="1440" alt="An annotated frame of the OneStreamer interface" loading="lazy" /></picture>
+      <picture><source srcset="/portfolio/assets/onestreamer-stream.webp" type="image/webp" /><img src="/portfolio/assets/onestreamer-stream.png" width="2560" height="1440" alt="An annotated frame of the OneStreamer interface" loading="lazy" /></picture>
       {tourPins.map((pin) => (
         <span class={'pin' + (pin.r ? ' r' : '')} style={`left:${pin.left}%;top:${pin.top}%`}>
           <span class="dot"></span><span class="lab">{pin.l}</span>
@@ -209,12 +209,12 @@ const tourPins = [
 
   {/* prev/next */}
   <nav class="os-nav">
-    <a class="os-navcard prev" href={`project-${prev.id}.html`}>
+    <a class="os-navcard prev" href={`/projects/${prev.id}`}>
       <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
     </a>
-    <a class="os-navcard next" href={`project-${next.id}.html`}>
+    <a class="os-navcard next" href={`/projects/${next.id}`}>
       <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
       <div class="miniscrim"></div>
       <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>

@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { PAGES, read, exists } from './_lib.js';
+import { PAGES, read, exists, fileToUrl } from './_lib.js';
 
 describe('site structure', () => {
   it('all eight pages exist', () => {
@@ -17,7 +17,9 @@ describe('site structure', () => {
   it('sitemap lists every page (home as the bare apex)', () => {
     const sm = read('sitemap.xml');
     for (const p of PAGES) {
-      const loc = p === 'index.html' ? 'https://rogerwinter.dev/' : `https://rogerwinter.dev/${p}`;
+      // The sitemap advertises the public URL, not the dist filename: project
+      // pages list the clean /projects/<id>, home the bare apex.
+      const loc = `https://rogerwinter.dev${fileToUrl(p)}`;
       expect(sm, p).toContain(`<loc>${loc}</loc>`);
     }
   });

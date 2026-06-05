@@ -7,11 +7,13 @@ export const PAGES = [
   { slug: 'index', path: '/' },
   { slug: 'bio', path: '/bio.html' },
   { slug: 'contact', path: '/contact.html' },
-  { slug: 'project-sheet-llm', path: '/project-sheet-llm.html' },
-  { slug: 'project-onestreamer', path: '/project-onestreamer.html' },
-  { slug: 'project-price-games', path: '/project-price-games.html' },
-  { slug: 'project-pricey', path: '/project-pricey.html' },
-  { slug: 'project-multilingual-seo', path: '/project-multilingual-seo.html' },
+  // slug stays the screenshot-baseline name; only the public path moved to the
+  // clean, extensionless /projects/<id>.
+  { slug: 'project-sheet-llm', path: '/projects/sheet-llm' },
+  { slug: 'project-onestreamer', path: '/projects/onestreamer' },
+  { slug: 'project-price-games', path: '/projects/price-games' },
+  { slug: 'project-pricey', path: '/projects/pricey' },
+  { slug: 'project-multilingual-seo', path: '/projects/multilingual-seo' },
 ];
 
 const DESKTOP = { width: 1280, height: 800 };
