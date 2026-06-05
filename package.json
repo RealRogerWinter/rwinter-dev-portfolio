@@ -8,10 +8,11 @@
     "pretest": "npm run build",
     "test": "vitest run",
     "lint": "astro build && htmlhint \"dist/**/*.html\"",
+    "csp:hashes": "astro build && node scripts/print-csp-hashes.mjs",
     "build": "astro build",
     "dev": "astro dev",
     "test:visual": "playwright test",
-    "test:visual:ci": "playwright test rendersmoke.spec.mjs selftest.spec.mjs",
+    "test:visual:ci": "playwright test rendersmoke.spec.mjs selftest.spec.mjs csp.spec.mjs",
     "test:visual:update": "playwright test pages.spec.mjs --update-snapshots"
   },
   "devDependencies": {

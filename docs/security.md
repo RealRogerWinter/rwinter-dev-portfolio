@@ -68,7 +68,7 @@ The Content-Security-Policy is scoped to exactly what the site loads:
 
 ```
 default-src 'self';
-script-src 'self' 'unsafe-inline';
+script-src 'self' 'sha256-<bootstrap>' 'sha256-<client:only>' 'sha256-<client:visible>';
 style-src  'self' 'unsafe-inline';
 font-src   'self';
 img-src    'self' data:;
@@ -78,14 +78,17 @@ frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 ```
 
 - `default-src 'self'` — deny-by-default; everything falls back to same-origin.
-- `script-src 'self' 'unsafe-inline'` — **`'unsafe-eval'` is gone.** It existed
-  only for the in-browser `@babel/standalone` transpiler, which the Astro migration
-  removed; the React islands now ship a prebuilt production bundle under
-  content-hashed `/_astro/` (covered by `'self'`) and never `eval`. The remaining
-  `'unsafe-inline'` covers the two inline scripts every page emits — the pre-paint
-  theme bootstrap and Astro's island-hydration runtime. The follow-up cutover step
-  replaces it with their `sha256-…` hashes (and a CI drift-guard), tightening this
-  to `'self' 'sha256-…'`.
+- `script-src 'self' 'sha256-…' ×3` — **hash-locked: no `'unsafe-inline'`, no
+  `'unsafe-eval'`.** The Astro migration removed the in-browser `@babel/standalone`
+  transpiler (which needed `eval`) and the window-global scripts (which needed
+  `'unsafe-inline'`). The only inline scripts that remain are pinned by sha256 hash:
+  the pre-paint theme bootstrap and Astro's two island-hydration runtimes
+  (`client:only` + `client:visible`). `'self'` covers the content-hashed `/_astro/*`
+  ES-module imports. Two CI guards keep the hashes honest:
+  `tests/csp-hashes.test.js` recomputes them from the built `dist/` and fails if the
+  policy drifts (e.g. an Astro upgrade), and `tests/visual/csp.spec.mjs` applies the
+  real policy in a headless browser and asserts zero violations + a hydrated island.
+  After an upgrade that changes a hash, `npm run csp:hashes` prints the new snippet.
 - `style-src 'self' 'unsafe-inline'` / `font-src 'self'` — fonts are **self-hosted**
   under `/vendor/fonts`, so no Google Fonts origins (`fonts.googleapis.com` /
   `fonts.gstatic.com`) appear. `'unsafe-inline'` on `style-src` covers Astro's
@@ -145,7 +148,9 @@ no runtime secrets/`.env`.
 - [x] App bound to loopback only; never directly public.
 - [x] Cloudflare Full (strict) + Authenticated Origin Pull mTLS; origin 80/443
       firewalled to Cloudflare ranges.
-- [x] Security headers + tightly scoped CSP.
+- [x] Security headers + tightly scoped CSP; `script-src` **hash-locked** (no
+      `'unsafe-inline'`/`'unsafe-eval'`), guarded by a recompute-from-build drift test
+      and a headless-browser enforcement test.
 - [x] No secrets in repo/image/logs; CI secret-scan; contexts; forced-command +
       digest-validated deploy; narrow sudoers.
 - [x] React build-bundled to content-hashed `/_astro/` (no runtime CDN, no `eval`);
@@ -153,12 +158,12 @@ no runtime secrets/`.env`.
 
 ## Residual Risks & Future Work
 
-- **`script-src` still allows `'unsafe-inline'`.** In-browser Babel is gone and
-  `'unsafe-eval'` with it; the remaining `'unsafe-inline'` is needed only by the two
-  inline scripts each page emits (the pre-paint theme bootstrap and Astro's
-  island-hydration runtime). *Next step:* replace it with their `sha256-…` hashes,
-  guarded by a CI test that recomputes the hashes from the built output so a drift
-  fails closed.
+- **`style-src` still allows `'unsafe-inline'`.** `script-src` is now hash-locked,
+  but Astro's per-component scoped styles and the inline `<style>` reset (plus a
+  handful of inline `style=` attributes) still need `'unsafe-inline'` on `style-src`.
+  Style injection is far lower risk than script injection (no code execution), but
+  tightening it would mean hashing/externalizing the scoped styles and dropping the
+  inline `style=` attributes — a larger refactor for a smaller gain.
 - **No edge WAF / rate limiting yet.** Enable Cloudflare WAF managed rules and a
   rate-limit rule once the zones are onboarded, since the origin has no app-layer
   throttling.
