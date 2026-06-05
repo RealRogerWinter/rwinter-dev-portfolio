@@ -55,23 +55,32 @@ Dockerfile                non-root nginx image
 docker-compose.yml        loopback-only stack (127.0.0.1:3001), hardened
 .circleci/config.yml      build → verify → push → APPROVE → deploy
 scripts/
-  build-site-from-design.py   regenerate site/ from the design export
-  fetch-vendor.sh             (re)download + verify vendored libs
+  fetch-fonts.py              (re)download + subset the self-hosted web fonts
+  optimize-images.py          generate WebP variants of the heavy screenshots
+  make-og-image.py            render the OpenGraph share card
   smoke.py                    post-deploy smoke test (pages/assets/headers/404)
 docs/                     architecture, deploy runbook, security, CI/CD, Cloudflare
 ```
 
 ## Local development
 
+The site is an [Astro](https://astro.build) app: `src/pages/` (pages + content),
+`src/components/` (chrome + React-island viz), and `site/` (verbatim-copied static
+assets — fonts, images, favicon). `npm run build` renders it all to `dist/`.
+
 ```bash
-# 1) (re)generate site/ from the design export — only needed if the design changes
-python3 scripts/build-site-from-design.py     # reads /…/design-src/extracted
-bash    scripts/fetch-vendor.sh               # populates site/vendor/
+# 1) install + develop (Astro dev server, hot reload)
+npm install
+npm run dev                                    # http://localhost:4321
 
-# 2) build + run the container (loopback :3001)
+# 2) build the static site (-> dist/) and run the checks
+npm run build
+npm test                                       # vitest: structure, SEO, integrity, images, …
+npm run test:visual                            # Playwright pixel oracle (local-authoritative)
+npm run lint                                   # htmlhint on the built dist/
+
+# 3) build + run the production container (loopback :3001), then smoke-test
 docker compose up -d --build
-
-# 3) verify
 python3 scripts/smoke.py http://127.0.0.1:3001
 ```
 

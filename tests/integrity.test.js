@@ -7,10 +7,13 @@ import path from 'node:path';
 import { SITE, PAGES, read } from './_lib.js';
 
 const ROOT = path.join(SITE, '..');
+// Every built HTML page, including the net-new writeups (not in the 8 deployed
+// PAGES), so the no-CDN / no-Babel guards cover the whole shipped surface.
+const ALL_PAGES = [...PAGES, 'writeups.html', 'writeups/visual-regression-as-a-migration-oracle.html'];
 
 describe('supply-chain & self-hosting invariants', () => {
   it('no third-party CDN script references in any page', () => {
-    for (const p of PAGES) expect(read(p), p).not.toMatch(/unpkg\.com|cdn\.jsdelivr|cdnjs\.|jsdelivr\.net/);
+    for (const p of ALL_PAGES) expect(read(p), p).not.toMatch(/unpkg\.com|cdn\.jsdelivr|cdnjs\.|jsdelivr\.net/);
   });
 
   it('the in-browser Babel + vendored-React eval runtime is gone', () => {
@@ -21,9 +24,18 @@ describe('supply-chain & self-hosting invariants', () => {
     for (const f of ['vendor/babel.min.js', 'vendor/react.production.min.js', 'vendor/react-dom.production.min.js']) {
       expect(fs.existsSync(path.join(SITE, f)), `${f} should be deleted`).toBe(false);
     }
-    for (const p of PAGES) {
+    for (const p of ALL_PAGES) {
       expect(read(p), p).not.toMatch(/babel(\.min)?\.js|react(-dom)?\.production\.min\.js|type="text\/babel"/);
     }
+  });
+
+  it("the deployed CSP no longer grants script-src 'unsafe-eval'", () => {
+    // Closes the config-side gap the page-content guards can't see: removing
+    // Babel let us drop 'unsafe-eval', and it must not creep back into nginx.
+    const conf = fs.readFileSync(path.join(ROOT, 'deploy/default.conf'), 'utf8');
+    const csp = conf.split('\n').find((l) => l.includes('Content-Security-Policy')) || '';
+    expect(csp, "default.conf CSP must not contain 'unsafe-eval'").not.toMatch(/'unsafe-eval'/);
+    expect(csp, 'sanity: the CSP line was found').toMatch(/script-src/);
   });
 
   it('nav home link is "/" (the 404-fix invariant)', () => {

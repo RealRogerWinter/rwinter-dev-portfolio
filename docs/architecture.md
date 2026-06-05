@@ -2,13 +2,24 @@
 
 This document describes how the Roger Winter portfolio is built, structured, and deployed. It is the companion to the deploy runbook (`docs/deploy.md`), CI/CD reference (`docs/ci-cd.md`), and DNS/TLS bring-up (`docs/cloudflare-setup.md`).
 
-> **Migration in progress.** The site is being migrated to Astro (see [`docs/adr/0001-migrate-to-astro-islands.md`](adr/0001-migrate-to-astro-islands.md)). A build step now produces `dist/` — Astro copies `site/` verbatim and renders migrated pages from `src/pages/`. `bio.html` is the first page served by Astro (static, zero JS). The in-browser-Babel model described below still applies to the pages not yet migrated.
+> **Migration complete.** The site is now an [Astro](https://astro.build) app (see
+> [`docs/adr/0001-migrate-to-astro-islands.md`](adr/0001-migrate-to-astro-islands.md)).
+> `npm run build` renders every page from `src/pages/` to static HTML in `dist/`,
+> copies `site/` (fonts, images, favicon) verbatim, and ships JavaScript **only** for
+> the interactive React islands — bundled to content-hashed `/_astro/`. The in-browser
+> `@babel/standalone` transpiler, the vendored React UMD scripts, and the `window.*`
+> global components are all gone; with them, `script-src 'unsafe-eval'` was dropped
+> from the CSP. **Sections 2–3 below describe the original pre-migration model, kept
+> for provenance.** Current structure: `src/pages/*.astro` (pages), `src/layouts/`
+> (the shared shell + pre-paint theme bootstrap), `src/components/` (chrome + the
+> `viz/` React islands), `src/content/` (the writeups collection), and `src/styles/`
+> (the extracted stylesheets the pages link).
 
 ## 1. What the site is
 
-The portfolio at [rogerwinter.dev](https://rogerwinter.dev) is a **lightweight, multi-page static site** migrated from a Claude Design export. It has eight HTML pages — `index.html` (home), `bio.html`, `contact.html`, and five project pages (`project-multilingual-seo.html`, `project-onestreamer.html`, `project-price-games.html`, `project-pricey.html`, `project-sheet-llm.html`) — plus `favicon.svg`, `robots.txt`, and `sitemap.xml`. There is **no server-side application and no build step** for the site itself: `site/` is the committed source of truth and is copied verbatim into the image.
+The portfolio at [rogerwinter.dev](https://rogerwinter.dev) is a **lightweight, multi-page static site**. It has eight deployed pages — `index.html` (home), `bio.html`, `contact.html`, and five project pages (`project-multilingual-seo.html`, `project-onestreamer.html`, `project-price-games.html`, `project-pricey.html`, `project-sheet-llm.html`) — plus a `writeups/` section, `favicon.svg`, `robots.txt`, and a generated `sitemap.xml`. `npm run build` (Astro) renders these to `dist/`, which is what the nginx image serves; there is **no server-side application**. *(Originally — pre-migration — `site/` was the committed HTML and there was no build step; the rest of this section describes that historical model.)*
 
-### Client-side React-via-Babel rendering model
+### Client-side React-via-Babel rendering model (historical — replaced by Astro islands)
 
 Each page is shipped as plain static assets but renders **entirely in the browser**. The boot sequence in every HTML page is:
 
@@ -41,12 +52,15 @@ All 21 components live in `site/portfolio/` (plus `site/tweaks-panel.jsx` at the
 
 `shell.jsx` provides the nav/page chrome and the home/back links; `data.jsx` holds project metadata; `microviz.jsx` renders the small inline visualizations. `tweaks-panel.jsx` is the design's theme engine (see §3). The Pricey page embeds a Twitch player iframe (`https://player.twitch.tv/...&parent=<dynamic hostname>`) with a static-image fallback.
 
-## 3. Migration decisions & fixes
+## 3. Migration decisions & fixes (historical)
 
-`scripts/build-site-from-design.py` regenerates `site/` from the export idempotently. Key decisions:
+The Claude Design export was originally turned into `site/` by a
+`scripts/build-site-from-design.py` generator (removed at the Astro cutover, along
+with `scripts/fetch-vendor.sh` and `site/vendor/VENDOR.lock`). Its key decisions, kept
+here for provenance:
 
-- **Faithful serve.** Kept the in-browser Babel render model so the output matches the design preview pixel-for-pixel; no rewrite to a bundler.
-- **Self-hosted vendor.** The three CDN (`unpkg`) `<script>` tags are rewritten to `/vendor/*`, removing any runtime CDN dependency. Files and SHA-384 hashes are pinned in `site/vendor/VENDOR.lock` and (re)fetched by `scripts/fetch-vendor.sh`.
+- **Faithful serve.** Kept the in-browser Babel render model so the output matched the design preview pixel-for-pixel; no rewrite to a bundler. *(Superseded: the Astro migration reproduced the same look via the visual-regression oracle while replacing Babel with prebuilt islands.)*
+- **Self-hosted vendor.** The three CDN (`unpkg`) `<script>` tags were rewritten to `/vendor/*`, removing any runtime CDN dependency. Files and SHA-384 hashes were pinned in `site/vendor/VENDOR.lock`. *(Superseded: React is now build-bundled to `/_astro/`; only the subset fonts remain under `vendor/`.)*
 - **React dev → prod swap.** `react.development.js` / `react-dom.development.js` were swapped for the **production minified** builds (React 18.3.1): semantically identical render, smaller, no dev console noise.
 - **Babel kept + SRI-verified.** `@babel/standalone` 7.29.0 (`babel.min.js`, ~3.1 MB) is kept verbatim and byte-verified against the design's Subresource-Integrity hash.
 - **`HOME_FILE` 404 fix.** The export set `shell.jsx` `HOME_FILE` to `"Roger Winter — Portfolio.html"` (em-dash), which never matched the hyphenated real filename, so every nav/back link would 404 as a static site. Changed to `"/"`, and `Bio.html`/`Contact.html` references lowercased.
