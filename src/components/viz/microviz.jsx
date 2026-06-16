@@ -181,11 +181,33 @@ function StreamViz() {
   </svg></div>);
 }
 
+// algebra-1-tutor — a balance scale that settles level as 2x = 6 resolves to
+// x = 3 (concrete -> symbolic). Pure SVG; motion is CSS, gated by .mv-anim and
+// the prefers-reduced-motion rule, so the static render already reads as solved.
+function AlgebraViz() {
+  return (<div className="mv mv-alg"><svg viewBox="0 0 340 120" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A balance scale that settles level as 2x = 6 resolves to x = 3">
+    <line className="alg-post" x1="170" y1="50" x2="170" y2="94" />
+    <path className="alg-base" d="M150 96 H190 L182 90 H158 Z" />
+    <g className="alg-beam">
+      <line className="alg-arm" x1="84" y1="50" x2="256" y2="50" />
+      <line className="alg-str" x1="84" y1="50" x2="84" y2="63" />
+      <path className="alg-pan" d="M64 63 H104 L98 78 Q84 84 70 78 Z" />
+      <text className="alg-tile" x="84" y="74" textAnchor="middle">2x</text>
+      <line className="alg-str" x1="256" y1="50" x2="256" y2="63" />
+      <path className="alg-pan" d="M236 63 H276 L270 78 Q256 84 242 78 Z" />
+      <text className="alg-tile" x="256" y="74" textAnchor="middle">6</text>
+    </g>
+    <circle className="alg-piv" cx="170" cy="50" r="3.4" />
+    <text className="alg-eq" x="170" y="116" textAnchor="middle">x = 3</text>
+  </svg></div>);
+}
+
 export function ProjectViz({ id, animate }) {
   if (id === 'sheet-llm') return <StaffViz />;
   if (id === 'onestreamer') return <StreamViz />;
   if (id === 'price-games') return <PriceViz animate={animate} />;
   if (id === 'pricey') return <NeuralViz />;
   if (id === 'multilingual-seo') return <HelloViz />;
+  if (id === 'algebra-1-tutor') return <AlgebraViz />;
   return null;
 }

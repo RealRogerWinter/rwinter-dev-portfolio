@@ -44,6 +44,7 @@
 .pc-logo.has-img{ padding:5px; } .pc-logo.has-img img{ width:100%; height:100%; object-fit:contain; display:block; }
 .pc-logo.clef svg{ width:80%; height:80%; overflow:visible; }
 .pc-logo.seo svg{ width:80%; height:80%; }
+.pc-logo.alg svg{ width:82%; height:82%; overflow:visible; }
 .pc-name{ font-family:var(--display); font-size:25px; font-weight:600; letter-spacing:-.01em; margin:0 0 10px; }
 .pc-name a{ color:inherit; text-decoration:none; transition:color .15s; }
 .pc-name a:hover{ color:var(--acc); }

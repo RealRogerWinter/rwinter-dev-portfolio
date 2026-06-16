@@ -1,0 +1,258 @@
+---
+// Project page: Algebra 1 Tutor. Static Astro shell; VerificationFlow renders as
+// static HTML at build (no client directive, zero JS); TutorChatDemo, BalanceStepper,
+// CheckMyAnswer and CurriculumMap hydrate on scroll (client:visible, deterministic
+// initial render); the micro-viz (band, CTA, prev/next minis) is a client:only
+// island. The "Inside the textbook" gallery uses coded mockups (no external images)
+// so it stays self-contained — swap in real screenshots from the live textbook later.
+import Page from '../../layouts/Page.astro';
+import ProjectVizIsland from '../../components/viz/ProjectVizIsland.jsx';
+import { VerificationFlow, BalanceStepper, TutorChatDemo, CheckMyAnswer, CurriculumMap } from '../../components/viz/algebra-1-tutor.jsx';
+import { projects } from '../../data/portfolio.js';
+import '../../styles/microviz.css';
+import '../../styles/algebra-1-tutor.css';
+
+const p = projects.find((x) => x.id === 'algebra-1-tutor');
+const idx = projects.findIndex((x) => x.id === 'algebra-1-tutor');
+const prev = projects[(idx - 1 + projects.length) % projects.length];
+const next = projects[(idx + 1) % projects.length];
+const TEXTBOOK = p.demo;
+
+const methods = [
+  { h: 'Ask before telling', p: 'Hints arrive as questions on a graduated ladder, so you do the thinking. The tutor only narrows the gap.' },
+  { h: 'Reads the actual mistake', p: 'Misconception diagnosis looks at your specific wrong answer and repairs the cause, not a generic “try again.”' },
+  { h: 'Concrete before symbols', p: 'Balance scales for equations, money for negatives, input–output machines for functions, then the notation.' },
+  { h: 'Worked examples that fade', p: 'Backward-faded examples show the full solution, then hand you one more step each time until you own it.' },
+  { h: 'Honest encouragement', p: 'Effort is acknowledged plainly and a wrong answer is never praised, so the feedback stays worth trusting.' },
+  { h: 'Checks for transfer', p: 'Instead of “make sense?”, it asks you to apply the idea somewhere new, the real test of understanding.' },
+];
+
+const freeTier = [
+  { h: 'Runs on Sonnet 4.6', p: 'Tuned for Claude’s free plan, so no subscription is needed to get a full one-on-one tutor.' },
+  { h: 'Degrades gracefully', p: 'When code execution is off, it falls back cleanly instead of breaking mid-lesson.' },
+  { h: 'Progress Cards', p: 'Copy-paste a Progress Card to resume exactly where you left off, even in a brand-new chat.' },
+  { h: 'Start anywhere', p: 'Prerequisite-aware: begin at any unit and the tutor patches the gaps behind it.' },
+];
+---
+{/* No ogImage yet: this page ships coded mockups (no hero screenshot), so it
+    uses the valid generic site OG card. TODO: once a tutor OG/hero image is
+    captured (e.g. /portfolio/assets/a1-hero.png), pass ogImage to match siblings. */}
+<Page
+  title="Algebra 1 Tutor — Roger Winter"
+  description={p.desc}
+  canonical="https://rogerwinter.dev/projects/algebra-1-tutor"
+  active=""
+  ogType="article"
+>
+  {/* hero */}
+  <header class="a1-hero">
+    <div class="a1-band">
+      <ProjectVizIsland id="algebra-1-tutor" client:only="react" />
+      <div class="a1-scrim"></div>
+      <div class="a1-status"><i></i> {p.status}</div>
+      <div class="a1-titlewrap">
+        <div class="a1-logo" aria-label="algebra">
+          <svg viewBox="0 0 40 40" role="img">
+            <text x="15" y="29" text-anchor="middle" font-family="'Syne', sans-serif" font-style="italic" font-weight="800" font-size="29" fill="currentColor">x</text>
+            <text x="31" y="15" text-anchor="middle" font-family="'Syne', sans-serif" font-weight="800" font-size="15" fill="currentColor">2</text>
+          </svg>
+        </div>
+        <div>
+          <p class="a1-eyebrow">Project {p.n}</p>
+          <h1 class="a1-title">Algebra 1 Tutor</h1>
+        </div>
+      </div>
+    </div>
+    <div class="a1-intro">
+      <p class="a1-tagline">{p.tagline}</p>
+      <div class="a1-actions">
+        <a class="tm-btn demo" href={TEXTBOOK} target="_blank" rel="noopener">Open the textbook ↗</a>
+        <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">Get the skill ↗</a>
+        <a class="tm-btn ghost" href="/">← All projects</a>
+      </div>
+    </div>
+  </header>
+
+  {/* lede */}
+  <section class="a1-lede">
+    <p>Algebra 1 Tutor is a complete first course in algebra, and it’s free. Work through it as a browser textbook, or install a Claude skill that sits beside you and tutors one-on-one.</p>
+    <p>Both halves read from <span class="hl">one source of truth that SymPy re-checks on every change</span>, so the example you see in the book is the exact example the tutor walks you through, and the whole thing runs on Claude’s free tier.</p>
+  </section>
+
+  {/* tutor chat demo */}
+  <section class="a1-sec">
+    <div class="a1-split">
+      <div>
+        <p class="a1-kicker">The tutor</p>
+        <h2 class="a1-h2">It asks before it tells</h2>
+        <p class="a1-p">The skill turns Claude into a patient tutor with full knowledge of your textbook. It nudges with questions instead of answers, reads a photo of your handwritten work, and catches the specific slip behind a wrong answer, then verifies the fix.</p>
+        <p class="a1-p">Watch a short session: a sign error on <span class="mono">8 − 2x = 14</span>, caught and repaired.</p>
+      </div>
+      <figure class="a1-figure">
+        <TutorChatDemo client:visible />
+        <figcaption class="a1-figcap">Illustrative session · the real tutor runs in Claude</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* pedagogy methods */}
+  <section class="a1-sec">
+    <p class="a1-kicker">Why it works</p>
+    <h2 class="a1-h2">Teaching methods, distilled from research</h2>
+    <p class="a1-p">The tutor doesn’t improvise its style. Deep research into cited teaching methods was condensed into a single pedagogical approach, baked into the skill so every session follows what actually helps people learn.</p>
+    <div class="a1-cells">
+      {methods.map((m) => (
+        <div class="a1-cell"><h3>{m.h}</h3><p>{m.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  {/* concrete -> symbolic */}
+  <section class="a1-sec">
+    <div class="a1-split">
+      <div>
+        <p class="a1-kicker">Concrete first</p>
+        <h2 class="a1-h2">From balance scales to symbols</h2>
+        <p class="a1-p">Equations make sense before the notation does when you can see them. An equation is a balance: whatever you do to one side, you do to the other. Take the same amount off both pans and the unknown stands alone.</p>
+        <p class="a1-p">Try it, and watch the symbols keep step with the picture.</p>
+      </div>
+      <figure class="a1-figure">
+        <BalanceStepper client:visible />
+        <figcaption class="a1-figcap">Concrete → symbolic · the same move on both sides</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* check my answer */}
+  <section class="a1-sec">
+    <div class="a1-split rev">
+      <figure class="a1-figure">
+        <CheckMyAnswer client:visible />
+        <figcaption class="a1-figcap">Pick each step · the final answer is checked by SymPy</figcaption>
+      </figure>
+      <div>
+        <p class="a1-kicker">Try it</p>
+        <h2 class="a1-h2">Solve one, step by step</h2>
+        <p class="a1-p">This is the loop the tutor runs, right on the page: choose the next move, get a pointed nudge when a step goes wrong, and finish at a verified answer. The sign on a negative coefficient is exactly where most people slip. See if it catches you.</p>
+      </div>
+    </div>
+  </section>
+
+  {/* one source of truth */}
+  <section class="a1-sec">
+    <p class="a1-kicker">Verified</p>
+    <h2 class="a1-h2">One source of truth, checked by SymPy</h2>
+    <p class="a1-p">Every worked example is stored once as machine-readable data and re-derived with SymPy. The textbook, the tutor, and the study guides all draw from that same source, so they can’t silently drift apart.</p>
+    <figure class="a1-figure wide">
+      <div class="a1-figbox"><VerificationFlow /></div>
+      <figcaption class="a1-figcap">curriculum.yaml → four surfaces → SymPy re-check → CircleCI gate</figcaption>
+    </figure>
+    <p class="a1-p">The numbers behind it: <span class="hl">909 problems, 614 auto-verified by SymPy, zero failures</span>, enforced on every push. The conceptual answers SymPy can’t check are reviewed by hand, and CI also guards notation, figure accuracy, and byte-identical builds.</p>
+  </section>
+
+  {/* curriculum map */}
+  <section class="a1-sec">
+    <p class="a1-kicker">The course</p>
+    <h2 class="a1-h2">Thirteen units, start anywhere</h2>
+    <p class="a1-p">Fifty-two lessons run from the language of algebra to a quadratics capstone, with a standalone statistics unit. Pick any unit below: because the tutor is prerequisite-aware, you don’t have to start at the beginning.</p>
+    <CurriculumMap client:visible />
+  </section>
+
+  {/* built for the free tier */}
+  <section class="a1-sec">
+    <p class="a1-kicker">No paywall</p>
+    <h2 class="a1-h2">Built to run on free Claude</h2>
+    <p class="a1-p">A good tutor shouldn’t cost anything. The whole experience is designed for Claude’s free tier, with the rough edges of a stateless, no-code-execution session engineered around rather than ignored.</p>
+    <div class="a1-cells four">
+      {freeTier.map((m) => (
+        <div class="a1-cell"><h3>{m.h}</h3><p>{m.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  {/* inside the textbook (coded mockups) */}
+  <section class="a1-sec">
+    <p class="a1-kicker">The textbook</p>
+    <h2 class="a1-h2">Inside the book</h2>
+    <p class="a1-p">The free browser textbook mirrors the tutor exactly: worked examples with answer reveals, reference codes you can hand the tutor for targeted help, and figures that are computed and verified rather than hand-drawn.</p>
+    <div class="a1-gallery">
+      <div class="a1-shot">
+        <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url">realrogerwinter.github.io/algebra-1-tutor</span></div>
+        <div class="frame a1-book">
+          <p class="bk-unit">Unit 5 · Linear Functions &amp; Their Graphs</p>
+          <h4 class="bk-h">Slope as a rate of change</h4>
+          <div class="bk-ex">
+            <p class="bk-q">Find the slope of the line through (1, 2) and (4, 11).</p>
+            <p class="bk-work">m = (11 − 2) ÷ (4 − 1) = 9 ÷ 3 = <b>3</b></p>
+            <div class="bk-foot"><span class="bk-reveal">Show answer ▾</span><span class="bk-code">[5.2-EX3]</span></div>
+          </div>
+        </div>
+        <div class="cap"><b>Worked examples</b>: answer reveals and reference codes for targeted help</div>
+      </div>
+      <div class="a1-shot">
+        <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="url">realrogerwinter.github.io/algebra-1-tutor</span></div>
+        <div class="frame a1-graph">
+          {/* Grid: origin (96,96), 36px per x-unit, 24px per y-unit. Geometry is
+              held to y = 2x − 1: intercept (0,−1)→(96,120), (1,1)→(132,72),
+              segment (−0.5,−2)→(78,144) to (2,3)→(168,24). */}
+          <svg viewBox="0 0 240 168" role="img" aria-label="A computed graph of the line y = 2x minus 1 on a labeled grid, through the points (0, minus 1) and (1, 1)">
+            <g class="gr-grid">
+              {[24, 60, 96, 132, 168, 204].map((x) => <line x1={x} y1="24" x2={x} y2="144" />)}
+              {[24, 48, 72, 96, 120, 144].map((y) => <line x1="24" y1={y} x2="204" y2={y} />)}
+            </g>
+            <line class="gr-axis" x1="24" y1="96" x2="204" y2="96" />
+            <line class="gr-axis" x1="96" y1="24" x2="96" y2="144" />
+            <line class="gr-line" x1="78" y1="144" x2="168" y2="24" />
+            <circle class="gr-pt" cx="96" cy="120" r="3.4" />
+            <circle class="gr-pt" cx="132" cy="72" r="3.4" />
+            <text class="gr-lbl" x="200" y="18">y = 2x − 1</text>
+          </svg>
+        </div>
+        <div class="cap"><b>Computed figures</b>: every graph is generated and verified, not drawn by hand</div>
+      </div>
+    </div>
+  </section>
+
+  {/* template angle */}
+  <section class="a1-sec">
+    <p class="a1-kicker">Open source</p>
+    <h2 class="a1-h2">A template for the next tutor</h2>
+    <p class="a1-p">The skill, the curriculum format, and the verification tooling are all open source under permissive licenses. The hard parts are reusable: a pedagogy encoded as a skill, examples locked to a verified source, and a CI gate that catches drift between surfaces. Fork it and point the same machinery at a different subject.</p>
+  </section>
+
+  {/* tech stack */}
+  <section class="a1-sec">
+    <p class="a1-kicker">Under the hood</p>
+    <h2 class="a1-h2">Tech stack</h2>
+    <div class="a1-stack">
+      {p.stack.map((t) => <span class="a1-chip">{t}</span>)}
+    </div>
+  </section>
+
+  {/* CTA */}
+  <section class="a1-cta">
+    <div class="mvbg"><ProjectVizIsland id="algebra-1-tutor" client:only="react" /></div>
+    <div class="inner">
+      <div>
+        <h2>Learn algebra, free</h2>
+        <p>Open the textbook in a tab, or add the skill to Claude and start a session. No signup, no paywall.</p>
+        <span class="url">realrogerwinter.github.io/algebra-1-tutor</span>
+      </div>
+      <a class="tm-btn demo big" href={TEXTBOOK} target="_blank" rel="noopener">Open the textbook ↗</a>
+    </div>
+  </section>
+
+  {/* prev/next */}
+  <nav class="a1-nav">
+    <a class="a1-navcard prev" href={`/projects/${prev.id}`}>
+      <div class="miniviz"><ProjectVizIsland id={prev.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">← Previous</div><div class="nm">{prev.name}</div></div>
+    </a>
+    <a class="a1-navcard next" href={`/projects/${next.id}`}>
+      <div class="miniviz"><ProjectVizIsland id={next.id} client:only="react" /></div>
+      <div class="miniscrim"></div>
+      <div class="lbl"><div class="dir">Next →</div><div class="nm">{next.name}</div></div>
+    </a>
+  </nav>
+</Page>

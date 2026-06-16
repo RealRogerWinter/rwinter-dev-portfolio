@@ -119,6 +119,28 @@ export const projects = [
     ],
     stack: ['TypeScript', 'Next.js', 'LLM API', 'Search APIs'],
   },
+  {
+    id: 'algebra-1-tutor',
+    name: 'Algebra 1 Tutor',
+    n: '06',
+    status: 'Live',
+    desc: 'A free, open-source Algebra 1 course you work through with Claude as your tutor. A SymPy-verified textbook and an installable Claude skill share one source of truth, and the whole thing runs on the free tier.',
+    tagline: 'A full Algebra 1 course that turns Claude into your personal tutor, built on cited teaching research and one SymPy-verified source of truth.',
+    tags: ['Education', 'Claude Skill', 'AI Tutor'],
+    demo: 'https://realrogerwinter.github.io/algebra-1-tutor/',
+    repo: 'https://github.com/RealRogerWinter/algebra-1-tutor',
+    overview: [
+      'Algebra 1 Tutor is a complete first course in algebra, built for adults learning it for the first time. It comes in two halves that share a single verified source: a free browser textbook, and a Claude skill that tutors you one-on-one. It asks before telling, diagnoses the specific mistake behind a wrong answer, and reads photos of your handwritten work.',
+      'The teaching method isn’t improvised. It distills cited research into a repeatable approach: concrete before symbolic, hint ladders instead of answers, and worked examples that hand you the wheel one step at a time. Every example is locked to one source of truth that SymPy re-checks on every change. It runs on the free Claude tier, and it’s open source for anyone to use or fork as a template for the next tutor.',
+    ],
+    features: [
+      { h: 'Tutors, doesn’t lecture', p: 'Ask-before-telling hint ladders, misconception diagnosis that reads your specific wrong answer, and photo review of handwritten work: pedagogy distilled from cited research.' },
+      { h: 'One verified source of truth', p: 'Textbook, tutor, and guides all draw from the same data, and SymPy re-checks every computational answer: 909 problems, 614 auto-verified, zero failures enforced in CI.' },
+      { h: 'Built for the free tier', p: 'Tuned for Claude’s free plan on Sonnet 4.6, with graceful degradation when code execution is off and Progress Cards that resume a session anywhere.' },
+      { h: 'A template for the next tutor', p: 'The skill, curriculum format, and verification tooling are open source: a working blueprint for building interactive tutors in other subjects.' },
+    ],
+    stack: ['Claude Agent Skill', 'SymPy', 'Python', 'YAML', 'SVG', 'LaTeX / Unicode', 'CircleCI', 'GitHub Pages'],
+  },
 ];
 
 // Accent hue per project (from site.jsx PC_HUE) — used for the home card glow.
@@ -128,4 +150,5 @@ export const projectHue = {
   'price-games': 'oklch(0.78 0.15 150)',
   pricey: 'oklch(0.80 0.15 85)',
   'multilingual-seo': 'oklch(0.72 0.14 235)',
+  'algebra-1-tutor': 'oklch(0.74 0.12 195)',
 };
