@@ -33,6 +33,16 @@ const freeTier = [
   { h: 'Progress Cards', p: 'Copy-paste a Progress Card to resume exactly where you left off, even in a brand-new chat.' },
   { h: 'Start anywhere', p: 'Prerequisite-aware: begin at any unit and the tutor patches the gaps behind it.' },
 ];
+
+// Structured tech stack rendered as labeled rows, matching the other project pages.
+const stack = [
+  { layer: 'Tutor', key: ['Claude Agent Skill'], rest: ['SKILL.md', 'per-unit references'], note: 'Sonnet 4.6 · free tier' },
+  { layer: 'Verification', key: ['SymPy'], rest: ['Python', 'pytest'] },
+  { layer: 'Content', key: ['curriculum.yaml'], rest: ['LaTeX / Unicode', 'SVG figures'], note: 'single source of truth' },
+  { layer: 'Textbook', key: ['GitHub Pages'], rest: ['static HTML'] },
+  { layer: 'CI/CD', key: ['CircleCI'], rest: [], note: 'answer accuracy + surface alignment, every push' },
+  { layer: 'Licensing', key: ['MIT'], rest: ['CC BY-NC 4.0', 'CC0'], note: 'code · content · images' },
+];
 ---
 {/* No ogImage yet: this page ships coded mockups (no hero screenshot), so it
     uses the valid generic site OG card. TODO: once a tutor OG/hero image is
@@ -224,9 +234,18 @@ const freeTier = [
   <section class="a1-sec">
     <p class="a1-kicker">Under the hood</p>
     <h2 class="a1-h2">Tech stack</h2>
-    <div class="a1-stack">
-      {p.stack.map((t) => <span class="a1-chip">{t}</span>)}
-    </div>
+    <dl class="a1-stack">
+      {stack.map((r) => (
+        <div class="a1-strow">
+          <dt>{r.layer}</dt>
+          <dd>
+            {r.key.map((k) => <span class="a1-chip key">{k}</span>)}
+            {r.rest.map((k) => <span class="a1-chip">{k}</span>)}
+            {r.note && <span class="note">{r.note}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
   </section>
 
   {/* CTA */}
