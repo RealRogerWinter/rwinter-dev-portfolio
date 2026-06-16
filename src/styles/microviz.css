@@ -112,4 +112,20 @@
 .mv-anim .mv-stream .lived{ animation:mvPulse 1.5s ease-in-out infinite; }
 .mv-stream .cnt{ fill:var(--dim); font-family:var(--mono); font-size:9px; letter-spacing:.5px; }
 
+/* balance scale (algebra-1-tutor) — settles level as 2x = 6 -> x = 3 */
+.mv-alg .alg-post,.mv-alg .alg-arm,.mv-alg .alg-str{ stroke:currentColor; stroke-linecap:round; fill:none; }
+.mv-alg .alg-post{ stroke-width:2; }
+.mv-alg .alg-arm{ stroke-width:2.6; }
+.mv-alg .alg-str{ stroke-width:1.6; opacity:.7; }
+.mv-alg .alg-base{ fill:currentColor; opacity:.85; }
+.mv-alg .alg-piv{ fill:var(--bg); stroke:currentColor; stroke-width:1.8; }
+.mv-alg .alg-pan{ fill:color-mix(in srgb,var(--acc) 16%, transparent); stroke:currentColor; stroke-width:1.6; }
+.mv-alg .alg-tile{ fill:var(--ink); font-family:var(--display); font-weight:700; font-size:13px; }
+.mv-alg .alg-eq{ fill:var(--acc); font-family:var(--display); font-weight:800; font-size:22px; font-variant-numeric:tabular-nums; opacity:.92; }
+.mv-alg .alg-beam{ transform-box:fill-box; transform-origin:center; }
+.mv-anim .mv-alg .alg-beam{ animation:mvAlgBal 4.6s ease-in-out infinite; }
+@keyframes mvAlgBal{ 0%{ transform:rotate(-2.8deg); } 22%{ transform:rotate(2.2deg); } 42%{ transform:rotate(-1.2deg); } 58%,100%{ transform:rotate(0); } }
+.mv-anim .mv-alg .alg-eq{ animation:mvAlgSolve 4.6s ease-in-out infinite; }
+@keyframes mvAlgSolve{ 0%,52%{ opacity:0; transform:translateY(5px); } 68%{ opacity:.95; transform:none; } 90%{ opacity:.95; } 100%{ opacity:0; transform:translateY(5px); } }
+
 @media (prefers-reduced-motion: reduce){ .mv *{ animation:none !important; } }

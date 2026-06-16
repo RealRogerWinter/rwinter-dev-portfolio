@@ -23,7 +23,7 @@ import '../styles/home.css';
 
   <div class="rw-sec">
     <h2>Selected work</h2>
-    <em>five experiments · demo · code · writeup</em>
+    <em>six experiments · demo · code · writeup</em>
   </div>
 
   <div class="rw-grid">
@@ -43,6 +43,13 @@ import '../styles/home.css';
             ) : p.clef ? (
               <div class="pc-logo clef" aria-label="treble clef">
                 <svg viewBox="0 0 40 54" role="img"><text x="20" y="27" text-anchor="middle" dominant-baseline="central" font-family="'Noto Music', serif" font-size="50" fill="currentColor">{'\u{1D11E}'}</text></svg>
+              </div>
+            ) : p.id === 'algebra-1-tutor' ? (
+              <div class="pc-logo alg" aria-label="algebra">
+                <svg viewBox="0 0 40 40" role="img">
+                  <text x="15" y="29" text-anchor="middle" font-family="'Syne', sans-serif" font-style="italic" font-weight="800" font-size="29" fill="currentColor">x</text>
+                  <text x="31" y="15" text-anchor="middle" font-family="'Syne', sans-serif" font-weight="800" font-size="15" fill="currentColor">2</text>
+                </svg>
               </div>
             ) : (
               <div class="pc-logo">{p.name.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase()}</div>
