@@ -62,6 +62,41 @@ export function VerificationFlow() {
   );
 }
 
+// ---- how the textbook is built (static pipeline diagram) ----
+export function BuildPipeline() {
+  const stages = [
+    { t: 'Research', d: 'pedagogy' },
+    { t: 'Generate', d: 'Opus + skills', a: true },
+    { t: 'Validate', d: 'SymPy · SSOT', a: true },
+    { t: 'Review', d: 'human edit' },
+    { t: 'Visuals', d: 'HTML + images' },
+    { t: 'Publish', d: '4 surfaces' },
+  ];
+  const W = 130, SP = 158, y = 26, h = 70;
+  return (
+    <div className="a1d a1d-build">
+      <svg viewBox="0 0 980 116" role="img" aria-label="How the textbook is built: research the pedagogy, generate with Claude Opus and custom skills, validate with SymPy against the single source of truth, human review and editing, generate visuals, then publish to four parallel surfaces">
+        {stages.map((s, i) => {
+          const x = 4 + i * SP;
+          return (
+            <g key={i}>
+              {i > 0 && (
+                <>
+                  <path className="wire" d={`M${x - 26} ${y + h / 2} h24`} />
+                  <path className="flow" d={`M${x - 26} ${y + h / 2} h24`} />
+                </>
+              )}
+              <rect className={s.a ? 'pnl-a' : 'pnl'} x={x} y={y} width={W} height={h} rx="10" />
+              <text className="lbl" x={x + W / 2} y={y + 30} textAnchor="middle">{s.t}</text>
+              <text className="lbl-d" x={x + W / 2} y={y + 48} textAnchor="middle">{s.d}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 // ---- interactive balance scale: concrete -> symbolic ----
 // x + 3 = 5, shown as blocks on a balance; take 3 from each side -> x = 2.
 // A pan's blocks are laid out centred on its hang point so they never overflow.
