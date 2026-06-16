@@ -7,7 +7,7 @@
 // so it stays self-contained — swap in real screenshots from the live textbook later.
 import Page from '../../layouts/Page.astro';
 import ProjectVizIsland from '../../components/viz/ProjectVizIsland.jsx';
-import { VerificationFlow, BalanceStepper, TutorChatDemo, CheckMyAnswer, CurriculumMap } from '../../components/viz/algebra-1-tutor.jsx';
+import { VerificationFlow, BuildPipeline, BalanceStepper, TutorChatDemo, CheckMyAnswer, CurriculumMap } from '../../components/viz/algebra-1-tutor.jsx';
 import { projects } from '../../data/portfolio.js';
 import '../../styles/microviz.css';
 import '../../styles/algebra-1-tutor.css';
@@ -32,6 +32,16 @@ const freeTier = [
   { h: 'Degrades gracefully', p: 'When code execution is off, it falls back cleanly instead of breaking mid-lesson.' },
   { h: 'Progress Cards', p: 'Copy-paste a Progress Card to resume exactly where you left off, even in a brand-new chat.' },
   { h: 'Start anywhere', p: 'Prerequisite-aware: begin at any unit and the tutor patches the gaps behind it.' },
+];
+
+// Structured tech stack rendered as labeled rows, matching the other project pages.
+const stack = [
+  { layer: 'Tutor', key: ['Claude Agent Skill'], rest: ['SKILL.md', 'per-unit references'], note: 'Sonnet 4.6 · free tier' },
+  { layer: 'Verification', key: ['SymPy'], rest: ['Python', 'pytest'] },
+  { layer: 'Content', key: ['curriculum.yaml'], rest: ['LaTeX / Unicode', 'SVG figures'], note: 'single source of truth' },
+  { layer: 'Textbook', key: ['GitHub Pages'], rest: ['static HTML'] },
+  { layer: 'CI/CD', key: ['CircleCI'], rest: [], note: 'answer accuracy + surface alignment, every push' },
+  { layer: 'Licensing', key: ['MIT'], rest: ['CC BY-NC 4.0', 'CC0'], note: 'code · content · images' },
 ];
 ---
 {/* No ogImage yet: this page ships coded mockups (no hero screenshot), so it
@@ -143,6 +153,7 @@ const freeTier = [
     <p class="a1-kicker">Verified</p>
     <h2 class="a1-h2">One source of truth, checked by SymPy</h2>
     <p class="a1-p">Every worked example is stored once as machine-readable data and re-derived with SymPy. The textbook, the tutor, and the study guides all draw from that same source, so they can’t silently drift apart.</p>
+    <p class="a1-p">From that one source, the build generates parallel versions: the student-facing textbook and the tutor’s own copy, plus matching study and tutor guides. Every example carries a reference number, like <span class="mono">[5.2-EX3]</span>, so the example you read in the book is exactly the one Claude pulls up when you ask about it. The page and the tutor always agree.</p>
     <figure class="a1-figure wide">
       <div class="a1-figbox"><VerificationFlow /></div>
       <figcaption class="a1-figcap">curriculum.yaml → four surfaces → SymPy re-check → CircleCI gate</figcaption>
@@ -213,6 +224,19 @@ const freeTier = [
     </div>
   </section>
 
+  {/* how it was made */}
+  <section class="a1-sec">
+    <p class="a1-kicker">How it was made</p>
+    <h2 class="a1-h2">Written by Claude, proven by SymPy</h2>
+    <p class="a1-p">None of this is typed by hand. The course started as deep research into how algebra is taught and tutored, the cited methods behind the pedagogy. Claude Opus turned that research into a full textbook using custom skills built for generating and editing high-quality teaching content.</p>
+    <figure class="a1-figure wide">
+      <div class="a1-figbox"><BuildPipeline /></div>
+      <figcaption class="a1-figcap">Research → generate (Opus) → validate (SymPy) → human review → visuals → publish</figcaption>
+    </figure>
+    <p class="a1-p">Every example is validated by SymPy against the single source of truth, then put through thorough human testing, review, and editing. The visuals are generated too: Claude builds the rich HTML and interactive figures, and Nano Banana Pro (Google’s Gemini 3 Pro Image) draws the illustrative images.</p>
+    <p class="a1-p">The whole textbook is <span class="hl">free and open source</span> under permissive licenses, and anyone can contribute. Fixes and new explanations run through the same loop (research, generate, validate against SymPy, review), so the bar holds whether a change comes from Claude or a contributor.</p>
+  </section>
+
   {/* template angle */}
   <section class="a1-sec">
     <p class="a1-kicker">Open source</p>
@@ -224,9 +248,18 @@ const freeTier = [
   <section class="a1-sec">
     <p class="a1-kicker">Under the hood</p>
     <h2 class="a1-h2">Tech stack</h2>
-    <div class="a1-stack">
-      {p.stack.map((t) => <span class="a1-chip">{t}</span>)}
-    </div>
+    <dl class="a1-stack">
+      {stack.map((r) => (
+        <div class="a1-strow">
+          <dt>{r.layer}</dt>
+          <dd>
+            {r.key.map((k) => <span class="a1-chip key">{k}</span>)}
+            {r.rest.map((k) => <span class="a1-chip">{k}</span>)}
+            {r.note && <span class="note">{r.note}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
   </section>
 
   {/* CTA */}

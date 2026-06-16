@@ -62,6 +62,41 @@ export function VerificationFlow() {
   );
 }
 
+// ---- how the textbook is built (static pipeline diagram) ----
+export function BuildPipeline() {
+  const stages = [
+    { t: 'Research', d: 'pedagogy' },
+    { t: 'Generate', d: 'Opus + skills', a: true },
+    { t: 'Validate', d: 'SymPy · SSOT', a: true },
+    { t: 'Review', d: 'human edit' },
+    { t: 'Visuals', d: 'HTML + images' },
+    { t: 'Publish', d: '4 surfaces' },
+  ];
+  const W = 130, SP = 158, y = 26, h = 70;
+  return (
+    <div className="a1d a1d-build">
+      <svg viewBox="0 0 980 116" role="img" aria-label="How the textbook is built: research the pedagogy, generate with Claude Opus and custom skills, validate with SymPy against the single source of truth, human review and editing, generate visuals, then publish to four parallel surfaces">
+        {stages.map((s, i) => {
+          const x = 4 + i * SP;
+          return (
+            <g key={i}>
+              {i > 0 && (
+                <>
+                  <path className="wire" d={`M${x - 26} ${y + h / 2} h24`} />
+                  <path className="flow" d={`M${x - 26} ${y + h / 2} h24`} />
+                </>
+              )}
+              <rect className={s.a ? 'pnl-a' : 'pnl'} x={x} y={y} width={W} height={h} rx="10" />
+              <text className="lbl" x={x + W / 2} y={y + 30} textAnchor="middle">{s.t}</text>
+              <text className="lbl-d" x={x + W / 2} y={y + 48} textAnchor="middle">{s.d}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 // ---- interactive balance scale: concrete -> symbolic ----
 // x + 3 = 5, shown as blocks on a balance; take 3 from each side -> x = 2.
 // A pan's blocks are laid out centred on its hang point so they never overflow.
@@ -110,7 +145,7 @@ export function BalanceStepper() {
           <button className="a1-btn" onClick={() => setRemoved(true)}>Take 3 from both sides →</button>
         ) : (
           <>
-            <span className="a1-balnote">The same move on both sides keeps it balanced — and x stands alone.</span>
+            <span className="a1-balnote">The same move on both sides keeps it balanced, and x stands alone.</span>
             <button className="a1-btn ghost" onClick={() => setRemoved(false)}>↻ Reset</button>
           </>
         )}
@@ -126,15 +161,19 @@ const CHAT = [
   { who: 'me', text: 'Subtract 8 from both sides?' },
   { who: 'tutor', text: 'Exactly. That leaves −2x = 6. Try the last step and send me a photo of your work.' },
   { who: 'me', photo: 'x = 3', text: '' },
-  { who: 'tutor', text: 'I read x = 3 in your photo. Let’s test it: 8 − 2(3) = 2, not 14. The −2 is the tricky part — what’s 6 ÷ (−2)?' },
+  { who: 'tutor', text: 'I read x = 3 in your photo. Let’s test it: 8 − 2(3) = 2, not 14. The −2 is the tricky part. What’s 6 ÷ (−2)?' },
   { who: 'me', text: '−3!' },
-  { who: 'tutor', verify: true, text: '✓ x = −3. Checked: 8 − 2(−3) = 14. That sign flip trips up almost everyone — you caught it.' },
+  { who: 'tutor', verify: true, text: '✓ x = −3. Checked: 8 − 2(−3) = 14. That sign flip trips up almost everyone, but you caught it.' },
 ];
 
-function ChatBubble({ turn }) {
+function ChatBubble({ turn, visible }) {
+  // Every bubble is always rendered so the chat panel reserves its full height
+  // up front; `visible` only toggles visibility, so revealing a turn never
+  // reflows the page. (Pending rows stay visibility:hidden and keep their box.)
+  const vis = visible ? ' is-shown' : ' is-pending';
   if (turn.photo !== undefined) {
     return (
-      <div className="a1-row me">
+      <div className={'a1-row me' + vis}>
         <figure className="a1-photo">
           <span className="a1-hand">{turn.photo}</span>
           <figcaption>your photo</figcaption>
@@ -143,7 +182,7 @@ function ChatBubble({ turn }) {
     );
   }
   return (
-    <div className={'a1-row ' + turn.who}>
+    <div className={'a1-row ' + turn.who + vis}>
       <div className={'a1-bub ' + turn.who + (turn.verify ? ' verify' : '')}>
         {turn.verify && <span className="a1-vchip">verified by SymPy</span>}
         <p>{turn.text}</p>
@@ -202,20 +241,17 @@ export function TutorChatDemo() {
         <span className="a1-dot" /> Claude · Algebra 1 Tutor
       </div>
       <div className="a1-chatbody">
-        {CHAT.slice(0, shown).map((t, i) => (
-          <ChatBubble turn={t} key={i} />
+        {CHAT.map((t, i) => (
+          <ChatBubble turn={t} visible={i < shown} key={i} />
         ))}
-        {typing && (
-          <div className="a1-row tutor">
-            <div className="a1-bub tutor a1-typing"><i /><i /><i /></div>
-          </div>
-        )}
       </div>
       <div className="a1-chatfoot">
         {done ? (
           <button className="a1-btn ghost" onClick={play}>↻ Replay</button>
+        ) : typing ? (
+          <span className="a1-chatcap">Claude is typing<span className="a1-tw"><i /><i /><i /></span></span>
         ) : (
-          <span className="a1-chatcap">A sample tutoring session — ask-before-telling, photo review, then a verified answer.</span>
+          <span className="a1-chatcap">A sample tutoring session: ask-before-telling, photo review, then a verified answer.</span>
         )}
       </div>
     </div>
@@ -229,17 +265,17 @@ const SOLVE = [
     prompt: 'What’s the first move to get x by itself?',
     opts: [
       { t: 'Subtract 8 from both sides', ok: true, becomes: '−2x = 6' },
-      { t: 'Add 2x to both sides', hint: 'That works eventually, but it leaves terms on both sides — clear the constant 8 first.' },
+      { t: 'Add 2x to both sides', hint: 'That works eventually, but it leaves terms on both sides, so clear the constant 8 first.' },
       { t: 'Divide both sides by 2', hint: 'Too early: the −2x term isn’t alone yet. Move the 8 first.' },
     ],
   },
   {
     eq: '−2x = 6',
-    prompt: 'Now finish it — solve for x.',
+    prompt: 'Now finish it: solve for x.',
     opts: [
       { t: 'Divide both sides by −2', ok: true, becomes: 'x = −3' },
       { t: 'Divide both sides by 2', hint: 'Watch the sign: you’re undoing × (−2), so divide by −2, not 2.' },
-      { t: 'Subtract 6 from both sides', hint: 'x is multiplied by −2, so use division to undo it — not subtraction.' },
+      { t: 'Subtract 6 from both sides', hint: 'x is multiplied by −2, so use division to undo it, not subtraction.' },
     ],
   },
 ];
@@ -307,63 +343,81 @@ export function CheckMyAnswer() {
   );
 }
 
-// ---- interactive curriculum map (prerequisite-aware) ----
+// ---- interactive curriculum map: a phased course path (prerequisite-aware) ----
+// `phase` groups Units 1-12 into the five stages of the course; Unit A (stats)
+// is phase 5, shown as a standalone track. `f` is a one-line focus for the
+// detail panel, which is always populated (defaults to Unit 1) so the map never
+// reads as empty.
 const UNITS = [
-  { n: '1', t: 'Foundations & the Language of Algebra' },
-  { n: '2', t: 'Solving Linear Equations' },
-  { n: '3', t: 'Proportional Reasoning' },
-  { n: '4', t: 'Introducing Functions' },
-  { n: '5', t: 'Linear Functions & Their Graphs' },
-  { n: '6', t: 'Modeling & Translation' },
-  { n: '7', t: 'Systems of Equations' },
-  { n: '8', t: 'Inequalities' },
-  { n: '9', t: 'Sequences & Exponential Functions' },
-  { n: '10', t: 'Exponents & Polynomials' },
-  { n: '11', t: 'Factoring' },
-  { n: '12', t: 'Quadratic Functions & Equations' },
-  { n: 'A', t: 'Data & Statistics' },
+  { n: '1', t: 'Foundations & the Language of Algebra', f: 'Variables, expressions, and the vocabulary the rest of the course builds on.', phase: 0 },
+  { n: '2', t: 'Solving Linear Equations', f: 'Balance moves that isolate the unknown.', phase: 0 },
+  { n: '3', t: 'Proportional Reasoning', f: 'Ratios and rates, the bridge to linearity.', phase: 0 },
+  { n: '4', t: 'Introducing Functions', f: 'Inputs, outputs, and the function machine.', phase: 1 },
+  { n: '5', t: 'Linear Functions & Their Graphs', f: 'Slope, intercepts, and y = mx + b.', phase: 1 },
+  { n: '6', t: 'Modeling & Translation', f: 'Turning real situations and word problems into equations.', phase: 1 },
+  { n: '7', t: 'Systems of Equations', f: 'Two equations, one shared solution.', phase: 2 },
+  { n: '8', t: 'Inequalities', f: 'Ranges of solutions, and how to graph them.', phase: 2 },
+  { n: '9', t: 'Sequences & Exponential Functions', f: 'Patterns that grow by adding, then by multiplying.', phase: 3 },
+  { n: '10', t: 'Exponents & Polynomials', f: 'Powers, and arithmetic with polynomial expressions.', phase: 3 },
+  { n: '11', t: 'Factoring', f: 'Breaking polynomials back into their factors.', phase: 3 },
+  { n: '12', t: 'Quadratic Functions & Equations', f: 'The capstone: parabolas and the quadratic formula.', phase: 4 },
+  { n: 'A', t: 'Data & Statistics', f: 'Describing and interpreting data; stands on its own.', phase: 5 },
 ];
+const PHASES = ['Foundations', 'Functions & lines', 'Systems & inequalities', 'Growth & polynomials', 'Capstone'];
 
 export function CurriculumMap() {
-  const [sel, setSel] = useState(null);
-  const selUnit = sel === null ? null : UNITS[sel];
-  const isStats = selUnit && selUnit.n === 'A';
+  const [sel, setSel] = useState(0); // default Unit 1 so the detail panel is always populated
+  const u = UNITS[sel];
+  const isStats = u.n === 'A';
+  const note = isStats
+    ? 'Standalone: jump in whenever it’s useful.'
+    : sel === 0
+      ? 'The foundation, and the natural place to begin.'
+      : `Prerequisite-aware: the tutor checks Units 1–${UNITS[sel - 1].n} first and patches any gaps.`;
 
-  let caption = 'Start anywhere. Pick a unit and the tutor checks what it needs first.';
-  if (selUnit) {
-    if (isStats) {
-      caption = 'Data & Statistics stands largely on its own — dip in whenever it’s useful.';
-    } else if (sel === 0) {
-      caption = 'Unit 1 is the foundation — the natural place to begin.';
-    } else {
-      caption = `Jump to Unit ${selUnit.n}. The tutor quietly checks Units 1–${UNITS[sel - 1].n} and patches any gaps first.`;
-    }
-  }
+  const node = (unit, i) => {
+    const cls = 'a1-node'
+      + (sel === i ? ' sel' : '')
+      + (!isStats && unit.phase < 5 && i < sel ? ' lit' : '')
+      + (unit.n === '12' ? ' cap' : '')
+      + (unit.n === 'A' ? ' stats' : '');
+    return (
+      <button className={cls} key={unit.n} onClick={() => setSel(i)} aria-pressed={sel === i} title={`Unit ${unit.n}: ${unit.t}`}>
+        {unit.n}
+      </button>
+    );
+  };
 
   return (
     <div className="a1-map">
       <div className="a1-maphead">
         <span className="a1-mapstat"><b>13</b> units</span>
         <span className="a1-mapstat"><b>52</b> lessons</span>
-        <span className="a1-mapstat">foundations → quadratics</span>
+        <span className="a1-mapstat">foundations → capstone</span>
       </div>
-      <div className="a1-units">
-        {UNITS.map((u, i) => {
-          const numbered = u.n !== 'A';
-          const cls =
-            'a1-unit' +
-            (sel === i ? ' sel' : '') +
-            (selUnit && !isStats && numbered && i < sel ? ' prereq' : '') +
-            (u.n === 'A' ? ' stats' : '');
-          return (
-            <button className={cls} key={u.n} onClick={() => setSel(sel === i ? null : i)} aria-pressed={sel === i}>
-              <span className="a1-uno">{u.n}</span>
-              <span className="a1-utitle">{u.t}</span>
-            </button>
-          );
-        })}
+      <div className="a1-path">
+        {PHASES.map((label, pi) => (
+          <div className={'a1-phase' + (pi === 4 ? ' capstone' : '')} key={label}>
+            <span className="a1-phlabel">{label}</span>
+            <div className="a1-phnodes">
+              {UNITS.map((unit, i) => (unit.phase === pi ? node(unit, i) : null))}
+            </div>
+          </div>
+        ))}
       </div>
-      <p className="a1-mapcap">{caption}</p>
+      <div className="a1-aside">
+        <span className="a1-aslabel">Anytime</span>
+        {UNITS.map((unit, i) => (unit.n === 'A' ? node(unit, i) : null))}
+        <span className="a1-asname">Data &amp; Statistics</span>
+      </div>
+      <div className="a1-detail">
+        <span className={'a1-dno' + (isStats ? ' stats' : '')}>{u.n}</span>
+        <div className="a1-dtext">
+          <b>Unit {u.n} · {u.t}</b>
+          <p>{u.f}</p>
+          <p className="a1-dnote">{note}</p>
+        </div>
+      </div>
     </div>
   );
 }
