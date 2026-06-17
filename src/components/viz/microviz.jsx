@@ -184,21 +184,28 @@ function StreamViz() {
 // algebra-1-tutor — a balance scale that settles level as 2x = 6 resolves to
 // x = 3 (concrete -> symbolic). Pure SVG; motion is CSS, gated by .mv-anim and
 // the prefers-reduced-motion rule, so the static render already reads as solved.
+//
+// Layout note: this viz is rendered with preserveAspectRatio="meet" inside two
+// containers that overlay their bottom edge — the home card's bottom fade
+// (.pc-viz::after) and the project hero's title bar (.a1-titlewrap). So the
+// whole scale + the "x = 3" payoff are kept in the upper/centre band of the
+// viewBox; the lower third is intentionally empty decorative space the overlays
+// can eat without hiding any meaning.
 function AlgebraViz() {
   return (<div className="mv mv-alg"><svg viewBox="0 0 340 120" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A balance scale that settles level as 2x = 6 resolves to x = 3">
-    <line className="alg-post" x1="170" y1="50" x2="170" y2="94" />
-    <path className="alg-base" d="M150 96 H190 L182 90 H158 Z" />
+    <line className="alg-post" x1="170" y1="16" x2="170" y2="46" />
+    <path className="alg-base" d="M152 48 H188 L181 42 H159 Z" />
     <g className="alg-beam">
-      <line className="alg-arm" x1="84" y1="50" x2="256" y2="50" />
-      <line className="alg-str" x1="84" y1="50" x2="84" y2="63" />
-      <path className="alg-pan" d="M64 63 H104 L98 78 Q84 84 70 78 Z" />
-      <text className="alg-tile" x="84" y="74" textAnchor="middle">2x</text>
-      <line className="alg-str" x1="256" y1="50" x2="256" y2="63" />
-      <path className="alg-pan" d="M236 63 H276 L270 78 Q256 84 242 78 Z" />
-      <text className="alg-tile" x="256" y="74" textAnchor="middle">6</text>
+      <line className="alg-arm" x1="80" y1="16" x2="260" y2="16" />
+      <line className="alg-str" x1="80" y1="16" x2="80" y2="28" />
+      <path className="alg-pan" d="M60 28 H100 L94 43 Q80 49 66 43 Z" />
+      <text className="alg-tile" x="80" y="39" textAnchor="middle">2x</text>
+      <line className="alg-str" x1="260" y1="16" x2="260" y2="28" />
+      <path className="alg-pan" d="M240 28 H280 L274 43 Q260 49 246 43 Z" />
+      <text className="alg-tile" x="260" y="39" textAnchor="middle">6</text>
     </g>
-    <circle className="alg-piv" cx="170" cy="50" r="3.4" />
-    <text className="alg-eq" x="170" y="116" textAnchor="middle">x = 3</text>
+    <circle className="alg-piv" cx="170" cy="16" r="3.4" />
+    <text className="alg-eq" x="170" y="74" textAnchor="middle">x = 3</text>
   </svg></div>);
 }
 
