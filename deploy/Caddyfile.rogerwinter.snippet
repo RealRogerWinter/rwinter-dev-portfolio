@@ -20,14 +20,15 @@
 # "certificate required"). Requires AOP enabled + SSL/TLS Full(strict) on the
 # zone, and the apex A/AAAA records proxied.
 #
-# DEFERRED — www.rogerwinter.dev and rogerwinter.biz: each needs its own proxied
-# DNS record first (and, for .biz, onboarding that zone + a token that covers it).
-# When ready, add redirect blocks that ALSO carry the per-site dns token, e.g.:
+# www.rogerwinter.dev is handled by the redirect block at the bottom of this file
+# (301 → apex). It carries its OWN `tls { dns … }` override so Caddy obtains a
+# separate Let's Encrypt cert for the www name via DNS-01; without that block the
+# origin had no cert for www and Cloudflare (Full strict) returned 525 on the
+# www host. The www apex record must be proxied in Cloudflare (it is).
 #
-#   www.rogerwinter.dev {
-#       tls { dns cloudflare {env.CF_API_TOKEN_RW} }
-#       redir https://rogerwinter.dev{uri} permanent
-#   }
+# DEFERRED — rogerwinter.biz: needs its own proxied DNS record first, plus
+# onboarding that zone + a token that covers it. When ready, add a redirect block
+# that ALSO carries a per-site dns token covering the .biz zone.
 #
 # After editing: `sudo caddy validate --config /etc/caddy/Caddyfile` (note: a
 # standalone validate run shows an empty-token warning because caddy.env isn't
@@ -49,4 +50,24 @@ rogerwinter.dev {
 	}
 
 	reverse_proxy 127.0.0.1:3001
+}
+
+# Canonical-host redirect: www → apex. Carries its own per-site DNS token so Caddy
+# can solve the DNS-01 challenge and mint a cert for the www name (the apex block's
+# cert does not cover it). Without a valid origin cert here, Cloudflare (SSL/TLS
+# Full strict) fails the origin TLS handshake and serves a 525 on www. The origin
+# lock (client_auth) mirrors the apex block so www is also reachable only via real
+# Cloudflare connections — same AOP trust pool, same posture.
+www.rogerwinter.dev {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN_RW}
+		client_auth {
+			mode require_and_verify
+			trust_pool file {
+				pem_file /etc/caddy/cf-origin-pull-ca.pem
+			}
+		}
+	}
+
+	redir https://rogerwinter.dev{uri} permanent
 }
