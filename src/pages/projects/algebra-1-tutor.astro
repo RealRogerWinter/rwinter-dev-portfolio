@@ -237,6 +237,24 @@ const stack = [
     <p class="a1-p">The whole textbook is <span class="hl">free and open source</span> under permissive licenses, and anyone can contribute. Fixes and new explanations run through the same loop (research, generate, validate against SymPy, review), so the bar holds whether a change comes from Claude or a contributor.</p>
   </section>
 
+  {/* evaluated */}
+  <section class="a1-sec">
+    <p class="a1-kicker">How we know it works</p>
+    <h2 class="a1-h2">Measured, not assumed</h2>
+    <p class="a1-p">Verifying the math is one thing; knowing the tutoring actually helps is another. So the skill is run through a <a href={`${p.repo}/tree/main/algebra-1-tutor-evals`} target="_blank" rel="noopener">structured eval</a>: simulated students with distinct personalities work through real sections of the book, and a two-judge panel grades each transcript on five dimensions: accuracy, demeanor, source fidelity, staying on topic, and pedagogy.</p>
+    <figure class="a1-figure wide">
+      <div class="a1-eval">
+        <div class="a1-evrow"><span class="a1-evlbl">Simulated students</span><div class="a1-evchips"><span>Maya · error-prone</span><span>Sam · anxious</span><span>Jordan · tangent-seeker</span><span>Alex · impatient</span></div></div>
+        <div class="a1-evrow"><span class="a1-evlbl">Graded 1–5 on</span><div class="a1-evchips"><span>Accuracy</span><span>Friendly demeanor</span><span>Source fidelity</span><span>On-topic</span><span>Pedagogy</span></div></div>
+        <div class="a1-evrow"><span class="a1-evlbl">Judged by</span><div class="a1-evchips"><span class="key">Opus + Sonnet panel</span><span>blind grading</span><span>both models tested</span></div></div>
+        <div class="a1-evfoot">13 units × 4 personas · multi-turn sessions · ~52 scenarios per iteration</div>
+      </div>
+      <figcaption class="a1-figcap">A persona plays the student; a two-judge panel grades the transcript</figcaption>
+    </figure>
+    <p class="a1-p">Each persona stresses a different failure mode and rotates across all 13 units, on both Opus and Sonnet, so weaknesses show up where they would actually bite. The findings drive concrete fixes: one round of edits lifted a collaborative-pedagogy score from <span class="hl">2.0 to 4.5</span> on a hard unit and drove a source-fidelity red flag from four cases to zero.</p>
+    <p class="a1-p">The work stays honest, too: each scenario is a single conversation, so the eval watches trends and red flags rather than chasing one perfect number.</p>
+  </section>
+
   {/* template angle */}
   <section class="a1-sec">
     <p class="a1-kicker">Open source</p>
