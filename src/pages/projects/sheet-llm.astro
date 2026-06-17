@@ -35,7 +35,7 @@ const stack = [
 ];
 ---
 <Page
-  title="sheet-llm — Roger Winter"
+  title="sheet-llm, Roger Winter"
   description={p.desc}
   canonical="https://rogerwinter.dev/projects/sheet-llm"
   active=""
@@ -58,7 +58,7 @@ const stack = [
       </div>
     </div>
     <div class="slp-intro">
-      <p class="slp-tagline">A publisher-grade notation editor you talk to. Describe the music; a language model writes it onto the staff.</p>
+      <p class="slp-tagline">A notation editor you talk to. Describe the music; an LLM orchestrator writes it onto the staff, and never makes a silent edit.</p>
       <div class="slp-actions">
         <a class="tm-btn demo" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
         <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
@@ -69,23 +69,23 @@ const stack = [
 
   {/* lede */}
   <section class="slp-lede">
-    <p>sheet-llm is a music notation editor that works like a conversation. Describe the music in plain language, and a language model writes it onto the staff.</p>
-    <p>It's real notation under the hood, with one rule that shapes everything: <span class="hl">the editor changes only what it's asked to change.</span> Ask to rewrite bars 5 through 8, and bars 1 through 4 stay exactly as they were.</p>
+    <p>Ask sheet-llm to rewrite bars 5 through 8 of a waltz, and bars 1 through 4 come back identical. Not usually, and not because the model tried. The server hashes the bars that should stay and refuses the edit if any of them moved.</p>
+    <p>That refusal is the whole design. <span class="hl">The model emits a structured score, not notation markup, so the editor can prove exactly what an edit did not change.</span> It is in development, so this is how it works, not a victory lap.</p>
   </section>
 
   {/* signature: additive editing */}
   <section class="slp-sec">
     <p class="slp-kicker">The idea</p>
-    <h2 class="slp-h2">It changes only what's asked</h2>
-    <p class="slp-p">Most AI editing tools rewrite the whole thing. sheet-llm treats every edit as additive: new bars get added, named bars get rewritten, and everything else is left alone. A check on the server hashes the bars that should stay and refuses the edit if any of them moved. A full rewrite can still happen, but only behind a confirmation, never by surprise.</p>
+    <h2 class="slp-h2">It edits in place</h2>
+    <p class="slp-p">Every edit applies in place: new bars get added, named bars get rewritten, and everything else is left untouched. The whole document is never regenerated. A check on the server hashes the bars that should stay and refuses the edit if any of them moved, so the scoping is provable, not promised. A full rewrite can still happen, but only behind a confirmation, never by surprise.</p>
     <figure class="slp-figure" style="margin-top:8px">
       <AdditiveEditDemo client:visible />
-      <figcaption class="slp-figcap">Interactive · compose, then rewrite bars 5–8 and watch what stays</figcaption>
+      <figcaption class="slp-figcap">Interactive · compose, then rewrite bars 5-8 and watch what stays</figcaption>
     </figure>
     <div class="sl-frame">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">AI proposal · 48 changes</span></div>
       <img src="/portfolio/assets/sl-proposal.png" alt="An AI proposal in sheet-llm: a new sixteenth-note arpeggio run highlighted in amber across the last bars, with Accept all and Reject controls" />
-      <div class="cap"><b>The real preview</b> — the new arpeggio bars glow amber as a staged proposal. Accept or reject before anything touches the saved score; untouched bars never move.</div>
+      <div class="cap"><b>The real preview</b>: the new arpeggio bars glow amber as a staged proposal. Accept or reject before anything touches the saved score; untouched bars never move.</div>
     </div>
   </section>
 
@@ -96,17 +96,17 @@ const stack = [
     <p class="slp-p">The loop is short, and the score keeps up at every step. Describe the music, refine it in chat, review each AI edit, then reach in by hand whenever a note needs moving.</p>
     <WorkflowSteps />
     <div class="sl-frame">
-      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">sheet-llm — Simple Waltz in A Major</span></div>
+      <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">sheet-llm · Simple Waltz in A Major</span></div>
       <img src="/portfolio/assets/sl-compose.png" alt="The sheet-llm editor with a composed waltz on the staff and the running conversation of edits on the right" />
-      <div class="cap"><b>The editor</b> — the score on the left, the running chat of edits on the right, every turn revertible, with export to MIDI, PDF, and MusicXML.</div>
+      <div class="cap"><b>The editor</b>: the score on the left, the running chat of edits on the right, every turn revertible, with export to MIDI, PDF, and MusicXML.</div>
     </div>
   </section>
 
   {/* orchestrator */}
   <section class="slp-sec">
     <p class="slp-kicker">The orchestrator</p>
-    <h2 class="slp-h2">One brain behind every request</h2>
-    <p class="slp-p">Every chat request runs through an orchestrator. It reads the prompt and the current score, clears a copyright filter, then reasons about which edit to make and carries it out.</p>
+    <h2 class="slp-h2">It classifies and routes across models</h2>
+    <p class="slp-p">Every chat request runs through one orchestrator. It reads the prompt and the current score, clears a copyright filter, then classifies the request by complexity and routes it to the model that fits before carrying out the edit.</p>
     <figure class="slp-figure" style="margin-top:8px">
       <div class="slp-figbox"><OrchestratorFlow /></div>
       <figcaption class="slp-figcap">Prompt → filter → reasoning → safety gates → ghost preview → saved turn</figcaption>
@@ -134,7 +134,7 @@ const stack = [
   <section class="slp-sec">
     <p class="slp-kicker">Talk to the score</p>
     <h2 class="slp-h2">Ask it about the music</h2>
-    <p class="slp-p">Because questions get their own path, the editor doubles as something to talk to. A musician can ask what key a piece is in, why a bar sounds tense, or what a ii–V–I is, and get a plain-language answer with the open score as the reference point.</p>
+    <p class="slp-p">Because questions get their own path, the editor doubles as something to talk to. A musician can ask what key a piece is in, why a bar sounds tense, or what a ii-V-I is, and get a plain-language answer with the open score as the reference point.</p>
     <p class="slp-p">It can also teach by doing. Ask for a concept and it writes the example straight onto the staff, so an explanation of a scale or a cadence comes with the notes to see and play. That turns the tool into a patient music tutor as much as an editor.</p>
     <figure class="slp-figure" style="margin-top:8px">
       <ChatDemo client:visible />
@@ -143,7 +143,7 @@ const stack = [
     <div class="sl-frame">
       <div class="top"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">Converse mode · music theory</span></div>
       <img src="/portfolio/assets/sl-converse.png" alt="sheet-llm in converse mode giving a full music-theory breakdown of the open score, with a debug panel showing the request routed to a converse model" />
-      <div class="cap"><b>In the editor</b> — a full theory breakdown of the open score. The debug panel shows the turn classified as a simple converse request and routed to its model.</div>
+      <div class="cap"><b>In the editor</b>: a full theory breakdown of the open score. The debug panel shows the turn classified as a simple converse request and routed to its model.</div>
     </div>
   </section>
 

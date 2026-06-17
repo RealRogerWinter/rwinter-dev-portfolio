@@ -9,15 +9,16 @@ const entries = (await getCollection('writeups', ({ data }) => !data.draft)).sor
 );
 ---
 <Page
-  title="Writeups — Roger Winter"
-  description="Tutorials and deep-dives by Roger Winter on building AI-native software and how it works."
+  title="Writeups, Roger Winter"
+  description="Notes from the build: how the AI products I ship actually work, written up as I go."
   canonical="https://rogerwinter.dev/writeups.html"
   active="writeups"
 >
   <div class="wr-index">
     <header class="pg">
       <p class="pg-kicker">Writeups</p>
-      <h1 class="pg-h1">Tutorials &amp; deep-dives.</h1>
+      <h1 class="pg-h1">Notes from the build.</h1>
+      <p class="pg-lead">How the things I ship work, written up as I go.</p>
     </header>
     <div class="wr-list">
       {entries.length === 0 && <p class="wr-empty">Nothing published yet.</p>}

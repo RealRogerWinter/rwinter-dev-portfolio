@@ -38,7 +38,7 @@ const tourPins = [
 ];
 ---
 <Page
-  title="OneStreamer — Roger Winter"
+  title="OneStreamer, Roger Winter"
   description={p.desc}
   canonical="https://rogerwinter.dev/projects/onestreamer"
   active=""
@@ -72,14 +72,14 @@ const tourPins = [
   {/* lede */}
   <section class="os-lede">
     <p>OneStreamer started with one question: what if streamers competed for the audience by taking the broadcast away from each other?</p>
-    <p>Only one person holds the stream at a time. Anyone can cut in and seize it, so the show keeps changing hands. It's also where I test how far AI agents can carry a real product, with <span class="hl">AI viewers watching alongside real people</span> and talking back in chat.</p>
+    <p>Only one person holds the stream at a time, and anyone watching can cut in to seize it. <span class="hl">That one rule is really an architecture decision:</span> one publisher, one SFU, and one perception pipeline that fills the chat with AI viewers and bans abuse with the same eyes.</p>
   </section>
 
   {/* interface tour */}
   <section class="os-sec">
     <p class="os-kicker">The interface</p>
-    <h2 class="os-h2">One stream, wrapped in a control room</h2>
-    <p class="os-p">Every viewer sees the same thing: the live game full-bleed, the streamer's own cam, a switch timer counting down to the next takeover, and a chat where real people and AI viewers talk over each other.</p>
+    <h2 class="os-h2">One screen, everything a viewer needs</h2>
+    <p class="os-p">Every viewer sees the same thing: the live game full-bleed, the streamer's own cam, a switch timer counting down to the next takeover, and a chat where real people and AI viewers talk to each other and to the streamer.</p>
     <figure class="os-tour" style="margin:8px 0 0">
       <picture><source srcset="/portfolio/assets/onestreamer-stream.webp" type="image/webp" /><img src="/portfolio/assets/onestreamer-stream.png" width="2560" height="1440" alt="An annotated frame of the OneStreamer interface" loading="lazy" /></picture>
       {tourPins.map((pin) => (
@@ -98,7 +98,7 @@ const tourPins = [
         <p class="os-kicker">The mechanic</p>
         <h2 class="os-h2">One live seat. Anyone can take it.</h2>
         <p class="os-p">The platform never runs more than a single broadcast, so attention doesn't fragment across a hundred parallel streams. Holding the seat is the whole game, and it's always up for grabs.</p>
-        <p class="os-p">Streamers and viewers pick up items between rounds. Some raise a stream's defense so it can't be grabbed. Others cut that defense or disrupt the broadcast, opening a window for the next takeover.</p>
+        <p class="os-p">Between rounds, streamers and viewers buy items with points they earn by watching or streaming. Some raise a stream's defense so the seat can't be grabbed. Others drain that defense or disrupt the broadcast, opening a window for the next takeover.</p>
       </div>
       <figure class="os-figure">
         <div class="os-figbox"><TakeoverDiagram /></div>
@@ -122,7 +122,7 @@ const tourPins = [
       <div>
         <p class="os-kicker">AI viewers</p>
         <h2 class="os-h2">Viewers that watch and react</h2>
-        <p class="os-p">Real people fill the room, and OneStreamer seeds it with LLM-powered viewers too. Each AI viewer takes screenshots of the stream and a transcript of the audio, feeds both into a lightweight model, and posts back to chat.</p>
+        <p class="os-p">The room always has AI viewers, and real people use the site too, so both are present at once. Each AI viewer takes screenshots of the stream and a transcript of the audio, feeds both into a lightweight model, and posts back to chat.</p>
         <p class="os-p">Because the reactions come from the current frame and the current audio, they track what's on screen right now instead of running a generic script. Every viewer keeps a consistent personality across a session, so running jokes and callbacks build over time.</p>
       </div>
     </div>
@@ -155,7 +155,7 @@ const tourPins = [
       <div>
         <p class="os-kicker">Architecture</p>
         <h2 class="os-h2">Built on LiveKit, one to many</h2>
-        <p class="os-p">OneStreamer uses LiveKit as its only WebRTC SFU. A single publisher sends video into the SFU, which forwards it to every viewer at once — the one-to-many shape the takeover game needs.</p>
+        <p class="os-p">OneStreamer uses LiveKit as its only WebRTC SFU. A single publisher sends video into the SFU, which forwards it to every viewer at once, the one-to-many shape the takeover game needs.</p>
         <p class="os-p">Latency stays low enough that a takeover feels instant. A recorder taps the same feed continuously, so any moment can be turned into a clip after the fact.</p>
         <a class="os-doclink" href="https://github.com/RealRogerWinter/onestreamer/blob/main/docs/architecture/overview.md" target="_blank" rel="noopener">Read the architecture overview ↗</a>
       </div>
@@ -189,7 +189,7 @@ const tourPins = [
     <div class="os-timeline">
       <div class="os-stop"><p class="when">First prototype</p><h3 class="what">Hand-assembled from ChatGPT</h3><p>The earliest version came together by copy-pasting code out of an early ChatGPT, one piece at a time, before agents could touch a repo directly.</p></div>
       <div class="os-stop"><p class="when">Agent takes the wheel</p><h3 class="what">Claude Code · Sonnet 4.5</h3><p>Claude Code took over the codebase running Sonnet 4.5. Whole features started landing in a sitting instead of a weekend.</p></div>
-      <div class="os-stop"><p class="when">Bigger changes</p><h3 class="what">Claude Code · Opus</h3><p>Switching to Opus made larger, system-wide edits hold together — refactors that touched many files at once instead of one corner.</p></div>
+      <div class="os-stop"><p class="when">Bigger changes</p><h3 class="what">Claude Code · Opus</h3><p>Switching to Opus made larger, system-wide edits hold together, refactors that touched many files at once instead of one corner.</p></div>
       <div class="os-stop"><p class="when">Now</p><h3 class="what">Heavy refactor · Opus 4.8</h3><p>The current version is a deep refactor done with Opus 4.8, and development keeps going from here.</p></div>
     </div>
   </section>

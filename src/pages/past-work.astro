@@ -1,0 +1,227 @@
+---
+// Past work — by-lined technical/content portfolio, segmented by publisher, plus
+// video. Static page; reuses writeup.css list styling. Hero pairs the heading with
+// a tech-style quill-on-document micro-viz (pure CSS/SVG). Thumbnails self-hosted.
+import Page from '../layouts/Page.astro';
+import '../styles/writeup.css';
+
+const circleci = [
+  {
+    title: 'Deployment strategies: Types, trade-offs, and how to choose',
+    url: 'https://circleci.com/blog/deployment-strategies-types-trade-offs-and-how-to-choose/',
+    topic: 'How to pick a deployment strategy, and what each one costs you.',
+    tag: 'Deployment', date: '2026',
+  },
+  {
+    title: 'Regression testing: What it is, why it matters, and how to automate it with CI/CD',
+    url: 'https://circleci.com/blog/regression-testing-and-how-to-automate-it-with-ci/',
+    topic: 'Catching regressions automatically inside a pipeline.',
+    tag: 'Testing', date: '2026',
+  },
+  {
+    title: 'Getting started with Claude Code and CircleCI',
+    url: 'https://circleci.com/blog/getting-started-with-claude-code-and-circleci/',
+    topic: 'Wiring an AI coding agent into a CI/CD workflow.',
+    tag: 'AI', date: '2026',
+  },
+  {
+    title: 'How to set up blue-green deployments with CircleCI',
+    url: 'https://circleci.com/blog/how-to-set-up-blue-green-deployments-with-circleci/',
+    topic: 'Blue-green deployments, step by step.',
+    tag: 'Deployment', date: '2026',
+  },
+];
+const other = [
+  {
+    pub: 'Cockroach Labs',
+    title: 'Build a full-stack Node.js app with CockroachDB Serverless',
+    url: 'https://www.cockroachlabs.com/blog/full-stack-node-app/',
+    topic: 'A full-stack tutorial: Node.js and Express on CockroachDB Serverless, deployed end to end.',
+    date: '2021',
+  },
+  {
+    pub: 'HubSpot',
+    title: 'An Introduction to JavaScript',
+    url: 'https://offers.hubspot.com/intro-to-javascript-guide',
+    topic: 'A downloadable guide to JavaScript fundamentals.',
+    date: '',
+  },
+];
+const profile = 'https://circleci.com/blog/author/roger-winter/';
+const hubspotProfile = 'https://web.archive.org/web/20230608072722/blog.hubspot.com/website/author/roger-winter-1';
+
+const videos = [
+  { id: 'hE5y2eOp7Mw', title: 'Run CI Tests Without Pushing: Microbuilds with Chunk sidecars', channel: 'CircleCI' },
+  { id: '6AVqRyRnXAY', title: 'Agent Hooks + Chunk sidecars: Stop Broken AI Code Before It Hits CI', channel: 'CircleCI' },
+  { id: 'VRgcy1l7h4c', title: 'Find & Fix Bugs Automatically with Chunk (CI/CD AI Agent Tutorial)', channel: 'CircleCI' },
+  { id: 'wBlQkl6buhk', title: 'Crafting Developer Content that Converts at Every Stage (ContentLab Fireside Chat Series)', channel: 'ContentLab' },
+];
+---
+<Page
+  title="Past work, Roger Winter"
+  description="By-lined technical writing and video by Roger Winter for CircleCI, Cockroach Labs, HubSpot, and more: tutorials and explainers on CI/CD, deployment, testing, full-stack development, and AI in the developer workflow."
+  canonical="https://rogerwinter.dev/past-work.html"
+  active="past-work"
+>
+  <div class="wr-index">
+    <header class="pg">
+      <div class="pw-hero">
+        <div class="pw-hero-text">
+          <p class="pg-kicker">Past work</p>
+          <h1 class="pg-h1">Technical writing for developers.</h1>
+          <p class="pg-lead">By-lined tutorials, explainers, and guides written for developer-tool companies, on CI/CD, deployment, testing, full-stack development, and AI in the developer workflow.</p>
+        </div>
+
+        <div class="pw-viz" aria-hidden="true">
+          <div class="pw-viz-glow"></div>
+          <svg viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet" role="img">
+            {/* document */}
+            <g class="pw-doc">
+              <path class="pw-paper" d="M58 56 a6 6 0 0 1 6 -6 H224 L250 76 V222 a6 6 0 0 1 -6 6 H64 a6 6 0 0 1 -6 -6 Z" />
+              <path class="pw-fold" d="M224 50 L250 76 L224 76 Z" />
+              <text class="pw-glyph" x="74" y="90">&lt;/&gt;</text>
+              <line class="pw-line l1" x1="74" y1="116" x2="226" y2="116" />
+              <line class="pw-line l2" x1="74" y1="134" x2="198" y2="134" />
+              <line class="pw-line l3" x1="74" y1="152" x2="226" y2="152" />
+              <line class="pw-line l4" x1="74" y1="170" x2="162" y2="170" />
+              <line class="pw-line l5" x1="74" y1="188" x2="210" y2="188" />
+              <line class="pw-line l6" x1="74" y1="206" x2="134" y2="206" />
+              <rect class="pw-cursor" x="140" y="200" width="3" height="13" rx="1.5" />
+            </g>
+            {/* quill */}
+            <g class="pw-quill">
+              <path class="pw-quill-spine" d="M300 60 C 252 102, 196 156, 142 200" />
+              <g class="pw-barbs">
+                <path class="pw-barb" d="M300 60 L317 52" />
+                <path class="pw-barb" d="M289 70 L305 63" />
+                <path class="pw-barb" d="M277 82 L293 75" />
+                <path class="pw-barb" d="M264 95 L280 89" />
+                <path class="pw-barb" d="M250 109 L265 104" />
+                <path class="pw-barb" d="M236 123 L250 119" />
+                <path class="pw-barb" d="M221 138 L234 134" />
+                <path class="pw-barb" d="M289 70 L283 82" />
+                <path class="pw-barb" d="M277 82 L271 94" />
+              </g>
+              <path class="pw-nib" d="M142 200 l 11 -6 l -3 12 Z" />
+              <circle class="pw-nibglow" cx="143" cy="201" r="3.4" />
+            </g>
+          </svg>
+        </div>
+      </div>
+    </header>
+
+    <section class="pw-cat">
+      <p class="pw-seclabel">CircleCI</p>
+      <div class="wr-list">
+        {circleci.map((w) => (
+          <a class="wr-item" href={w.url} target="_blank" rel="noopener">
+            <p class="meta"><span class="tag">{w.tag}</span><time>{w.date}</time></p>
+            <h2>{w.title}</h2>
+            <p>{w.topic}</p>
+          </a>
+        ))}
+      </div>
+      <p class="pw-more"><a href={profile} target="_blank" rel="noopener">Review more on the CircleCI blog ↗</a></p>
+    </section>
+
+    <section class="pw-cat">
+      <p class="pw-seclabel">Other publishers</p>
+      <div class="wr-list">
+        {other.map((w) => (
+          <a class="wr-item" href={w.url} target="_blank" rel="noopener">
+            <p class="meta"><span class="tag">{w.pub}</span>{w.date && <time>{w.date}</time>}</p>
+            <h2>{w.title}</h2>
+            <p>{w.topic}</p>
+          </a>
+        ))}
+      </div>
+      <p class="pw-more">I wrote developer content for the HubSpot blog under my own byline; the author page is preserved on the Wayback Machine: <a href={hubspotProfile} target="_blank" rel="noopener">view it ↗</a></p>
+    </section>
+
+    <section class="pw-cat">
+      <p class="pw-seclabel">Video</p>
+      <div class="pw-vidgrid">
+        {videos.map((v) => (
+          <a class="pw-vid" href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener">
+            <div class="pw-vid-thumb">
+              <img src={`/portfolio/assets/yt-${v.id}.jpg`} alt={v.title} loading="lazy" width="480" height="360" />
+              <span class="pw-vid-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span>
+            </div>
+            <div class="pw-vid-meta">
+              <span class="pw-vid-tag">{v.channel}</span>
+              <h3 class="pw-vid-title">{v.title}</h3>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</Page>
+
+<style>
+  .pw-hero{ display:grid; grid-template-columns:1.12fr .88fr; gap:clamp(28px,5vw,56px); align-items:center; }
+  .pw-hero-text{ min-width:0; }
+  .pw-viz{ position:relative; display:flex; align-items:center; justify-content:center; }
+  .pw-viz svg{ width:100%; max-width:400px; height:auto; overflow:visible; display:block; }
+  .pw-viz-glow{ position:absolute; inset:6% 8%; border-radius:26px; pointer-events:none;
+    background:radial-gradient(56% 60% at 54% 46%, var(--acc-soft), transparent 72%); filter:blur(10px); }
+
+  .pw-paper{ fill:color-mix(in srgb, var(--panel2) 86%, transparent); stroke:color-mix(in srgb,var(--acc) 30%, var(--line)); stroke-width:1.5; }
+  .pw-fold{ fill:color-mix(in srgb,var(--acc) 15%, var(--panel)); stroke:color-mix(in srgb,var(--acc) 30%, var(--line)); stroke-width:1.2; stroke-linejoin:round; }
+  .pw-glyph{ fill:color-mix(in srgb,var(--acc) 78%, var(--ink)); font-family:var(--mono); font-size:14px; font-weight:600; letter-spacing:1.5px; }
+  .pw-line{ stroke:var(--acc); stroke-width:2.6; stroke-linecap:round; opacity:.6; }
+  .pw-cursor{ fill:var(--acc); }
+  .pw-quill-spine{ fill:none; stroke:var(--ink); stroke-width:2.6; stroke-linecap:round; }
+  .pw-barb{ fill:none; stroke:color-mix(in srgb,var(--ink) 52%, var(--acc)); stroke-width:1.5; stroke-linecap:round; }
+  .pw-nib{ fill:var(--acc); }
+  .pw-nibglow{ fill:var(--acc); opacity:.5; }
+
+  @media (prefers-reduced-motion: no-preference){
+    .pw-line{ stroke-dasharray:240; stroke-dashoffset:240; animation:pwDraw .85s ease forwards; }
+    .pw-line.l1{ animation-delay:.55s } .pw-line.l2{ animation-delay:.75s }
+    .pw-line.l3{ animation-delay:.95s } .pw-line.l4{ animation-delay:1.15s }
+    .pw-line.l5{ animation-delay:1.35s } .pw-line.l6{ animation-delay:1.55s }
+    .pw-cursor{ opacity:0; animation:pwCursorIn .01s linear 1.7s forwards, pwBlink 1.05s steps(1) infinite 1.7s; }
+    .pw-quill-spine{ stroke-dasharray:320; stroke-dashoffset:320; animation:pwDraw 1.2s ease .1s forwards; }
+    .pw-barbs{ opacity:0; animation:pwFade .6s ease 1s forwards; }
+    .pw-nibglow{ animation:pwPulse 2.6s ease-in-out infinite; }
+    .pw-viz svg{ animation:pwFloat 7.5s ease-in-out infinite; }
+  }
+  @keyframes pwDraw{ to{ stroke-dashoffset:0 } }
+  @keyframes pwFade{ from{ opacity:0 } to{ opacity:.82 } }
+  @keyframes pwCursorIn{ to{ opacity:1 } }
+  @keyframes pwBlink{ 0%,55%{ opacity:1 } 56%,100%{ opacity:0 } }
+  @keyframes pwPulse{ 0%,100%{ opacity:.3 } 50%{ opacity:.85 } }
+  @keyframes pwFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-7px) } }
+
+  @media (max-width:860px){
+    .pw-hero{ grid-template-columns:1fr; gap:34px; }
+    .pw-viz{ order:-1; }
+    .pw-viz svg{ max-width:340px; }
+  }
+
+  /* ---- segmented sections ---- */
+  .pw-cat{ margin-top:clamp(40px,5vw,58px); }
+  .pw-more{ margin:20px 0 0; font-family:var(--mono); font-size:13.5px; color:var(--dim); line-height:1.7; }
+  .pw-more a{ color:var(--acc); text-decoration:none; border-bottom:1px solid color-mix(in srgb,var(--acc) 40%, transparent); }
+  .pw-more a:hover{ border-bottom-color:var(--acc); }
+
+  /* ---- video grid ---- */
+  .pw-vidgrid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .pw-vid{ display:block; text-decoration:none; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--panel); transition:border-color .2s, transform .2s, box-shadow .2s; }
+  .pw-vid:hover{ border-color:color-mix(in srgb,var(--acc) 45%, var(--line)); transform:translateY(-3px); box-shadow:0 24px 60px -34px rgba(0,0,0,.7); }
+  .pw-vid-thumb{ position:relative; aspect-ratio:16 / 9; overflow:hidden; background:var(--panel2); }
+  .pw-vid-thumb img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s; }
+  .pw-vid:hover .pw-vid-thumb img{ transform:scale(1.05); }
+  .pw-vid-thumb::after{ content:''; position:absolute; inset:0; pointer-events:none; background:linear-gradient(to top, color-mix(in srgb,var(--bg) 55%, transparent), transparent 55%); }
+  .pw-vid-play{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1; width:50px; height:50px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; background:color-mix(in srgb,var(--bg) 52%, transparent);
+    border:1px solid color-mix(in srgb,var(--acc) 60%, transparent); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); transition:.2s; }
+  .pw-vid-play svg{ width:17px; height:17px; fill:var(--acc); margin-left:2px; }
+  .pw-vid:hover .pw-vid-play{ background:var(--acc); border-color:var(--acc); box-shadow:0 0 0 7px var(--acc-soft); }
+  .pw-vid:hover .pw-vid-play svg{ fill:#06160c; }
+  .pw-vid-meta{ padding:14px 16px 17px; }
+  .pw-vid-tag{ font-family:var(--mono); font-size:11px; color:var(--acc-dim); }
+  .pw-vid-title{ font-family:var(--display); font-size:15px; line-height:1.34; color:var(--ink); margin:7px 0 0; font-weight:600; }
+  @media (max-width:680px){ .pw-vidgrid{ grid-template-columns:1fr; } }
+</style>

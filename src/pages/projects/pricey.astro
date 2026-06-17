@@ -49,7 +49,7 @@ const personaPins = [
 ];
 ---
 <Page
-  title="Pricey — Roger Winter"
+  title="Pricey, Roger Winter"
   description={p.desc}
   canonical="https://rogerwinter.dev/projects/pricey"
   active=""
@@ -83,7 +83,7 @@ const personaPins = [
   {/* lede + stats */}
   <section class="pcy-lede">
     <p>Pricey is a 24/7 AI streamer. She logs into <a href="/projects/price-games" style="color: var(--acc); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--acc) 40%, transparent)">Price Games</a> like any other player, guesses the prices of real products round after round, narrates her reasoning out loud, and broadcasts the whole thing to Twitch.</p>
-    <p>Two things make her more than a bot playing a game: <span class="hl">a tiny neural network that learns on stream</span>, and a simulated mood wired straight into it that changes both what she says and how she plays.</p>
+    <p>Two things make her more than a bot playing a game: <span class="hl">a small neural network that learns on stream, no ML framework</span>, and a simulated mood wired into it that changes both what she says and how she plays.</p>
     <div class="pcy-stats">
       {stats.map((s) => (<div class="pcy-stat"><div class="v">{s.v}</div><div class="l">{s.l}</div><div class="s">{s.s}</div></div>))}
     </div>
@@ -115,8 +115,8 @@ const personaPins = [
       </figure>
       <div>
         <p class="pcy-kicker">The brain</p>
-        <h2 class="pcy-h2">A hand-rolled net, no PyTorch</h2>
-        <p class="pcy-p">Pricey's brain is a tiny multi-task network where every weight is a Float32 array the author owns byte for byte. A 140-feature read of each product runs through a small trunk into six heads, one per job: a 103-bin price belief, a cents estimate, a "which is pricier" call, a safe-bid floor, an uncertainty signal, and a mood head.</p>
+        <h2 class="pcy-h2">A small net, no framework</h2>
+        <p class="pcy-p">Pricey's brain is a tiny multi-task network with no ML framework behind it: about 7,000 Float32 weights, generated and tested with Claude Code, small enough to read end to end. A 140-feature read of each product runs through a small trunk into six heads, one per job: a 103-bin price belief, a cents estimate, a "which is pricier" call, a safe-bid floor, an uncertainty signal, and a mood head.</p>
         <p class="pcy-p">It doesn't predict the raw price. It predicts where a simple built-in estimator is <strong>wrong</strong>, so it only has to learn the hard part. Forward, backward, and the optimizer step all finish in under 2 ms.</p>
       </div>
     </div>
@@ -127,7 +127,7 @@ const personaPins = [
     <div class="pcy-split">
       <div>
         <p class="pcy-kicker">Learning in public</p>
-        <h2 class="pcy-h2">She gets better on camera</h2>
+        <h2 class="pcy-h2">A neural network that improves live on stream</h2>
         <p class="pcy-p">The network trains while it plays. Across roughly 48,000 logged rounds, her self-graded correct-rate climbed from <strong>48.4% to 53.3%</strong>, comparing her first thousand rounds to her most recent thousand.</p>
         <p class="pcy-p">Getting there took real network surgery: an early build collapsed its heads and starved several game modes, and one feature column that sat at zero for 1,500 rounds detonated the gradients the moment it saw real data. Re-specialized heads, action-masking to feasible prices, and a looser gradient clip turned the curve back upward.</p>
       </div>
@@ -141,8 +141,8 @@ const personaPins = [
   {/* mood wheel */}
   <section class="pcy-sec">
     <p class="pcy-kicker">The mood</p>
-    <h2 class="pcy-h2">Eight moods, on two hidden dials</h2>
-    <p class="pcy-p">A fast "vibe" reads the last few rounds and a slow "morale" tracks whole games. A small table over those two, plus her current streak, resolves to one of eight moods. One lucky guess can't fake a comeback, but a genuinely good session lifts her, and a long streak either way reads as locked-in focus.</p>
+    <h2 class="pcy-h2">A mood shaped by how she's doing</h2>
+    <p class="pcy-p">Pricey has an affective state shaped by how the game is going for her. A run of good rounds lifts her and a bad stretch wears her down, so her mood tracks the session rather than any single guess.</p>
     <figure class="pcy-figure" style="margin-top:8px">
       <div class="pcy-figbox"><MoodWheel client:visible /></div>
     </figure>
@@ -155,11 +155,11 @@ const personaPins = [
         <MoodGains />
       </figure>
       <div>
-        <p class="pcy-kicker">Mood → optimizer</p>
-        <h2 class="pcy-h2">Her feelings rewire how she plays</h2>
-        <p class="pcy-p">The mood isn't a costume painted on top. It turns into three multiplicative gains on her decisions and her learning, all exactly identity when a master knob is off, so there's a provably emotionless baseline to compare against.</p>
-        <p class="pcy-p">The grounding is real affective-neuroscience: arousal-biased competition makes her learn harder from high-stakes rounds whether she's up or down, and mood-as-momentum makes her over-credit whatever matches her mood. She gets streaky and superstitious for the same computational reason people do.</p>
-        <p class="pcy-cite">GANE — <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3110019/" target="_blank" rel="noopener">Mather &amp; Sutherland (2011)</a> · Mood-congruent learning — <a href="https://www.nature.com/articles/ncomms7149" target="_blank" rel="noopener">Eldar &amp; Niv (2015)</a></p>
+        <p class="pcy-kicker">Mood → play</p>
+        <h2 class="pcy-h2">Her mood feeds back into how she plays</h2>
+        <p class="pcy-p">The mood isn't a costume painted on top. It changes how she bids and how she learns, and it can be switched off cleanly, so there's an emotionless baseline to compare against.</p>
+        <p class="pcy-p">The grounding is real affective neuroscience: she learns harder from high-stakes rounds whether she's up or down, and she over-credits whatever matches her current mood. She gets streaky and superstitious for the same computational reason people do.</p>
+        <p class="pcy-cite">GANE: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3110019/" target="_blank" rel="noopener">Mather &amp; Sutherland (2011)</a> · Mood-congruent learning: <a href="https://www.nature.com/articles/ncomms7149" target="_blank" rel="noopener">Eldar &amp; Niv (2015)</a></p>
       </div>
     </div>
   </section>
