@@ -1,11 +1,308 @@
-/* Bio-specific CSS (the EXTRA block from the old bio.jsx). Bundled by Astro
-   after the shared shell.css; its .tm.rw-scoped rules win on specificity. */
-.bio-cta { border-top: 1px solid var(--line); padding: 34px 0 80px; }
-.bio-cta a { font-family: var(--display); color: var(--acc); text-decoration: none; font-size: clamp(20px, 3vw, 30px); font-weight: 600; letter-spacing: -.01em; }
-.bio-cta a:hover { opacity: .8; }
-.bio-aside { position: sticky; top: 30px; }
-@media (max-width: 820px) { .bio-aside { position: static; } }
-.at-glance dt { margin-top: 14px; }
-.at-glance dt:first-child { margin-top: 0; }
-.tm.rw .pg-lead { font-size: clamp(17px, 1.7vw, 21px); }
-.tm.rw .prose p { font-family: var(--body); font-size: 16px; }
+/* ============================================================================
+   bio.css: editorial, magazine-grade styling for the bio page (/bio.html).
+   Standalone stylesheet, bundled by Astro after the shared shell.css. Reuses the
+   shell's design tokens (--acc, --ink, --dim, --line, --panel, --display, etc.)
+   and is scoped under .tm.rw so it reads as native to the site. No shared file
+   is modified. All motion is CSS/SVG and gated behind prefers-reduced-motion.
+   ========================================================================== */
+
+/* ---- shared local atoms ------------------------------------------------- */
+.tm.rw .bvb-kicker{
+  font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--dim); display:inline-flex; align-items:center; gap:12px; margin:0 0 18px;
+}
+.tm.rw .bvb-kicker::before{ content:''; width:26px; height:1px; background:var(--acc); flex:0 0 auto; }
+
+.tm.rw .bvb-h2{
+  font-family:var(--display); font-weight:700; font-size:clamp(26px,3.4vw,40px);
+  letter-spacing:-.025em; line-height:1.05; margin:0 0 22px; color:var(--ink); max-width:20ch;
+}
+
+/* =========================================================================
+   HERO: asymmetric two-column, oversized headline, the photo as main element
+   ========================================================================= */
+.tm.rw .bvb-hero{ position:relative; padding:clamp(40px,7vw,80px) 0 clamp(34px,5vw,56px); }
+
+/* atmosphere: soft accent blobs floating behind the hero, over the weave bg */
+.bvb-atmo{ position:absolute; inset:-8% -6% auto -6%; height:140%; z-index:0; pointer-events:none; overflow:visible; }
+.bvb-blob{ position:absolute; border-radius:50%; filter:blur(60px); opacity:.55; }
+.bvb-blob.b1{ width:46%; height:64%; left:46%; top:-6%;
+  background:radial-gradient(circle at 50% 50%, color-mix(in srgb,var(--acc) 30%, transparent), transparent 70%); }
+.bvb-blob.b2{ width:38%; height:50%; left:-4%; top:28%;
+  background:radial-gradient(circle at 50% 50%, color-mix(in srgb,var(--acc) 16%, transparent), transparent 70%); }
+.bvb-blob.b3{ width:34%; height:46%; left:58%; top:54%;
+  background:radial-gradient(circle at 50% 50%, color-mix(in srgb,var(--acc) 12%, transparent), transparent 70%); }
+@media (prefers-reduced-motion: no-preference){
+  .bvb-blob.b1{ animation:bvbFloat 20s ease-in-out infinite alternate; }
+  .bvb-blob.b2{ animation:bvbFloat 26s ease-in-out infinite alternate-reverse; }
+  .bvb-blob.b3{ animation:bvbFloat 23s ease-in-out infinite alternate; }
+}
+@keyframes bvbFloat{ from{ transform:translate3d(0,0,0) scale(1); } to{ transform:translate3d(0,-26px,0) scale(1.12); } }
+
+.bvb-herogrid{
+  position:relative; z-index:1;
+  display:grid; grid-template-columns:1fr 1.04fr; gap:clamp(28px,5vw,68px);
+  align-items:center;
+}
+
+/* --- text column --- */
+.bvb-introcol{ position:relative; z-index:2; }
+/* intentional overlap: the headline column nudges over the photo on wide screens */
+@media (min-width:921px){ .bvb-introcol{ margin-right:-7%; } }
+
+.bvb-h1{
+  font-family:var(--display); font-weight:800; font-size:clamp(44px,7.4vw,86px);
+  line-height:.98; letter-spacing:-.035em; margin:0 0 26px; color:var(--ink);
+}
+.bvb-h1 .nm{
+  background:linear-gradient(180deg, var(--ink) 0%, color-mix(in oklab,var(--ink) 64%, var(--dim)) 100%);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+}
+.bvb-lead{
+  font-size:clamp(17px,1.75vw,22px); line-height:1.55; font-weight:400;
+  color:color-mix(in oklab,var(--ink) 88%, var(--dim)); margin:0 0 26px; max-width:40ch;
+}
+.bvb-lead .hl{ color:var(--acc); font-weight:500; }
+
+.bvb-meta{ display:flex; }
+.bvb-avail{
+  display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:11.5px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink);
+  border:1px solid var(--line); border-radius:100px; padding:8px 15px; background:color-mix(in srgb,var(--panel) 60%, transparent);
+}
+.bvb-avail i{ width:9px; height:9px; border-radius:50%; background:var(--acc); box-shadow:0 0 10px var(--acc); flex:0 0 auto; }
+@media (prefers-reduced-motion: no-preference){ .bvb-avail i{ animation:bvbPulse 1.8s ease-in-out infinite; } }
+@keyframes bvbPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+
+/* --- photo column: the main element --- */
+.bvb-photo{ position:relative; z-index:1; margin:0; }
+.bvb-photo-glow{
+  position:absolute; inset:-12% -10% -16% -6%; z-index:0; pointer-events:none; border-radius:32px;
+  background:radial-gradient(60% 60% at 64% 34%, var(--acc-glow), transparent 70%);
+  filter:blur(34px); opacity:.7;
+}
+@media (prefers-reduced-motion: no-preference){ .bvb-photo-glow{ animation:bvbGlow 7s ease-in-out infinite; } }
+@keyframes bvbGlow{ 0%,100%{ opacity:.55; transform:scale(1); } 50%{ opacity:.85; transform:scale(1.04); } }
+
+.bvb-photo-frame{
+  position:relative; z-index:1; border-radius:22px; overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--acc) 38%, var(--line));
+  background:var(--panel2);
+  box-shadow:0 34px 90px -34px rgba(0,0,0,.7), 0 0 0 6px color-mix(in srgb,var(--acc) 7%, transparent);
+  transition:transform .4s cubic-bezier(.2,.7,.2,1), box-shadow .4s;
+}
+.bvb-photo-frame img{
+  display:block; width:100%; height:100%; aspect-ratio:4 / 3.35; object-fit:cover;
+  object-position:28% 26%; transform:scale(1.5); transform-origin:28% 23%; /* crop on the face */
+  filter:saturate(1.03) contrast(1.02);
+}
+/* thin accent rim that brightens on hover */
+.bvb-photo-rim{
+  position:absolute; inset:0; z-index:2; pointer-events:none; border-radius:22px;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 22%, transparent);
+  transition:box-shadow .4s;
+}
+.bvb-photo:hover .bvb-photo-frame{ transform:translateY(-4px); box-shadow:0 40px 100px -34px rgba(0,0,0,.74), 0 0 0 6px color-mix(in srgb,var(--acc) 12%, transparent); }
+.bvb-photo:hover .bvb-photo-rim{ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 55%, transparent); }
+
+.bvb-photo-tag{
+  position:absolute; left:14px; bottom:14px; z-index:3;
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px;
+  letter-spacing:.08em; color:var(--ink);
+  background:color-mix(in srgb,var(--bg) 64%, transparent);
+  border:1px solid color-mix(in srgb,var(--acc) 30%, var(--line)); border-radius:100px; padding:7px 13px;
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+}
+.bvb-photo-tag .dot{ width:7px; height:7px; border-radius:50%; background:var(--acc); box-shadow:0 0 8px var(--acc); flex:0 0 auto; }
+
+@media (max-width:920px){
+  .bvb-herogrid{ grid-template-columns:1fr; gap:34px; }
+  .bvb-photo{ order:-1; }
+  .bvb-photo-frame img{ aspect-ratio:16 / 10; object-position:28% 24%; }
+  .bvb-lead{ max-width:60ch; }
+}
+@media (max-width:520px){
+  .bvb-photo-frame img{ aspect-ratio:4 / 3.3; }
+  .bvb-photo-tag{ font-size:10px; }
+}
+
+/* =========================================================================
+   STAT STRIP
+   ========================================================================= */
+.bvb-stats{
+  position:relative; z-index:1;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:clamp(34px,5vw,56px);
+}
+.bvb-stat{
+  border:1px solid var(--line); border-radius:14px; padding:20px; background:var(--panel);
+  transition:border-color .2s, transform .2s, background-color .2s;
+}
+.bvb-stat:hover{ border-color:color-mix(in srgb,var(--acc) 50%, var(--line)); transform:translateY(-3px); background:color-mix(in srgb,var(--acc) 4%, var(--panel)); }
+.bvb-stat .v{
+  font-family:var(--display); font-weight:800; font-size:clamp(26px,3.2vw,36px); letter-spacing:-.02em;
+  color:var(--acc); line-height:1; white-space:nowrap;
+}
+.bvb-stat .l{ font-size:13px; color:color-mix(in oklab,var(--ink) 80%, var(--dim)); margin-top:9px; }
+.bvb-stat .s{ font-family:var(--mono); font-size:10.5px; color:var(--dim); margin-top:4px; }
+@media (max-width:840px){ .bvb-stats{ grid-template-columns:1fr 1fr; } }
+@media (max-width:440px){ .bvb-stats{ grid-template-columns:1fr; } }
+
+/* =========================================================================
+   BODY GRID: narrative + timeline on the left, sticky rail on the right
+   ========================================================================= */
+.bvb-body{
+  display:grid; grid-template-columns:1.62fr .92fr; gap:clamp(34px,5vw,72px);
+  align-items:start; padding-top:clamp(48px,7vw,86px);
+}
+@media (max-width:920px){ .bvb-body{ grid-template-columns:1fr; gap:48px; } }
+
+.bvb-block{ margin:0 0 clamp(44px,6vw,72px); }
+.bvb-block:last-child{ margin-bottom:0; }
+
+.bvb-prose p{
+  font-family:var(--body); font-size:16px; line-height:1.78;
+  color:color-mix(in oklab,var(--ink) 86%, var(--dim)); margin:0 0 20px; max-width:64ch;
+}
+.bvb-prose p:last-child{ margin-bottom:0; }
+.bvb-prose strong{ color:var(--ink); font-weight:600; }
+
+/* ---- vertical career spine ---- */
+.bvb-tl{ list-style:none; margin:0; padding:0; position:relative; }
+/* the spine line */
+.bvb-tl::before{
+  content:''; position:absolute; left:7px; top:6px; bottom:6px; width:2px;
+  background:linear-gradient(180deg, color-mix(in srgb,var(--acc) 55%, transparent), var(--line) 60%, transparent);
+}
+.bvb-node{ position:relative; display:grid; grid-template-columns:84px 1fr; gap:18px; padding:0 0 30px 30px; }
+.bvb-node:last-child{ padding-bottom:0; }
+.bvb-node-dot{
+  position:absolute; left:0; top:5px; width:16px; height:16px; border-radius:50%;
+  background:var(--bg); border:2px solid color-mix(in srgb,var(--acc) 60%, var(--line)); z-index:1;
+  transition:border-color .25s, box-shadow .25s, background-color .25s;
+}
+.bvb-node:hover .bvb-node-dot{ border-color:var(--acc); box-shadow:0 0 0 5px var(--acc-soft); }
+.bvb-node.now .bvb-node-dot{ background:var(--acc); border-color:var(--acc); box-shadow:0 0 0 5px var(--acc-soft), 0 0 14px var(--acc); }
+@media (prefers-reduced-motion: no-preference){ .bvb-node.now .bvb-node-dot{ animation:bvbPulse 1.8s ease-in-out infinite; } }
+
+.bvb-node-when{ font-family:var(--mono); font-size:12px; letter-spacing:.04em; color:var(--dim); padding-top:4px; }
+.bvb-node.now .bvb-node-when{ color:var(--acc); }
+.bvb-node-card{ min-width:0; }
+.bvb-node-role{ font-family:var(--display); font-weight:600; font-size:19px; letter-spacing:-.01em; color:var(--ink); margin:0 0 4px; }
+.bvb-node-org{ font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--acc-dim); margin:0 0 11px; }
+.bvb-node-pt{ font-family:var(--body); font-size:14.5px; line-height:1.66; color:color-mix(in oklab,var(--ink) 82%, var(--dim)); margin:0; max-width:54ch; }
+@media (max-width:560px){
+  .bvb-node{ grid-template-columns:1fr; gap:6px; }
+  .bvb-node-when{ padding-top:0; }
+}
+
+/* =========================================================================
+   SIDE RAIL: at a glance + skills + connection rings
+   ========================================================================= */
+.bvb-railsticky{ position:sticky; top:30px; display:flex; flex-direction:column; gap:18px; }
+@media (max-width:920px){ .bvb-railsticky{ position:static; } }
+
+.bvb-panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+.bvb-panel-bar{ padding:18px 22px 6px; }
+.bvb-panel-bar .ttl{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); }
+.bvb-panel-body{ padding:8px 22px 22px; }
+
+.bvb-kv{ display:grid; grid-template-columns:1fr; gap:0; margin:0; }
+.bvb-kv dt{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); margin:16px 0 5px; }
+.bvb-kv dt:first-child{ margin-top:6px; }
+.bvb-kv dd{ font-family:var(--display); font-weight:500; font-size:15px; line-height:1.45; color:var(--ink); margin:0; }
+
+.bvb-tags{ display:flex; flex-wrap:wrap; gap:8px; }
+.bvb-tag{
+  font-family:var(--mono); font-size:11px; color:var(--acc-dim);
+  border:1px solid var(--line); border-radius:20px; padding:5px 11px; transition:border-color .18s, color .18s;
+}
+.bvb-tag:hover{ border-color:color-mix(in srgb,var(--acc) 50%, var(--line)); color:var(--acc); }
+
+/* connection rings: a quiet echo of the contact page's animated glow */
+.bvb-rings{
+  position:relative; border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  background:radial-gradient(120% 120% at 50% 0%, color-mix(in srgb,var(--acc) 9%, var(--panel)), var(--panel));
+  text-align:center; color:var(--acc);
+}
+.bvb-rings svg{ width:100%; max-width:240px; height:auto; overflow:visible; display:block; margin:0 auto; }
+.rg{ fill:none; stroke:var(--acc); stroke-width:1.5; transform-box:fill-box; transform-origin:center; opacity:0; }
+@media (prefers-reduced-motion: no-preference){
+  .bvb-rings .r1{ animation:bvbPing 3.6s ease-out infinite; }
+  .bvb-rings .r2{ animation:bvbPing 3.6s ease-out infinite 1.2s; }
+  .bvb-rings .r3{ animation:bvbPing 3.6s ease-out infinite 2.4s; }
+}
+@keyframes bvbPing{ 0%{ transform:scale(.32); opacity:.7; } 100%{ transform:scale(1); opacity:0; } }
+.rg-core{ fill:var(--acc); }
+.rg-coreglow{ fill:var(--acc); opacity:.25; transform-box:fill-box; transform-origin:center; }
+@media (prefers-reduced-motion: no-preference){ .rg-coreglow{ animation:bvbCoreGlow 2.6s ease-in-out infinite; } }
+@keyframes bvbCoreGlow{ 0%,100%{ transform:scale(1); opacity:.22; } 50%{ transform:scale(1.5); opacity:.05; } }
+/* keep at least one ring visible when motion is reduced */
+@media (prefers-reduced-motion: reduce){ .bvb-rings .r2{ opacity:.5; transform:scale(.78); } }
+.rg-wm{ fill:#0a130f; font-family:var(--display); font-weight:800; font-size:12px; }
+.tm.rw[data-theme=light] .rg-wm{ fill:#eceae2; }
+.bvb-rings-cap{ font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim); margin:10px 0 0; }
+
+/* =========================================================================
+   PAST WORK + CTA
+   ========================================================================= */
+.bvb-pastwork{ margin-top:clamp(48px,7vw,80px); padding-top:30px; border-top:1px solid var(--line); }
+.bvb-pastline{ font-family:var(--body); font-size:16px; line-height:1.7; color:var(--dim); margin:0; max-width:70ch; }
+.bvb-inline-link, .tm.rw .bvb-inline-link{
+  color:var(--acc); text-decoration:none; white-space:nowrap;
+  border-bottom:1px solid color-mix(in srgb,var(--acc) 40%, transparent); transition:border-color .15s;
+}
+.bvb-inline-link:hover{ border-color:var(--acc); }
+
+.bvb-cta{
+  position:relative; overflow:hidden; margin:clamp(40px,5vw,56px) 0 80px;
+  border:1px solid color-mix(in srgb,var(--acc) 45%, var(--line)); border-radius:20px;
+  background:radial-gradient(120% 160% at 0% 0%, color-mix(in srgb,var(--acc) 16%, var(--panel)), var(--panel));
+  padding:clamp(34px,5vw,52px) clamp(26px,5vw,52px);
+}
+.bvb-cta-atmo{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(40% 120% at 100% 100%, var(--acc-glow), transparent 70%); opacity:.6;
+}
+@media (prefers-reduced-motion: no-preference){ .bvb-cta-atmo{ animation:bvbGlow 8s ease-in-out infinite; } }
+.bvb-cta-inner{ position:relative; z-index:1; }
+.bvb-cta-inner .bvb-kicker{ color:var(--dim); margin-bottom:14px; }
+.bvb-cta-link{
+  font-family:var(--display); font-weight:700; font-size:clamp(22px,3.2vw,34px); letter-spacing:-.02em;
+  line-height:1.2; color:var(--ink); text-decoration:none; display:inline-block; transition:color .2s, transform .2s;
+}
+.bvb-cta-link:hover{ color:var(--acc); transform:translateX(3px); }
+
+/* =========================================================================
+   PAGE-LOAD REVEALS: one orchestrated, staggered fade + slide
+   ========================================================================= */
+@media (prefers-reduced-motion: no-preference){
+  .reveal{ opacity:0; transform:translateY(16px); animation:bvbReveal .7s cubic-bezier(.2,.7,.2,1) forwards; }
+  .reveal.d1{ animation-delay:.08s; }
+  .reveal.d2{ animation-delay:.16s; }
+  .reveal.d3{ animation-delay:.24s; }
+  .reveal.d4{ animation-delay:.34s; }
+  .bvb-photo.reveal{ transform:translateY(16px) scale(.985); animation-name:bvbRevealPhoto; }
+}
+@keyframes bvbReveal{ to{ opacity:1; transform:translateY(0); } }
+@keyframes bvbRevealPhoto{ to{ opacity:1; transform:translateY(0) scale(1); } }
+
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1 !important; transform:none !important; }
+  .bvb-atmo, .bvb-blob, .bvb-photo-glow, .bvb-cta-atmo{ animation:none !important; }
+}
+
+/* ---- generic decorative divider: a soft animated accent signal to break up the prose ---- */
+.bvb-sig{ position:relative; margin:36px auto; height:74px; width:100%; max-width:560px; display:flex; align-items:center; justify-content:center; }
+.bvb-sig .sig-glow{ position:absolute; inset:-24% 0; pointer-events:none; background:radial-gradient(46% 130% at 50% 50%, var(--acc-soft), transparent 72%); }
+.bvb-sig svg{ position:relative; width:100%; height:74px; display:block; overflow:visible; }
+.bvb-sig .sig-base{ fill:none; stroke:var(--line); stroke-width:1.2; }
+.bvb-sig .sig-path{ fill:none; stroke:var(--acc); stroke-width:1.6; opacity:.6; stroke-linecap:round; stroke-dasharray:5 11; filter:drop-shadow(0 0 5px var(--acc-glow)); }
+.bvb-sig .sig-node{ fill:var(--acc); filter:drop-shadow(0 0 5px var(--acc-glow)); }
+@media (prefers-reduced-motion: no-preference){
+  .bvb-sig .sig-path{ animation:bvbSigFlow 6.5s linear infinite; }
+  .bvb-sig .sig-node{ animation:bvbSigPulse 3s ease-in-out infinite; }
+  .bvb-sig .sig-node:nth-of-type(2){ animation-delay:.5s; }
+  .bvb-sig .sig-node:nth-of-type(3){ animation-delay:1s; }
+}
+@keyframes bvbSigFlow{ to{ stroke-dashoffset:-160; } }
+@keyframes bvbSigPulse{ 0%,100%{ opacity:.35; } 50%{ opacity:1; } }

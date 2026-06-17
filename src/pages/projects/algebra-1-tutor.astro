@@ -21,7 +21,7 @@ const TEXTBOOK = p.demo;
 const methods = [
   { h: 'Ask before telling', p: 'Hints arrive as questions on a graduated ladder, so you do the thinking. The tutor only narrows the gap.' },
   { h: 'Reads the actual mistake', p: 'Misconception diagnosis looks at your specific wrong answer and repairs the cause, not a generic “try again.”' },
-  { h: 'Concrete before symbols', p: 'Balance scales for equations, money for negatives, input–output machines for functions, then the notation.' },
+  { h: 'Concrete before symbols', p: 'Balance scales for equations, money for negatives, input-output machines for functions, then the notation.' },
   { h: 'Worked examples that fade', p: 'Backward-faded examples show the full solution, then hand you one more step each time until you own it.' },
   { h: 'Honest encouragement', p: 'Effort is acknowledged plainly and a wrong answer is never praised, so the feedback stays worth trusting.' },
   { h: 'Checks for transfer', p: 'Instead of “make sense?”, it asks you to apply the idea somewhere new, the real test of understanding.' },
@@ -48,7 +48,7 @@ const stack = [
     uses the valid generic site OG card. TODO: once a tutor OG/hero image is
     captured (e.g. /portfolio/assets/a1-hero.png), pass ogImage to match siblings. */}
 <Page
-  title="Algebra 1 Tutor — Roger Winter"
+  title="Algebra 1 Tutor, Roger Winter"
   description={p.desc}
   canonical="https://rogerwinter.dev/projects/algebra-1-tutor"
   active=""
@@ -85,8 +85,8 @@ const stack = [
 
   {/* lede */}
   <section class="a1-lede">
-    <p>Algebra 1 Tutor is a complete first course in algebra, and it’s free. Work through it as a browser textbook, or install a Claude skill that sits beside you and tutors one-on-one.</p>
-    <p>Both halves read from <span class="hl">one source of truth that SymPy re-checks on every change</span>, so the example you see in the book is the exact example the tutor walks you through, and the whole thing runs on Claude’s free tier.</p>
+    <p>An AI tutor that teaches from a textbook has a quiet failure mode: the book says one thing, the tutor says another. Algebra 1 Tutor keeps one source of truth, and makes SymPy prove the math before anything ships.</p>
+    <p><span class="hl">909 problems, 614 re-derived by SymPy on every push, zero failures.</span> The example you read in the book is the exact example Claude pulls up when you ask, because both are generated from the same file. And the whole thing runs on Claude's free tier.</p>
   </section>
 
   {/* tutor chat demo */}
