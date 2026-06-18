@@ -7,7 +7,7 @@ export const projects = [
     name: 'sheet-llm',
     n: '01',
     status: 'In development',
-    desc: "A music notation editor you describe in plain language: an LLM orchestrator writes the notes onto the staff, changing only the bars you asked it to, and never makes a silent edit.",
+    desc: "A music notation editor you drive with plain language. Describe the music and a language model writes it onto the staff, with every note still yours to edit by hand.",
     tagline: 'Compose, edit, and reason about musical scores in plain language.',
     tags: ['Music', 'LLM', 'Editor'],
     clef: true,
