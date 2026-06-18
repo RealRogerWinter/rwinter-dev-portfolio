@@ -58,7 +58,7 @@ const stack = [
       </div>
     </div>
     <div class="slp-intro">
-      <p class="slp-tagline">A notation editor you talk to. Describe the music; an LLM orchestrator writes it onto the staff, and never makes a silent edit.</p>
+      <p class="slp-tagline">A music notation editor you drive with plain language. Describe the music and a language model writes it onto the staff, with every note still yours to edit by hand.</p>
       <div class="slp-actions">
         <a class="tm-btn demo" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
         <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
@@ -69,8 +69,8 @@ const stack = [
 
   {/* lede */}
   <section class="slp-lede">
-    <p>Ask sheet-llm to rewrite bars 5 through 8 of a waltz, and bars 1 through 4 come back identical. Not usually, and not because the model tried. The server hashes the bars that should stay and refuses the edit if any of them moved.</p>
-    <p>That refusal is the whole design. <span class="hl">The model emits a structured score, not notation markup, so the editor can prove exactly what an edit did not change.</span> It is in development, so this is how it works, not a victory lap.</p>
+    <p>sheet-llm is a notation editor built around a language model. Describe the music in words, "add a four-bar ii-V-I in F", "transpose the bridge up a third", "harmonize this melody as a chorale", and the notes land on the staff. You can still drag, click, and type like any editor, ask plain questions about the open score, and export to MusicXML, MIDI, and PDF. It is in development, so this is how it works, not a victory lap.</p>
+    <p>How it's built is the interesting part. <span class="hl">The model never emits notation markup; it emits a structured Score as validated JSON, and the staff, the playback, and the exports all render from that one source of truth.</span> A single orchestrator reads each request and routes it to the model that fits: a small one for a small change, a frontier one for a hard one, a conversational one for a question. And every edit is additive, enforced on the server, which hashes the bars meant to stay and refuses the change if any of them moved, so you can prove exactly what an edit did and did not touch.</p>
   </section>
 
   {/* signature: additive editing */}
