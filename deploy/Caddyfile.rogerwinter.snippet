@@ -22,18 +22,32 @@
 #
 # www.rogerwinter.dev is handled by the redirect block at the bottom of this file
 # (301 → apex). It carries its OWN `tls { dns … }` override so Caddy obtains a
-# separate Let's Encrypt cert for the www name via DNS-01; without that block the
-# origin had no cert for www and Cloudflare (Full strict) returned 525 on the
-# www host. The www apex record must be proxied in Cloudflare (it is).
+# separate Let's Encrypt cert for the www name via DNS-01.
+#
+#   IMPORTANT — www has NO client_auth, unlike the apex. The apex's origin lock
+#   works because Cloudflare's Authenticated Origin Pull is configured for the
+#   apex hostname, so Cloudflare presents its client cert there. www is NOT
+#   covered by AOP, so locking it would make Cloudflare's origin handshake fail
+#   with a 525 (Cloudflare sends no client cert → require_and_verify rejects).
+#   A bare redirect carries no content worth locking anyway, so leave it open.
+#
+#   IMPORTANT — the www DNS record must be a proxied CNAME/A pointing at THIS
+#   origin (CNAME → rogerwinter.dev). It originally shipped as a proxied CNAME to
+#   parkingpage.namecheap.com (a Namecheap parking page); Cloudflare (Full strict)
+#   handshakes against the record's target, so the parking origin returned 525 on
+#   www regardless of Caddy. Repointing the CNAME to the apex was the real fix.
 #
 # DEFERRED — rogerwinter.biz: needs its own proxied DNS record first, plus
 # onboarding that zone + a token that covers it. When ready, add a redirect block
 # that ALSO carries a per-site dns token covering the .biz zone.
 #
-# After editing: `sudo caddy validate --config /etc/caddy/Caddyfile` (note: a
-# standalone validate run shows an empty-token warning because caddy.env isn't
-# loaded in your shell — harmless; the service has the tokens) then
-# `sudo systemctl restart caddy`.
+# After editing: validate, then reload (a new env var would need a restart, but
+# www reuses the existing CF_API_TOKEN_RW, so reload is enough):
+#   sudo bash -c 'set -a; . /etc/caddy/caddy.env; set +a; \
+#       caddy validate --config /etc/caddy/Caddyfile'   # source the env first —
+#   sudo systemctl reload caddy                          # a bare `caddy validate`
+# WITHOUT sourcing caddy.env hard-errors ("API token '' appears invalid"), because
+# {env.CF_API_TOKEN_RW} is empty in your shell; it is NOT a harmless warning.
 # ─────────────────────────────────────────────────────────────────────────────
 
 rogerwinter.dev {
@@ -54,19 +68,11 @@ rogerwinter.dev {
 
 # Canonical-host redirect: www → apex. Carries its own per-site DNS token so Caddy
 # can solve the DNS-01 challenge and mint a cert for the www name (the apex block's
-# cert does not cover it). Without a valid origin cert here, Cloudflare (SSL/TLS
-# Full strict) fails the origin TLS handshake and serves a 525 on www. The origin
-# lock (client_auth) mirrors the apex block so www is also reachable only via real
-# Cloudflare connections — same AOP trust pool, same posture.
+# cert does not cover it). NO client_auth here — see the header note: www is not
+# covered by Cloudflare's Authenticated Origin Pull, so an origin lock would 525.
 www.rogerwinter.dev {
 	tls {
 		dns cloudflare {env.CF_API_TOKEN_RW}
-		client_auth {
-			mode require_and_verify
-			trust_pool file {
-				pem_file /etc/caddy/cf-origin-pull-ca.pem
-			}
-		}
 	}
 
 	redir https://rogerwinter.dev{uri} permanent
