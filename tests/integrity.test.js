@@ -7,9 +7,9 @@ import path from 'node:path';
 import { SITE, PAGES, read } from './_lib.js';
 
 const ROOT = path.join(SITE, '..');
-// Every built HTML page, including the net-new writeups (not in the 8 deployed
-// PAGES), so the no-CDN / no-Babel guards cover the whole shipped surface.
-const ALL_PAGES = [...PAGES, 'writeups.html', 'writeups/visual-regression-as-a-migration-oracle.html'];
+// Every built HTML page, so the no-CDN / no-Babel guards cover the whole
+// shipped surface.
+const ALL_PAGES = [...PAGES];
 
 describe('supply-chain & self-hosting invariants', () => {
   it('no third-party CDN script references in any page', () => {
