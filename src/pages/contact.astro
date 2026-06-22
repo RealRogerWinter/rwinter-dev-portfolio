@@ -35,7 +35,7 @@ const ends = [
       <p class="ct-lead">Hiring for AI developer relations or applied AI engineering, or need someone who can ship the product <span class="hl">and</span> explain it? Here's where to find me.</p>
       <div class="ct-cards">
         {cards.map((c) => (
-          <a class="ct-card" href={c.href} target={c.k === 'email' ? undefined : '_blank'} rel="noopener">
+          <a class="ct-card" href={c.href} target={c.k === 'email' ? undefined : '_blank'} rel={c.k === 'email' ? 'noopener' : 'me noopener'}>
             <span class="ic"><Icon name={c.icon} /></span>
             <span class="tx"><span class="l">{c.label}</span><span class="v">{c.value}</span></span>
             <span class="go">{c.arrow}</span>

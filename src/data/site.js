@@ -10,6 +10,12 @@ export const social = {
     href: 'https://www.linkedin.com/in/roger-winter-content-strategy',
     handle: 'in/roger-winter-content-strategy',
   },
+  // Domain handle: @rogerwinter.dev is claimed via an _atproto DNS TXT record
+  // (Cloudflare), not a file here. This is just the public profile link.
+  bluesky: {
+    href: 'https://bsky.app/profile/rogerwinter.dev',
+    handle: '@rogerwinter.dev',
+  },
 };
 
 export const repo = 'https://github.com/RealRogerWinter/rwinter-dev-portfolio';
