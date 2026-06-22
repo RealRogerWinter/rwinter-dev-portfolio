@@ -188,10 +188,16 @@ jobs:
             docker push "$IMG:$CIRCLE_SHA1"
             docker push "$IMG:latest"
             # Resolve the pushed manifest digest from the registry and build the
-            # canonical GHCR ref. RepoDigests[0] is unreliable here: the local
-            # `rwinter-portfolio:ci` scan tag also lands in RepoDigests, which is
-            # what made the first hardened deploy send a non-GHCR ref.
-            SHA="$(docker buildx imagetools inspect "$IMG:$CIRCLE_SHA1" --format '{{.Manifest.Digest}}')"
+            # canonical GHCR ref. We grep the sha256 out of `imagetools inspect`
+            # instead of `--format '{{.Manifest.Digest}}'`: buildx on
+            # ubuntu-2404:current ignored the template and printed its default
+            # Name/MediaType/Digest block, so $SHA came back as that text and the
+            # sha256: guard below (correctly) failed the build. grep takes the
+            # first sha256, the top-level manifest digest for this single-arch
+            # image. RepoDigests[0] is also unreliable here: the local
+            # `rwinter-portfolio:ci` scan tag lands in RepoDigests, which made the
+            # first hardened deploy send a non-GHCR ref.
+            SHA="$(docker buildx imagetools inspect "$IMG:$CIRCLE_SHA1" | grep -oE 'sha256:[0-9a-f]{64}' | head -n1)"
             case "$SHA" in sha256:*) : ;; *) echo "ERROR: bad digest '$SHA'"; exit 1 ;; esac
             echo "${IMG}@${SHA}" > image-digest.txt
             echo "pushed $(cat image-digest.txt)"
