@@ -71,7 +71,7 @@ here for provenance:
 
 ## 4. Deploy topology
 
-The site is served by a hardened, non-root nginx container (`nginxinc/nginx-unprivileged:1.27-alpine`, uid 101, listening on `:8080`) bound to **loopback only** (`127.0.0.1:3001`). The shared host **Caddy** terminates TLS and Cloudflare Authenticated Origin Pulls (mTLS) and reverse-proxies in.
+The site is served by a hardened, non-root nginx container (`nginxinc/nginx-unprivileged:1.27-alpine`, uid 101, listening on `:8080`) bound to **loopback only** (`127.0.0.1:3005`). The shared host **nginx** terminates TLS and Cloudflare Authenticated Origin Pulls (mTLS) and reverse-proxies in. (It was Caddy until the 2026-09-03 host move; see `deploy/rogerwinter.dev.nginx.conf`.)
 
 ```
             Browser
@@ -81,7 +81,7 @@ The site is served by a hardened, non-root nginx container (`nginxinc/nginx-unpr
                │  Full (strict) + Authenticated Origin Pull (mTLS)
                ▼
    Caddy on the VPS :443         (shared with sheet-llm; LE cert via DNS-01)
-               │  reverse_proxy 127.0.0.1:3001   (loopback only)
+               │  proxy_pass http://127.0.0.1:3005  (loopback only)
                ▼
    Docker: nginx-unprivileged    (non-root uid 101, read-only rootfs)
                └ serves static site on :8080  ·  /healthz probe

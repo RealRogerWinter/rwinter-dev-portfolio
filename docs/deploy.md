@@ -7,7 +7,7 @@ Cloudflare Authenticated Origin Pull (mTLS), and reverse-proxies in.
 
 - **Server:** Hetzner VPS, Ubuntu 26.04, `${VPS_HOST}` / `${VPS_HOST_V6}`
 - **Stack dir:** `/opt/rwinter-portfolio` (root-owned, mirrors `/opt/sheet-llm`)
-- **Container port:** `127.0.0.1:3001 -> 8080` (sheet-llm owns `3000` — never touch it)
+- **Container port:** `127.0.0.1:3005 -> 8080` (sheet-llm owns `3000`, price-game owns `3001` — never touch either)
 - **Image:** `ghcr.io/realrogerwinter/rwinter-dev-portfolio` (pinned by `@sha256:` digest)
 - **Canonical host:** `https://rogerwinter.dev` (`rogerwinter.biz` + `www.*` redirect to it)
 
@@ -60,18 +60,18 @@ sudo PORTFOLIO_IMAGE=ghcr.io/realrogerwinter/rwinter-dev-portfolio@sha256:<diges
 sudo docker compose up -d --build
 ```
 
-Either way the container comes up on `127.0.0.1:3001`. Confirm health before
+Either way the container comes up on `127.0.0.1:3005`. Confirm health before
 wiring Caddy:
 
 ```bash
-curl -fsS http://127.0.0.1:3001/healthz && echo OK
+curl -fsS http://127.0.0.1:3005/healthz && echo OK
 ```
 
 ## Wiring Caddy
 
 Append the portfolio site blocks to the shared Caddyfile, validate, then reload.
 The snippet (`deploy/Caddyfile.rogerwinter.snippet`) defines the apex
-`reverse_proxy 127.0.0.1:3001` with `client_auth mode require_and_verify`
+`proxy_pass http://127.0.0.1:3005` with `ssl_verify_client on`
 against the Cloudflare Origin-Pull CA, plus the `www` and `.biz` redirects. It
 relies on the **already-present** global options block and does not repeat it.
 
@@ -86,7 +86,7 @@ sudo systemctl reload caddy
 The Caddy block requires both the container *and* Cloudflare to be ready, or the
 TLS/mTLS handshake and DNS-01 issuance will fail. Follow this order:
 
-1. **Container up on `127.0.0.1:3001`** — manual deploy above; `/healthz` returns 200.
+1. **Container up on `127.0.0.1:3005`** — manual deploy above; `/healthz` returns 200.
 2. **Cloudflare ready** — onboard **both** `rogerwinter.dev` and
    `rogerwinter.biz` as zones in the same Cloudflare account as `CF_API_TOKEN`
    (today that token sees only `sheetllm.com`), set proxied (orange-cloud)
@@ -130,7 +130,7 @@ the last-good digest:
 ```bash
 cd /opt/rwinter-portfolio
 sudo PORTFOLIO_IMAGE="$(cat .previous-image)" docker compose up -d --remove-orphans
-curl -fsS http://127.0.0.1:3001/healthz && echo OK
+curl -fsS http://127.0.0.1:3005/healthz && echo OK
 ```
 
 ## Logs & health
@@ -147,7 +147,7 @@ For the proxy layer: `sudo journalctl -u caddy -e`.
 ## Coexistence with sheet-llm
 
 The portfolio and sheet-llm are **independent Docker Compose projects** on the
-same host. They are isolated by port — portfolio on `127.0.0.1:3001`, sheet-llm
+same host. They are isolated by port — portfolio on `127.0.0.1:3005`, sheet-llm
 on `127.0.0.1:3000` — and share only the host Caddy, which routes by hostname
 (`rogerwinter.dev` vs `sheetllm.com`). Both bind loopback only and are reached
 solely through Caddy.

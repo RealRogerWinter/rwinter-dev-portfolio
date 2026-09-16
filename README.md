@@ -19,7 +19,7 @@ Browser ──TLS──▶ Cloudflare edge (proxy / WAF / cache)
                    │  Full(strict) + Authenticated Origin Pull (mTLS)
                    ▼
                 Caddy on the host :443   (shared; LE cert via DNS-01)
-                   │  reverse_proxy 127.0.0.1:3001   (loopback only)
+                   │  proxy_pass http://127.0.0.1:3005  (loopback only)
                    ▼
                 Docker: nginx-unprivileged (non-root, read-only rootfs)
                    └ serves the static site on :8080
@@ -54,7 +54,7 @@ deploy/
   Caddyfile.rogerwinter.snippet   site block to append to the shared Caddyfile
   deploy.sh               server-side forced-command deploy (root, via sudo)
 Dockerfile                non-root nginx image (serves the prebuilt dist/)
-docker-compose.yml        loopback-only stack (127.0.0.1:3001), hardened
+docker-compose.yml        loopback-only stack (127.0.0.1:3005), hardened
 .circleci/config.yml      lint/test/visual/verify → build → push → APPROVE → deploy
 scripts/
   fetch-fonts.py              (re)download + subset the self-hosted web fonts
@@ -83,12 +83,12 @@ npm test                                       # vitest: structure, SEO, integri
 npm run test:visual                            # Playwright pixel oracle (local-authoritative)
 npm run lint                                   # htmlhint on the built dist/
 
-# 3) build + run the production container (loopback :3001), then smoke-test
+# 3) build + run the production container (loopback :3005), then smoke-test
 docker compose up -d --build
-python3 scripts/smoke.py http://127.0.0.1:3001
+python3 scripts/smoke.py http://127.0.0.1:3005
 ```
 
-Open <http://127.0.0.1:3001/>. The tests and the container both consume the built
+Open <http://127.0.0.1:3005/>. The tests and the container both consume the built
 `dist/`, so `npm run build` must run first; `npm test` does it automatically via
 its `pretest` hook.
 

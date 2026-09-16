@@ -1,5 +1,10 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Roger Winter portfolio — Caddy site block  (DEPLOYED on the VPS)
+# Roger Winter portfolio — Caddy site block  (SUPERSEDED, kept for reference)
+#
+# ⚠ NOT DEPLOYED since 2026-09-03. The site moved to a host where nginx already
+# owns :443, so the edge is now deploy/rogerwinter.dev.nginx.conf. Everything
+# below describes the old Caddy edge on the previous host and is retained only
+# because the Cloudflare/DNS-01/mTLS reasoning it records still applies.
 #
 # Appended to the shared /etc/caddy/Caddyfile. The global options block (email,
 # `acme_dns cloudflare {env.CF_API_TOKEN}`, trusted_proxies = Cloudflare ranges)

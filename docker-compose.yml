@@ -1,7 +1,18 @@
 # Roger Winter portfolio — production stack.
-# Static site, bound to loopback only; the host Caddy (shared with other sites)
+# Static site, bound to loopback only; the host nginx (shared with other sites)
 # terminates TLS + Cloudflare Authenticated Origin Pull and proxies in.
 # Mirrors the sheet-llm deploy pattern (127.0.0.1 bind, restart, log rotation).
+#
+# Migrated to a new origin host on 2026-09-03. The origin address is NOT recorded
+# here: this repo is public, and the whole point of the Cloudflare Authenticated
+# Origin Pull lock is that the origin is not trivially reachable. It lives in the
+# CircleCI `deploy` context as VPS_HOST. Two things changed and are reflected here:
+#   1. Published port 3001 -> 3005. On the new host 127.0.0.1:3001 is
+#      price-game-app-1, and `tailscale serve` maps it as the price.games
+#      tailnet-only admin route. Both sides of 3001 are immovable. 3002 is
+#      sandbox.price.games and 3003 belongs to the price-game sandbox scripts.
+#   2. The edge is nginx, not Caddy — nginx owns :443 there because it also
+#      serves onestreamer.live. See deploy/rogerwinter.dev.nginx.conf.
 #
 # Local:   docker compose up -d --build
 # Server:  PORTFOLIO_IMAGE=ghcr.io/realrogerwinter/rwinter-dev-portfolio@sha256:... docker compose up -d
@@ -11,7 +22,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3001:8080"        # loopback ONLY — never 0.0.0.0 (sheet-llm owns 3000)
+      - "127.0.0.1:3005:8080"        # loopback ONLY — never 0.0.0.0 (3001 = price-game)
     # Hardening: nothing here needs to write to the image filesystem.
     read_only: true
     tmpfs:
