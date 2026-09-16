@@ -16,6 +16,7 @@ import {
 import { projects } from '../../data/portfolio.js';
 import '../../styles/microviz.css';
 import '../../styles/pricey.css';
+import '../../styles/offline.css';
 
 const p = projects.find((x) => x.id === 'pricey');
 const idx = projects.findIndex((x) => x.id === 'pricey');
@@ -61,7 +62,7 @@ const personaPins = [
     <div class="pcy-band">
       <ProjectVizIsland id="pricey" client:only="react" />
       <div class="pcy-scrim"></div>
-      <div class="pcy-status"><i></i> {p.status}</div>
+      <div class={`pcy-status${p.offline ? ' off' : ''}`}><i></i> {p.offline?.status ?? p.status}</div>
       <div class="pcy-titlewrap">
         <div class="pcy-logo"><img src={p.logo} alt="Pricey avatar" /></div>
         <div>
@@ -73,7 +74,11 @@ const personaPins = [
     <div class="pcy-intro">
       <p class="pcy-tagline">{p.tagline}</p>
       <div class="pcy-actions">
-        <a class="tm-btn demo" href={TWITCH} target="_blank" rel="noopener">Watch live ↗</a>
+        {p.offline ? (
+          <span class="tm-btn offline" role="status"><span class="dot" aria-hidden="true"></span> {p.offline.cta}</span>
+        ) : (
+          <a class="tm-btn demo" href={TWITCH} target="_blank" rel="noopener">Watch live ↗</a>
+        )}
         <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
         <a class="tm-btn ghost" href="/">← All projects</a>
       </div>
@@ -96,12 +101,23 @@ const personaPins = [
     <p class="pcy-p">Pricey streams around the clock. The overlay shows her avatar and mood ring, a running win/loss and streak, her live "brain" panels, and the thought bubble narrating each guess, all on top of the real game.</p>
     <div class="pcy-stream">
       <div class="ps-bar">
-        <span class="ps-live"><i></i> Live</span>
+        <span class={`ps-live${p.offline ? ' off' : ''}`}><i></i> {p.offline ? 'Offline' : 'Live'}</span>
         <span class="ps-ch">twitch.tv/pricegamespricey</span>
-        <a class="ps-cta" href={TWITCH} target="_blank" rel="noopener">Watch on Twitch ↗</a>
+        {p.offline ? (
+          <span class="ps-cta offline" role="status">{p.offline.card}</span>
+        ) : (
+          <a class="ps-cta" href={TWITCH} target="_blank" rel="noopener">Watch on Twitch ↗</a>
+        )}
       </div>
       <div class="ps-video">
-        <iframe title="Pricey live on Twitch" src={twitchSrc} allowfullscreen frameborder="0" scrolling="no"></iframe>
+        {p.offline ? (
+          <div class="ps-offline" role="status">
+            <b>Pricey is offline</b>
+            <small>twitch.tv/pricegamespricey</small>
+          </div>
+        ) : (
+          <iframe title="Pricey live on Twitch" src={twitchSrc} allowfullscreen frameborder="0" scrolling="no"></iframe>
+        )}
       </div>
     </div>
   </section>
@@ -250,7 +266,11 @@ const personaPins = [
         <p>She's live right now, learning and emoting in real time.</p>
         <span class="url">twitch.tv/pricegamespricey</span>
       </div>
-      <a class="tm-btn demo big" href={TWITCH} target="_blank" rel="noopener">Watch live ↗</a>
+      {p.offline ? (
+        <span class="tm-btn offline big" role="status"><span class="dot" aria-hidden="true"></span> {p.offline.cta}</span>
+      ) : (
+        <a class="tm-btn demo big" href={TWITCH} target="_blank" rel="noopener">Watch live ↗</a>
+      )}
     </div>
   </section>
 

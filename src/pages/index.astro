@@ -8,6 +8,7 @@ import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
 import { projects, projectHue } from '../data/portfolio.js';
 import '../styles/microviz.css';
 import '../styles/home.css';
+import '../styles/offline.css';
 ---
 <Page
   title="Roger Winter, Developer Advocate"
@@ -15,12 +16,6 @@ import '../styles/home.css';
   canonical="https://rogerwinter.dev/"
   active="home"
 >
-  <header class="hero">
-    <p class="hero-kicker">Developer Advocate</p>
-    <h1 class="hero-h1">I build AI products, then write up <span class="em">exactly how they work</span>.</h1>
-    <p class="hero-lead">LLM tools, AI agents, and a neural net that learns live on a 24/7 stream. Each project here is something I built and documented in depth, so you can try the live ones, read how they work, and dig through the code. <span class="hl">The build is the experiment. The writeup is the result.</span></p>
-  </header>
-
   <div class="rw-sec">
     <h2>Selected work</h2>
     <em>Six projects, each one built, documented, and open to take apart.</em>
@@ -61,9 +56,15 @@ import '../styles/home.css';
           <div class="tm-tags pc-tags">{p.tags.map((tg) => <span class="tm-tag">{tg}</span>)}</div>
           <div class="pc-links">
             {p.id !== 'multilingual-seo' && (
-              <a class="pc-mini live" href={p.demo} target={p.id === 'pricey' ? '_blank' : undefined} rel="noopener">
-                {p.id === 'pricey' ? 'Watch live' : 'Live demo'} <span class="ar">↗</span>
-              </a>
+              p.offline ? (
+                <span class="pc-mini offline" role="status">
+                  <span class="dot" aria-hidden="true"></span> {p.offline.card}
+                </span>
+              ) : (
+                <a class="pc-mini live" href={p.demo} target={p.id === 'pricey' ? '_blank' : undefined} rel="noopener">
+                  {p.id === 'pricey' ? 'Watch live' : 'Live demo'} <span class="ar">↗</span>
+                </a>
+              )
             )}
             <a class="pc-mini" href={p.repo}>GitHub <span class="ar">↗</span></a>
           </div>
