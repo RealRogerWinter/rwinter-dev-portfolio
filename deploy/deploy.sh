@@ -36,8 +36,14 @@ PORTFOLIO_IMAGE="$REF" docker compose pull
 PORTFOLIO_IMAGE="$REF" docker compose up -d --remove-orphans
 
 # Wait for health before declaring success.
+#
+# Port 3005, NOT 3001. On this host 127.0.0.1:3001 is price-game-app-1, which
+# answers /healthz with a 200 of its own — so a 3001 check here would report
+# every portfolio deploy healthy whether or not the portfolio actually came up,
+# and would silently skip the rollback below. A wrong port is worse than no
+# check. Keep this in lockstep with the published port in docker-compose.yml.
 for _ in $(seq 1 30); do
-	if curl -fsS http://127.0.0.1:3001/healthz >/dev/null 2>&1; then
+	if curl -fsS http://127.0.0.1:3005/healthz >/dev/null 2>&1; then
 		echo "deploy: healthy — $REF"; docker image prune -f >/dev/null 2>&1 || true; exit 0
 	fi
 	sleep 1

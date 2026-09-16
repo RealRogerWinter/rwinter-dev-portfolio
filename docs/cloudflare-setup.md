@@ -157,7 +157,7 @@ sudo systemctl reload caddy
 ```
 
 Verify the site serves **through Cloudflare** (cert chains to Let's Encrypt,
-served from the loopback container on `127.0.0.1:3001`):
+served from the loopback container on `127.0.0.1:3005`):
 
 ```bash
 curl -sI https://rogerwinter.dev/ | head -n1            # HTTP/2 200

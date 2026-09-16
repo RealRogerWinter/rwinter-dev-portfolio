@@ -32,7 +32,7 @@ See `Dockerfile` and `docker-compose.yml`.
 
 The application is **never directly reachable from the internet**.
 
-- **Loopback-only bind** — compose maps `127.0.0.1:3001:8080`. The container is
+- **Loopback-only bind** — compose maps `127.0.0.1:3005:8080`. The container is
   bound to loopback, not `0.0.0.0`, so only processes on the VPS (i.e. Caddy) can
   reach it. (`3000` is owned by sheet-llm.)
 - **Cloudflare in front** — the canonical host `rogerwinter.dev` is proxied through

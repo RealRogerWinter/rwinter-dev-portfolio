@@ -12,7 +12,7 @@ server-side deploy script is [`deploy/deploy.sh`](../deploy/deploy.sh).
 
 | Stage | Branch | What it does |
 |-------|--------|--------------|
-| `verify` | all | Builds the image, runs it on `127.0.0.1:3001:8080`, waits for `/healthz`, runs `scripts/smoke.py`, and asserts no secret-like content is baked into `/usr/share/nginx/html`. |
+| `verify` | all | Builds the image, runs it on `127.0.0.1:3001:8080` (the CircleCI VM is ephemeral and owns that port; production publishes 3005), waits for `/healthz`, runs `scripts/smoke.py`, and asserts no secret-like content is baked into `/usr/share/nginx/html`. |
 | `build_and_push` | **main only** | Logs in to GHCR, builds `:$CIRCLE_SHA1` + `:latest`, pushes both, and records the resulting `RepoDigests[0]` to `image-digest.txt`. |
 | `hold` | **main only** | `type: approval` — a **manual gate that blocks every production deploy**. Nothing reaches `deploy` until a human approves it in the CircleCI UI. |
 | `deploy` | **main only** | Registers the `rwinter-deploy@VPS` key, pins the VPS host key from `VPS_KNOWN_HOSTS`, and runs `ssh rwinter-deploy@${VPS_HOST} "$DIGEST"`. |
@@ -137,7 +137,7 @@ to the script as **`$SSH_ORIGINAL_COMMAND`** — the image digest. The script th
    shell metacharacters or whitespace.
 2. Saves the currently-running image to `.previous-image`, then runs
    `PORTFOLIO_IMAGE="$REF" docker compose pull` and `... up -d --remove-orphans`.
-3. Waits up to 30s for `http://127.0.0.1:3001/healthz`; on failure it **rolls back**
+3. Waits up to 30s for `http://127.0.0.1:3005/healthz`; on failure it **rolls back**
    to `.previous-image` and exits non-zero.
 
 To deploy the first time **without CI** (or to test the path end-to-end), resolve
