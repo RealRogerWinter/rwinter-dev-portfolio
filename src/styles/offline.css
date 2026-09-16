@@ -1,0 +1,54 @@
+/* Offline states for a project whose live demo or stream is down.
+
+   Driven entirely by the `offline` field in src/data/portfolio.js: set it and
+   the live link/embed is replaced by a notice, clear it and the live link comes
+   back and none of this applies. Nothing here is page-specific plumbing — it is
+   imported by the home page and by the two project pages that can go offline.
+
+   Amber, not red: these are paused, not broken. The live-state dots lose their
+   pulse, because a pulsing dot reads as "active" no matter what the label next
+   to it says. */
+
+.tm{ --offline:#f5b54b; }
+
+/* Shared pill/button treatment: same box as the live variant, no affordance. */
+.pc-mini.offline,
+.tm-btn.offline{
+  color:var(--offline);
+  border:1px solid color-mix(in srgb, var(--offline) 34%, var(--line));
+  background:color-mix(in srgb, var(--offline) 8%, transparent);
+  cursor:default;
+}
+.pc-mini.offline:hover,
+.tm-btn.offline:hover{ transform:none; box-shadow:none; }
+.tm-btn.offline{ font-family:var(--mono); font-weight:600; }
+
+.offline .dot{
+  width:6px; height:6px; border-radius:50%; background:var(--offline);
+  display:inline-block; flex:none; opacity:.9;
+}
+
+/* Pricey page: hero badge, stream bar, and the box the Twitch iframe filled. */
+.pcy-status.off{ border-color:color-mix(in srgb, var(--offline) 55%, var(--line)); }
+.pcy-status.off i,
+.ps-live.off i{ background:var(--offline); box-shadow:none; animation:none; }
+
+.ps-cta.offline{
+  margin-left:auto; background:transparent; color:var(--offline);
+  border:1px solid color-mix(in srgb, var(--offline) 34%, var(--line));
+  cursor:default; font-family:var(--mono); font-size:12px;
+  padding:7px 13px; border-radius:8px;
+}
+
+/* .ps-video keeps its CSS background (a still of the stream), so the notice
+   overlays that rather than leaving a black box where the player was. */
+.ps-offline{
+  position:absolute; inset:0; display:grid; place-items:center; align-content:center;
+  gap:7px; text-align:center; padding:18px;
+  background:color-mix(in srgb, #000 58%, transparent);
+}
+.ps-offline b{
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--offline); font-weight:600;
+}
+.ps-offline small{ font-family:var(--mono); font-size:11px; color:#cfd6d1; }

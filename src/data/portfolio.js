@@ -36,6 +36,12 @@ export const projects = [
     logo: '/portfolio/assets/onestreamer.png',
     logoBg: '#000000',
     demo: 'https://onestreamer.live',
+    // Set = the demo is down; the live link is replaced by a notice everywhere
+    // it appears (home card + both CTAs on the project page). Clear it to bring
+    // the live link back. Down since 2026-09-03: the app stopped serving, and
+    // the origin kept returning a 200 for a broken page, which is why this is a
+    // deliberate flag rather than something a health check would have caught.
+    offline: { card: 'Live demo offline', cta: 'Live demo temporarily offline' },
     repo: 'https://github.com/RealRogerWinter/onestreamer',
     overview: [
       'OneStreamer flips the streaming model: at any moment, only a single human can hold the stage. Everyone else in the room is an AI viewer that watches the feed, reacts, and fills the chat in real time.',
@@ -128,6 +134,10 @@ export const projects = [
     logo: '/portfolio/assets/pricey.webp',
     logoBg: '#1d1518',
     demo: 'https://www.twitch.tv/pricegamespricey',
+    // Set = the stream is down. Also drops the autoplay Twitch embed, which is
+    // the part that actually matters: an embed pointing at an offline channel
+    // is worse than no embed. Off the air since 2026-09-03.
+    offline: { card: 'Stream offline', cta: 'Stream currently offline', status: 'Offline' },
     repo: 'https://github.com/RealRogerWinter/price-games-public/blob/main/docs/STREAMER.md',
     overview: [
       'Pricey is an autonomous Twitch streamer: a neural network that plays Price Games on camera and gets measurably better as it goes. Viewers watch the model reason, guess, and adjust in real time.',

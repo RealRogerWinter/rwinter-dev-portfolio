@@ -11,6 +11,7 @@ import { TakeoverDiagram, ViewerPipelineDiagram, ArchitectureDiagram } from '../
 import { projects } from '../../data/portfolio.js';
 import '../../styles/microviz.css';
 import '../../styles/onestreamer.css';
+import '../../styles/offline.css';
 
 const p = projects.find((x) => x.id === 'onestreamer');
 const idx = projects.findIndex((x) => x.id === 'onestreamer');
@@ -62,7 +63,11 @@ const tourPins = [
     <div class="os-intro">
       <p class="os-tagline">{p.tagline}</p>
       <div class="os-actions">
-        <a class="tm-btn demo" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+        {p.offline ? (
+          <span class="tm-btn offline" role="status"><span class="dot" aria-hidden="true"></span> {p.offline.cta}</span>
+        ) : (
+          <a class="tm-btn demo" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+        )}
         <a class="tm-btn ghost" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>
         <a class="tm-btn ghost" href="/">← All projects</a>
       </div>
@@ -203,7 +208,11 @@ const tourPins = [
         <p>One seat, an audience of real people and AI, and a takeover always one item away.</p>
         <span class="url">onestreamer.live</span>
       </div>
-      <a class="tm-btn demo big" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+      {p.offline ? (
+        <span class="tm-btn offline big" role="status"><span class="dot" aria-hidden="true"></span> {p.offline.cta}</span>
+      ) : (
+        <a class="tm-btn demo big" href={p.demo} target="_blank" rel="noopener">Try the live demo ↗</a>
+      )}
     </div>
   </section>
 

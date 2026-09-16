@@ -8,6 +8,7 @@ import ProjectVizIsland from '../components/viz/ProjectVizIsland.jsx';
 import { projects, projectHue } from '../data/portfolio.js';
 import '../styles/microviz.css';
 import '../styles/home.css';
+import '../styles/offline.css';
 ---
 <Page
   title="Roger Winter, Developer Advocate"
@@ -55,9 +56,15 @@ import '../styles/home.css';
           <div class="tm-tags pc-tags">{p.tags.map((tg) => <span class="tm-tag">{tg}</span>)}</div>
           <div class="pc-links">
             {p.id !== 'multilingual-seo' && (
-              <a class="pc-mini live" href={p.demo} target={p.id === 'pricey' ? '_blank' : undefined} rel="noopener">
-                {p.id === 'pricey' ? 'Watch live' : 'Live demo'} <span class="ar">↗</span>
-              </a>
+              p.offline ? (
+                <span class="pc-mini offline" role="status">
+                  <span class="dot" aria-hidden="true"></span> {p.offline.card}
+                </span>
+              ) : (
+                <a class="pc-mini live" href={p.demo} target={p.id === 'pricey' ? '_blank' : undefined} rel="noopener">
+                  {p.id === 'pricey' ? 'Watch live' : 'Live demo'} <span class="ar">↗</span>
+                </a>
+              )
             )}
             <a class="pc-mini" href={p.repo}>GitHub <span class="ar">↗</span></a>
           </div>
